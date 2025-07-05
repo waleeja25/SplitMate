@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-wrap: nowrap;
+}
+
+/* Logo and brand text together */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between logo and text */
+  text-decoration: none;
+  color: #333;
+}
+
+/* Logo image */
+.logo {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Brand name (SplitMate) */
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(55, 59, 63);
+  margin: 0;
+}
+
+/* Right side actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  white-space: nowrap;
+}
+
+/* Login */
+.login-link {
+  color: #1cc29f;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: color 0.3s ease;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+  color: #17a185;
+}
+
+/* Signup */
+.signup-btn {
+  background-color: #1cc29f;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.signup-btn:hover {
+  background-color: #17a185;
+}
