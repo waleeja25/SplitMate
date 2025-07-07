@@ -9,7 +9,7 @@ const NavBar = () => {
 <header className="navbar">
   <NavLink to="/" className="logo-container">
     <img src={logo} alt="Logo" className="logo" />
-    <p className="brand-name">SplitMate</p>
+    <p className="brand-name ">SplitMate</p>
   </NavLink>
   <div className="nav-actions">
     <NavLink to="/login" className="login-link">

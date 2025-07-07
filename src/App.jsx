@@ -1,11 +1,14 @@
+
 import './App.css'
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Home from './components/Home';
 import NavBar from './components/NavBar'
 import Login from './components/Login';
 import SignUp from './components/SignUp'
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import Dashboard from './components/Dashboard';
 
 function App() {
+
   const router = createBrowserRouter (
     [
       {
@@ -28,6 +31,12 @@ function App() {
         <div>
           <NavBar />
           <SignUp />
+        </div>
+      } , {
+        path : '/dashboard',
+        element : 
+        <div>
+          <Dashboard />
         </div>
       }
     ]
