@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../style/Authorization.css';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const [name, setName] = useState('');
   const navigate = useNavigate();
   function handleSubmit(e) {
     e.preventDefault();
+    localStorage.setItem('username', name);
     navigate('/dashboard');
 
   }
@@ -22,6 +24,7 @@ const Login = () => {
           type='text'
           placeholder='Username'
           className='auth-input'
+          onChange={(e) => setName(e.target.value)}
         />
         <input
           type='password'
