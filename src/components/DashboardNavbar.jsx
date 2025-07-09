@@ -51,7 +51,7 @@ function stringAvatar(name) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div>
       <nav className="flex items-center justify-between px-6 py-2 shadow-md bg-white">
       
         <div className="flex items-center gap-4 ml-10">
