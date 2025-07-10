@@ -48,7 +48,7 @@ function App() {
         element: 
         <div>
           <Home />
-          <NavBar />
+          {/* <NavBar /> */}
         </div>
       }, {
         path: '/login',
