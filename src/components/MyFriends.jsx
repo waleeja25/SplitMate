@@ -1,26 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { Alert } from "@mui/material";
 import AlertTitle from "@mui/material/AlertTitle";
 import Stack from "@mui/material/Stack";
 
-const MyFriends = () => {
+const MyFriends = ({friends, setFriends, displayList}) => {
   const [friendName, setFriendName] = useState("");
   const [friendEmail, setFriendEmail] = useState("");
   const [error, setError] = useState(false);
-  const [friends, setFriends] = useState(() => {
-    // ✅ Load from localStorage on first render only (not with useEffect)
-    try {
-      const stored = localStorage.getItem("friends");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  // ✅ Save to localStorage on change
-  useEffect(() => {
-    localStorage.setItem("friends", JSON.stringify(friends));
-  }, [friends]);
 
   const addFriends = () => {
     if (!friendName || !friendEmail) {
@@ -59,18 +45,7 @@ const MyFriends = () => {
         Add Friend
       </button>
 
-      <h2 className="text-lg font-semibold mt-4">Friend List</h2>
-      {friends.length === 0 ? (
-        <p>No friends added yet.</p>
-      ) : (
-        <ul className="list-disc pl-5">
-          {friends.map((friend, index) => (
-            <li key={index}>
-              {friend.name} - {friend.email}
-            </li>
-          ))}
-        </ul>
-      )}
+      {displayList("Friends", friends)}
 
       {error && (
         <Stack sx={{ width: "100%" }} spacing={2} className="mb-4">

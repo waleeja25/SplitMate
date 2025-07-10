@@ -10,6 +10,10 @@ const Dashboard = () => {
   function myFriends() {
     navigate('/myFriends')
   }
+
+  function myGroups() {
+    navigate('/myGroups');
+  }
   return (
     <div>
       <DashboardNavbar />
@@ -20,6 +24,11 @@ const Dashboard = () => {
 
       <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
         <button onClick={myFriends} className="text-xl font-semibold">My Friends</button>
+        <p className="text-gray-700">Content goes here.</p>
+      </div>
+
+      <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
+        <button onClick={myGroups} className="text-xl font-semibold">My Groups</button>
         <p className="text-gray-700">Content goes here.</p>
       </div>
     </div>

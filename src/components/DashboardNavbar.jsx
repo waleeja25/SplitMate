@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 
-const Dashboard = () => {
+const  DashboardNavbar= () => {
   const navigate= useNavigate(); 
   const username = localStorage.getItem('username') || 'Guest';
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -88,4 +88,4 @@ function stringAvatar(name) {
   );
 };
 
-export default Dashboard;
+export default DashboardNavbar;

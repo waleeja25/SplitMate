@@ -3,13 +3,12 @@ import { Alert } from "@mui/material";
 import AlertTitle from "@mui/material/AlertTitle";
 import Stack from "@mui/material/Stack";
 
-const CreateGroup = () => {
+const CreateGroup = ({friends, groups, setGroups}) => {
   const [groupName, setGroupName] = useState("");
   const [saveName, isSaveName] = useState(false);
   const [friendList, setFriendList] = useState(false);
   const [newMember, setNewMember] = useState(false);
   const [members, setMembers] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [addGroup, setAddGroup] = useState(false);
@@ -30,29 +29,32 @@ const CreateGroup = () => {
   };
 
   const handleNewGroup = () => {
-    if (!groupName.trim()) {
-      setGroupError(true);
-      return;
-    }
-    if (members.length === 0) {
-      setsingleMemberError(true);
-      return;
-    }
+  if (!groupName.trim()) {
+    setGroupError(true);
+    return;
+  }
+  if (members.length === 0) {
+    setsingleMemberError(true);
+    return;
+  }
 
-    const newGroup = {
-      name: groupName,
-      members: [...members],
-    };
-    setGroups([...groups, newGroup]);
-    setSuccessAlert(true);
-
-    // Reset form
-    setGroupName("");
-    setMembers([]);
-    isSaveName(false);
-    setFriendList(false);
-    setNewMember(false);
+  const newGroup = {
+    name: groupName,
+    members: [...members],
   };
+  setGroups([...groups, newGroup]);
+
+  setAddGroup(true);       // ✅ Show group added alert
+  setSuccessAlert(true);   // (Optional: for another alert?)
+
+  // Reset form
+  setGroupName("");
+  setMembers([]);
+  isSaveName(false);
+  setFriendList(false);
+  setNewMember(false);
+};
+
 
   useEffect(() => {
     if (groupError || memberError || singlememberError || successAlert) {
@@ -171,7 +173,18 @@ const CreateGroup = () => {
 
           {friendList && (
             <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
-              Friend's List (Placeholder)
+             <h2 className="text-lg font-semibold mt-4">Friend List</h2>
+      {friends.length === 0 ? (
+        <p>No friends added yet.</p>
+      ) : (
+        <ul className="list-disc pl-5">
+          {friends.map((friend, index) => (
+            <li key={index}>
+              {friend.name} - {friend.email}
+            </li>
+          ))}
+        </ul>
+      )}
             </div>
           )}
 
