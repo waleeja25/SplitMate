@@ -1,10 +1,14 @@
 import React from 'react'
 import DashboardNavbar from './DashboardNavbar';
-import { Outlet, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const navigate = useNavigate();
   function createGroup() {
     navigate('/createGroup')
+  }
+
+  function myFriends() {
+    navigate('/myFriends')
   }
   return (
     <div>
@@ -12,7 +16,11 @@ const Dashboard = () => {
       <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
         <button onClick={createGroup} className="text-xl font-semibold">Create a Group</button>
         <p className="text-gray-700">Content goes here.</p>
-        
+      </div>
+
+      <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
+        <button onClick={myFriends} className="text-xl font-semibold">My Friends</button>
+        <p className="text-gray-700">Content goes here.</p>
       </div>
     </div>
   );

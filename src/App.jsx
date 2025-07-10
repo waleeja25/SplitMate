@@ -8,6 +8,7 @@ import SignUp from './components/SignUp'
 import Dashboard from './components/Dashboard';
 import CreateGroup from './components/CreateGroup'
 import DashboardNavbar from './components/DashboardNavbar'
+import MyFriends from './components/MyFriends';
 
 function App() {
 
@@ -45,6 +46,12 @@ function App() {
         element:
         <div>
           <CreateGroup />
+        </div>
+      } , {
+        path: '/myFriends',
+        element:
+        <div>
+          <MyFriends />
         </div>
       }
     ]
