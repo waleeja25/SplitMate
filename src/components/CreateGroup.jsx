@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "@mui/material";
-import AlertTitle from "@mui/material/AlertTitle";
-import Stack from "@mui/material/Stack";
+import alertDisplay from "../utils/alertDisplay";
 
-const CreateGroup = ({friends, groups, setGroups}) => {
+const CreateGroup = ({ friends, groups, setGroups }) => {
   const [groupName, setGroupName] = useState("");
   const [saveName, isSaveName] = useState(false);
   const [friendList, setFriendList] = useState(false);
@@ -16,45 +14,60 @@ const CreateGroup = ({friends, groups, setGroups}) => {
   const [memberError, setMemberError] = useState(false);
   const [singlememberError, setsingleMemberError] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
+  const [memberNameError, setMemberNameError] = useState(false);
+  const [memberEmailError, setMemberEmailError] = useState(false);
 
-  const handleAddMember = () => {
-    if (!memberName.trim() || !memberEmail.trim()) {
-      setMemberError(true);
+
+ const handleAddMember = () => {
+  const nameMissing = !memberName.trim();
+  const emailMissing = !memberEmail.trim();
+
+  // Set specific errors
+  setMemberNameError(nameMissing);
+  setMemberEmailError(emailMissing);
+
+  // If any field is missing, show relevant alert(s)
+  if (nameMissing || emailMissing) return;
+
+  // Add valid member
+  setMembers([...members, { name: memberName.trim(), email: memberEmail.trim() }]);
+
+  // Reset form
+  setMemberName("");
+  setMemberEmail("");
+
+  // Clear field errors
+  setMemberNameError(false);
+  setMemberEmailError(false);
+};
+
+
+  const handleNewGroup = () => {
+    if (!groupName.trim()) {
+      setGroupError(true);
+      return;
+    }
+    if (members.length === 0) {
+      setsingleMemberError(true);
       return;
     }
 
-    setMembers([...members, { name: memberName, email: memberEmail }]);
-    setMemberName("");
-    setMemberEmail("");
+    const newGroup = {
+      name: groupName,
+      members: [...members],
+    };
+    setGroups([...groups, newGroup]);
+
+    setAddGroup(true); // ✅ Show group added alert
+    setSuccessAlert(true); // (Optional: for another alert?)
+
+    // Reset form
+    setGroupName("");
+    setMembers([]);
+    isSaveName(false);
+    setFriendList(false);
+    setNewMember(false);
   };
-
-  const handleNewGroup = () => {
-  if (!groupName.trim()) {
-    setGroupError(true);
-    return;
-  }
-  if (members.length === 0) {
-    setsingleMemberError(true);
-    return;
-  }
-
-  const newGroup = {
-    name: groupName,
-    members: [...members],
-  };
-  setGroups([...groups, newGroup]);
-
-  setAddGroup(true);       // ✅ Show group added alert
-  setSuccessAlert(true);   // (Optional: for another alert?)
-
-  // Reset form
-  setGroupName("");
-  setMembers([]);
-  isSaveName(false);
-  setFriendList(false);
-  setNewMember(false);
-};
-
 
   useEffect(() => {
     if (groupError || memberError || singlememberError || successAlert) {
@@ -80,67 +93,74 @@ const CreateGroup = ({friends, groups, setGroups}) => {
 
   return (
     <div className="mt-12 p-8 bg-white border border-gray-500 rounded-lg shadow-md max-w-xl mx-auto">
-      {addGroup && groups.length > 0 && (
-        <Stack sx={{ width: "100%" }} spacing={2} className="mb-4">
-          <Alert severity="success" sx={{ backgroundColor: "	#a5d6a7" }}>
-            <AlertTitle>Success</AlertTitle>
-            Group added successfully.
-          </Alert>
-        </Stack>
+      {addGroup &&
+        groups.length > 0 &&
+        alertDisplay({
+          type: "success",
+          title: "Success",
+          message: "Group added successfully",
+          color: "#a5d6a7",
+        })}
+
+      {groupError &&
+        alertDisplay({
+          type: "error",
+          title: "Error",
+          message: "Group name is required",
+        })}
+
+      {singlememberError &&
+        alertDisplay({
+          type: "error",
+          title: "Error",
+          message: "At least one member must be added to the group.",
+        })}
+
+        
+
+
+{(memberNameError || memberEmailError) &&
+  alertDisplay({
+    type: "error",
+    title: "Incomplete Member Info",
+    message:
+      memberNameError && memberEmailError
+        ? "Member name and email are required."
+        : memberNameError
+        ? "Name is missing."
+        : "Email is missing.",
+  })}
+
+
+      {!saveName && (
+        <>
+          <h2 className="text-2xl font-semibold mb-4">Start a New Group</h2>
+
+          <input
+            placeholder="Enter Group Name"
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded w-full mb-6"
+          />
+
+          <button
+            onClick={() => {
+              if (!groupName.trim()) {
+                setGroupError(true);
+                isSaveName(false);
+              } else {
+                setGroupError(false);
+                isSaveName(true);
+              }
+            }}
+            className="px-4 py-2 bg-cyan-700 hover:bg-cyan-800 text-white rounded"
+          >
+            Save
+          </button>
+
+          <hr className="my-6" />
+        </>
       )}
-
-      {groupError && (
-        <Stack sx={{ width: "100%" }} spacing={2} className="mb-4">
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            Group name is required.
-          </Alert>
-        </Stack>
-      )}
-
-      {singlememberError && (
-        <Stack sx={{ width: "100%" }} spacing={2} className="mb-4">
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            At least one member must be added to the group.
-          </Alert>
-        </Stack>
-      )}
-
-      {memberError && !memberName && !memberEmail && (
-        <Stack sx={{ width: "100%" }} spacing={2} className="mb-4">
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            Member name and email are required.
-          </Alert>
-        </Stack>
-      )}
-
-      <h2 className="text-2xl font-semibold mb-4">Start a New Group</h2>
-
-      <input
-        placeholder="Enter Group Name"
-        value={groupName}
-        onChange={(e) => setGroupName(e.target.value)}
-        className="border border-gray-300 px-4 py-2 rounded w-full mb-6"
-      />
-
-      <button
-        onClick={() => {
-          if (!groupName.trim()) {
-            setGroupError(true);
-            isSaveName(false);
-          } else {
-            setGroupError(false);
-            isSaveName(true);
-          }
-        }}
-        className="px-4 py-2 bg-cyan-700 hover:bg-cyan-800 text-white rounded"
-      >
-        Save
-      </button>
-
-      <hr className="my-6" />
 
       {saveName && (
         <>
@@ -173,18 +193,18 @@ const CreateGroup = ({friends, groups, setGroups}) => {
 
           {friendList && (
             <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
-             <h2 className="text-lg font-semibold mt-4">Friend List</h2>
-      {friends.length === 0 ? (
-        <p>No friends added yet.</p>
-      ) : (
-        <ul className="list-disc pl-5">
-          {friends.map((friend, index) => (
-            <li key={index}>
-              {friend.name} - {friend.email}
-            </li>
-          ))}
-        </ul>
-      )}
+              <h2 className="text-lg font-semibold mt-4">Friend List</h2>
+              {friends.length === 0 ? (
+                <p>No friends added yet.</p>
+              ) : (
+                <ul className="list-disc pl-5">
+                  {friends.map((friend, index) => (
+                    <li key={index}>
+                      {friend.name} - {friend.email}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
 
