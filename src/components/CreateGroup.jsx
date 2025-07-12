@@ -16,27 +16,46 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
   const [successAlert, setSuccessAlert] = useState(false);
   const [memberNameError, setMemberNameError] = useState(false);
   const [memberEmailError, setMemberEmailError] = useState(false);
+  const [selectedFriendIndex, setSelectedFriendIndex] = useState("");
+
+  const handleAddFriendToGroup = () => {
+  if (selectedFriendIndex === "") return;
+
+  const selectedFriend = friends[selectedFriendIndex];
+
+  // Check for duplicate
+  const alreadyAdded = members.some(
+    (m) => m.email.toLowerCase() === selectedFriend.email.toLowerCase()
+  );
+
+  if (alreadyAdded) {
+    alertDisplay({
+      type: "error",
+      title: "Duplicate Member",
+      message: "This friend is already added to the group.",
+    });
+    return;
+  }
+
+  setMembers([...members, selectedFriend]);
+  setSelectedFriendIndex("");
+};
 
 
  const handleAddMember = () => {
   const nameMissing = !memberName.trim();
   const emailMissing = !memberEmail.trim();
 
-  // Set specific errors
   setMemberNameError(nameMissing);
   setMemberEmailError(emailMissing);
 
-  // If any field is missing, show relevant alert(s)
   if (nameMissing || emailMissing) return;
 
-  // Add valid member
   setMembers([...members, { name: memberName.trim(), email: memberEmail.trim() }]);
 
-  // Reset form
   setMemberName("");
   setMemberEmail("");
 
-  // Clear field errors
   setMemberNameError(false);
   setMemberEmailError(false);
 };
@@ -58,10 +77,9 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
     };
     setGroups([...groups, newGroup]);
 
-    setAddGroup(true); // ✅ Show group added alert
-    setSuccessAlert(true); // (Optional: for another alert?)
-
-    // Reset form
+    setAddGroup(true); 
+    setSuccessAlert(true); 
+    
     setGroupName("");
     setMembers([]);
     isSaveName(false);
@@ -191,22 +209,39 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
             </button>
           </div>
 
-          {friendList && (
-            <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
-              <h2 className="text-lg font-semibold mt-4">Friend List</h2>
-              {friends.length === 0 ? (
-                <p>No friends added yet.</p>
-              ) : (
-                <ul className="list-disc pl-5">
-                  {friends.map((friend, index) => (
-                    <li key={index}>
-                      {friend.name} - {friend.email}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+{friendList && (
+  <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
+    <h2 className="text-lg font-semibold mt-4">Select Friend to Add</h2>
+
+    {friends.length === 0 ? (
+      <p>No friends added yet.</p>
+    ) : (
+      <div className="flex flex-col gap-4">
+        <select
+          value={selectedFriendIndex}
+          onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
+          className="p-2 border rounded"
+        >
+          <option value="">-- Choose a friend --</option>
+          {friends.map((friend, index) => (
+            <option key={index} value={index}>
+              {friend.name} ({friend.email})
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={handleAddFriendToGroup}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          disabled={selectedFriendIndex === ""}
+        >
+          Add to Group
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
 
           {newMember && (
             <div className="bg-gray-100 p-4 rounded mb-6">

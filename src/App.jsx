@@ -86,7 +86,7 @@ function App() {
         path: 'myGroups',
         element:
         <div>
-          <MyGroups groups={groups} setGroups={setGroups} displayList={displayList}/>
+          <MyGroups groups={groups} setGroups={setGroups} displayList={displayList} friends={friends}/>
         </div>
       }
     ]
