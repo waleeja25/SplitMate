@@ -17,48 +17,49 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
   const [memberNameError, setMemberNameError] = useState(false);
   const [memberEmailError, setMemberEmailError] = useState(false);
   const [selectedFriendIndex, setSelectedFriendIndex] = useState("");
+  const sessionUser = localStorage.getItem('username');
 
   const handleAddFriendToGroup = () => {
-  if (selectedFriendIndex === "") return;
+    if (selectedFriendIndex === "") return;
 
-  const selectedFriend = friends[selectedFriendIndex];
+    const selectedFriend = friends[selectedFriendIndex];
 
-  // Check for duplicate
-  const alreadyAdded = members.some(
-    (m) => m.email.toLowerCase() === selectedFriend.email.toLowerCase()
-  );
+    // Check for duplicate
+    const alreadyAdded = members.some(
+      (m) => m.email.toLowerCase() === selectedFriend.email.toLowerCase()
+    );
 
-  if (alreadyAdded) {
-    alertDisplay({
-      type: "error",
-      title: "Duplicate Member",
-      message: "This friend is already added to the group.",
-    });
-    return;
-  }
+    if (alreadyAdded) {
+      alertDisplay({
+        type: "error",
+        title: "Duplicate Member",
+        message: "This friend is already added to the group.",
+      });
+      return;
+    }
 
-  setMembers([...members, selectedFriend]);
-  setSelectedFriendIndex("");
-};
+    setMembers([...members, selectedFriend]);
+    setSelectedFriendIndex("");
+  };
 
 
- const handleAddMember = () => {
-  const nameMissing = !memberName.trim();
-  const emailMissing = !memberEmail.trim();
+  const handleAddMember = () => {
+    const nameMissing = !memberName.trim();
+    const emailMissing = !memberEmail.trim();
 
-  setMemberNameError(nameMissing);
-  setMemberEmailError(emailMissing);
+    setMemberNameError(nameMissing);
+    setMemberEmailError(emailMissing);
 
-  if (nameMissing || emailMissing) return;
+    if (nameMissing || emailMissing) return;
 
-  setMembers([...members, { name: memberName.trim(), email: memberEmail.trim() }]);
+    setMembers([...members, { name: memberName.trim(), email: memberEmail.trim() }]);
 
-  setMemberName("");
-  setMemberEmail("");
+    setMemberName("");
+    setMemberEmail("");
 
-  setMemberNameError(false);
-  setMemberEmailError(false);
-};
+    setMemberNameError(false);
+    setMemberEmailError(false);
+  };
 
 
   const handleNewGroup = () => {
@@ -70,16 +71,20 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       setsingleMemberError(true);
       return;
     }
+    const sessionMember = { name: sessionUser, email: `${sessionUser}@splitmate.com` };
 
     const newGroup = {
       name: groupName,
-      members: [...members],
+      members: [sessionMember, ...members],
     };
+
+
+
     setGroups([...groups, newGroup]);
 
-    setAddGroup(true); 
-    setSuccessAlert(true); 
-    
+    setAddGroup(true);
+    setSuccessAlert(true);
+
     setGroupName("");
     setMembers([]);
     isSaveName(false);
@@ -134,20 +139,20 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
           message: "At least one member must be added to the group.",
         })}
 
-        
 
 
-{(memberNameError || memberEmailError) &&
-  alertDisplay({
-    type: "error",
-    title: "Incomplete Member Info",
-    message:
-      memberNameError && memberEmailError
-        ? "Member name and email are required."
-        : memberNameError
-        ? "Name is missing."
-        : "Email is missing.",
-  })}
+
+      {(memberNameError || memberEmailError) &&
+        alertDisplay({
+          type: "error",
+          title: "Incomplete Member Info",
+          message:
+            memberNameError && memberEmailError
+              ? "Member name and email are required."
+              : memberNameError
+                ? "Name is missing."
+                : "Email is missing.",
+        })}
 
 
       {!saveName && (
@@ -209,38 +214,38 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
             </button>
           </div>
 
-{friendList && (
-  <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
-    <h2 className="text-lg font-semibold mt-4">Select Friend to Add</h2>
+          {friendList && (
+            <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
+              <h2 className="text-lg font-semibold mt-4">Select Friend to Add</h2>
 
-    {friends.length === 0 ? (
-      <p>No friends added yet.</p>
-    ) : (
-      <div className="flex flex-col gap-4">
-        <select
-          value={selectedFriendIndex}
-          onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
-          className="p-2 border rounded"
-        >
-          <option value="">-- Choose a friend --</option>
-          {friends.map((friend, index) => (
-            <option key={index} value={index}>
-              {friend.name} ({friend.email})
-            </option>
-          ))}
-        </select>
+              {friends.length === 0 ? (
+                <p>No friends added yet.</p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <select
+                    value={selectedFriendIndex}
+                    onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
+                    className="p-2 border rounded"
+                  >
+                    <option value="">-- Choose a friend --</option>
+                    {friends.map((friend, index) => (
+                      <option key={index} value={index}>
+                        {friend.name} ({friend.email})
+                      </option>
+                    ))}
+                  </select>
 
-        <button
-          onClick={handleAddFriendToGroup}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-          disabled={selectedFriendIndex === ""}
-        >
-          Add to Group
-        </button>
-      </div>
-    )}
-  </div>
-)}
+                  <button
+                    onClick={handleAddFriendToGroup}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    disabled={selectedFriendIndex === ""}
+                  >
+                    Add to Group
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
 
           {newMember && (

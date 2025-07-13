@@ -6,7 +6,7 @@ const Dashboard = () => {
   function createGroup() {
     navigate('/createGroup')
   }
-
+  const user = localStorage.getItem('username');
   function myFriends() {
     navigate('/myFriends')
   }
@@ -20,6 +20,9 @@ const Dashboard = () => {
   return (
     <div>
       <DashboardNavbar />
+      <div className="text-xl font-semibold">
+        Welcome {user}
+      </div>
       <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
         <button onClick={createGroup} className="text-xl font-semibold">Create a Group</button>
         <p className="text-gray-700">Content goes here.</p>
