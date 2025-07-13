@@ -12,6 +12,7 @@ import MyFriends from './components/MyFriends';
 import MyGroups from './components/MyGroups';
 import { displayList } from './utils/displayList';
 import AddExpense from './components/AddExpense';
+import AllExpenses from './components/AllExpenses';
 
 function App() {
    const [friends, setFriends] = useState(() => {
@@ -94,6 +95,12 @@ function App() {
         element :
         <div>
           <AddExpense groups={groups}/>
+        </div>
+      } , {
+        path: '/allExpenses',
+        element:
+        <div>
+          <AllExpenses />
         </div>
       }
     ]

@@ -17,6 +17,9 @@ const Dashboard = () => {
   function AddExpense() {
     navigate('/addExpense');
   }
+  function AllExpense() {
+    navigate('/allExpenses');
+  }
   return (
     <div>
       <DashboardNavbar />
@@ -40,6 +43,11 @@ const Dashboard = () => {
 
       <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
         <button onClick={AddExpense} className="text-xl font-semibold">Add Expense</button>
+        <p className="text-gray-700">Content goes here.</p>
+      </div>
+
+      <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
+        <button onClick={AllExpense} className="text-xl font-semibold">All Expenses</button>
         <p className="text-gray-700">Content goes here.</p>
       </div>
     </div>
