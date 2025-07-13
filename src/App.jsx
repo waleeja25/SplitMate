@@ -11,6 +11,7 @@ import DashboardNavbar from './components/DashboardNavbar'
 import MyFriends from './components/MyFriends';
 import MyGroups from './components/MyGroups';
 import { displayList } from './utils/displayList';
+import AddExpense from './components/AddExpense';
 
 function App() {
    const [friends, setFriends] = useState(() => {
@@ -83,10 +84,16 @@ function App() {
           <MyFriends friends={friends} setFriends={setFriends} displayList={displayList} />
         </div>
       } , {
-        path: 'myGroups',
+        path: '/myGroups',
         element:
         <div>
           <MyGroups groups={groups} setGroups={setGroups} displayList={displayList} friends={friends}/>
+        </div>
+      } , {
+        path : '/addExpense',
+        element :
+        <div>
+          <AddExpense groups={groups}/>
         </div>
       }
     ]
