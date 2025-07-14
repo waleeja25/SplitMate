@@ -52,15 +52,9 @@ const AddExpense = ({ groups }) => {
         grandTotal = subtotal + tax + tip;
     }
 
-
     const handleAddItem = () => {
         setItems([...items, { name: '', cost: '', assignedTo: '' }]);
     };
-
-
-
-
-
 
     const total =
         selectedGroup && selectedGroup.members.length > 0
