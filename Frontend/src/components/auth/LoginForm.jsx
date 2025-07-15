@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import '../style/Authorization.css';
-import logo from '../assets/logo.png';
+import '../../style/Authorization.css'
+import logo from '../../assets/logo.png'
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const LoginForm = () => {
   const [name, setName] = useState('');
   const navigate = useNavigate();
   function handleSubmit(e) {
@@ -38,4 +38,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

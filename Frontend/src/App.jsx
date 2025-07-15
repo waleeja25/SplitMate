@@ -1,21 +1,10 @@
-import './App.css'
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import './App.css';
+import { RouterProvider } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Home from './components/Home';
-import NavBar from './components/NavBar'
-import Login from './components/Login';
-import SignUp from './components/SignUp'
-import Dashboard from './components/Dashboard';
-import CreateGroup from './components/CreateGroup'
-import DashboardNavbar from './components/DashboardNavbar'
-import MyFriends from './components/MyFriends';
-import MyGroups from './components/MyGroups';
-import { displayList } from './utils/displayList';
-import AddExpense from './components/AddExpense';
-import AllExpenses from './components/AllExpenses';
+import { getRouter } from './routes';
 
 function App() {
-   const [friends, setFriends] = useState(() => {
+  const [friends, setFriends] = useState(() => {
     try {
       const stored = localStorage.getItem('friends');
       return stored ? JSON.parse(stored) : [];
@@ -29,7 +18,7 @@ function App() {
   }, [friends]);
 
   const [groups, setGroups] = useState(() => {
-    try{
+    try {
       const storedGroups = localStorage.getItem('groups');
       return storedGroups ? JSON.parse(storedGroups) : [];
     } catch {
@@ -41,77 +30,13 @@ function App() {
     localStorage.setItem('groups', JSON.stringify(groups));
   }, [groups]);
 
+  const router = getRouter(friends, setFriends, groups, setGroups);
 
-
-  const router = createBrowserRouter (
-    [
-      {
-        path: '/',
-        element: 
-        <div>
-          <Home />
-          {/* <NavBar /> */}
-        </div>
-      }, {
-        path: '/login',
-        element :
-        <div>
-          <NavBar />
-          < Login />
-        </div>
-      } , {
-        path: '/signup',
-        element : 
-        <div>
-          <NavBar />
-          <SignUp />
-        </div>
-      } , {
-        path : '/dashboard',
-        element : 
-        <div>
-          <Dashboard />
-        </div>,
-      } , {
-        path : '/createGroup',
-        element:
-        <div>
-          <CreateGroup friends={friends} groups={groups} setGroups={setGroups}/>
-        </div>
-      } , {
-        path: '/myFriends',
-        element:
-        <div>
-          <MyFriends friends={friends} setFriends={setFriends} displayList={displayList} />
-        </div>
-      } , {
-        path: '/myGroups',
-        element:
-        <div>
-          <MyGroups groups={groups} setGroups={setGroups} displayList={displayList} friends={friends}/>
-        </div>
-      } , {
-        path : '/addExpense',
-        element :
-        <div>
-          <AddExpense groups={groups}/>
-        </div>
-      } , {
-        path: '/allExpenses',
-        element:
-        <div>
-          <AllExpenses />
-        </div>
-      }
-    ]
-  )
   return (
-    <>
-      <div>
-        <RouterProvider router={router} />
+    <div>
+      <RouterProvider router={router} />
     </div>
-    </>
-  )
+  );
 }
 
-export default App
+export default App;

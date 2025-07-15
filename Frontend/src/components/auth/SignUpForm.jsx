@@ -1,9 +1,10 @@
 import React from 'react';
-import '../style/Authorization.css';
-import logo from '../assets/logo.png';
+// import '../style/Authorization.css';
+import '../../style/Authorization.css'
+import logo from '../../assets/logo.png'
 import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const SignupForm = () => {
   const navigate = useNavigate();
   function handleSubmit(e) {
     e.preventDefault();
@@ -40,4 +41,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignupForm;

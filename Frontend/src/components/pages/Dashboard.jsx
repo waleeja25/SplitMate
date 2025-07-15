@@ -1,5 +1,5 @@
 import React from 'react'
-import DashboardNavbar from './DashboardNavbar';
+import DashboardNavbar from '../dashboard/DashboardNavbar';
 import {useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const navigate = useNavigate();

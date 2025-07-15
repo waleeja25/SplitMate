@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import alertDisplay from "../utils/alertDisplay";
+import alertDisplay from "../ui/alertDisplay";
 
 const CreateGroup = ({ friends, groups, setGroups }) => {
   const [groupName, setGroupName] = useState("");
