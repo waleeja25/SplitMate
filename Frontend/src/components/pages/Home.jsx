@@ -1,15 +1,3 @@
-// import React from 'react'
-
-// const Home = () => {
-//   return (
-//     <div>
-//     </div>
-//   )
-// }
-
-// export default Home
-// app/page.tsx or src/pages/Home.tsx
-// For Next.js — remove if you're using CRA
 import { Link } from "react-router-dom";
 import NavBar from "../ui/NavBar";
 
