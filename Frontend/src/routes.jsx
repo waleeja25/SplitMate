@@ -7,8 +7,9 @@ import NavBar from './components/ui/NavBar';
 import CreateGroup from './components/groups/CreateGroup';
 import MyFriends from './components/friends/MyFriends';
 import MyGroups from './components/groups/MyGroups';
-import AddExpense from './components/expenses/AddExpense';
+// import AddExpense from './components/expenses/AddExpense';
 import AllExpenses from './components/expenses/AllExpenses';
+import AddExpenseForm from './components/expenses/AddExpense/AddExpenseForm';
 
 import { displayList } from './components/ui/displayList';
 
@@ -70,7 +71,7 @@ export const getRouter = (friends, setFriends, groups, setGroups) =>
     },
     {
       path: '/addExpense',
-      element: <AddExpense groups={groups} />,
+      element: <AddExpenseForm groups={groups} />,
     },
     {
       path: '/allExpenses',
