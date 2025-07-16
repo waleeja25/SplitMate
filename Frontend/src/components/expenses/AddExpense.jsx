@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllCategories, getCategoryById, getCategoryIcon } from '../../lib/expense-categories';
 
 const categories = [
     'Food & Drink', 'Coffee', 'Groceries', 'Shopping', 'Transportation',
@@ -197,16 +198,18 @@ const AddExpense = ({ groups }) => {
             <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+
                 className="w-full p-2 mb-4 border rounded"
             >
                 <option value="" disabled>
                     -- Select Category --
                 </option>
-                {categories.map((label, idx) => (
-                    <option key={idx} value={label}>
-                        {label}
+                {getAllCategories().map((category) => (
+                    <option key={category.id} value={category.id}>
+                        {category.name}
                     </option>
                 ))}
+
             </select>
 
             {/* Date */}
@@ -453,37 +456,48 @@ const AddExpense = ({ groups }) => {
             >
                 Add Expense
             </button>
-            {showSummary && submittedExpense && (
-                <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-                        <h2 className="text-xl font-bold mb-2">{submittedExpense.category}</h2>
-                        <h4 className="text-gray-700 mb-2">Total: Rs {submittedExpense.amount}</h4>
-                        <p className="mb-2">
-                            <strong>Paid By:</strong> {submittedExpense.paidBy}
-                        </p>
-                        <p className="mb-2">
-                            <strong>Date:</strong> {submittedExpense.date}
-                        </p>
-                        <div className="mb-4">
-                            <strong>Owed By:</strong>
-                            <ul className="list-disc pl-6 mt-1 text-sm">
-                                {Object.entries(submittedExpense.summary).map(([name, amt], idx) => (
-                                    <li key={idx}>{name} owes Rs {amt}</li>
-                                ))}
-                            </ul>
+            {showSummary && submittedExpense && (() => {
+                const categoryDetails = getCategoryById(submittedExpense.category);
+                const CategoryIcon = getCategoryIcon(submittedExpense.category);
+
+                return (
+                    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                                {CategoryIcon && <CategoryIcon className="w-6 h-6 text-cyan-700" />}
+                                <h2 className="text-xl font-bold">{categoryDetails?.name || "Unknown Category"}</h2>
+                            </div>
+
+                            <h4 className="text-gray-700 mb-2">Total: Rs {submittedExpense.amount}</h4>
+                            <p className="mb-2">
+                                <strong>Paid By:</strong> {submittedExpense.paidBy}
+                            </p>
+                            <p className="mb-2">
+                                <strong>Date:</strong> {submittedExpense.date}
+                            </p>
+                            <div className="mb-4">
+                                <strong>Owed By:</strong>
+                                <ul className="list-disc pl-6 mt-1 text-sm">
+                                    {Object.entries(submittedExpense.summary).map(([name, amt], idx) => (
+                                        <li key={idx}>{name} owes Rs {amt}</li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <button
+                                className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800"
+                                onClick={() => {
+                                    setShowSummary(false);
+                                    navigate('/allExpenses');
+                                }}
+                            >
+                                Close
+                            </button>
                         </div>
-                        <button
-                            className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800"
-                            onClick={() => {
-                                setShowSummary(false);
-                                navigate('/allExpenses');
-                            }}
-                        >
-                            Close
-                        </button>
                     </div>
-                </div>
-            )}
+                );
+            })()}
+
 
 
         </form>

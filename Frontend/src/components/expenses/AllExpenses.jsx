@@ -1,4 +1,5 @@
 import React from 'react';
+import { getCategoryById, getCategoryIcon } from '../../lib/expense-categories';
 
 const AllExpenses = () => {
   const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
@@ -35,6 +36,9 @@ const AllExpenses = () => {
             <h2 className="text-xl font-bold text-cyan-800 mb-4">{groupName}</h2>
 
             {groupExpenses.map((expense, eIdx) => {
+              const CategoryIcon = getCategoryIcon(expense.category);
+              const categoryName = getCategoryById(expense.category).name;
+
               const owedToYou = [];
               const youOwe = [];
 
@@ -54,7 +58,11 @@ const AllExpenses = () => {
                   className="mb-6 p-4 bg-blue-50 rounded border border-blue-100"
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold">{expense.category}</h3>
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <CategoryIcon className="w-5 h-5 text-cyan-700" />
+                      {categoryName}
+                    </h3>
+
                     <span className="text-gray-600 text-sm">{expense.date}</span>
                   </div>
                   <p><strong>Paid By:</strong> {expense.paidBy === sessionUser ? 'You' : expense.paidBy}</p>
