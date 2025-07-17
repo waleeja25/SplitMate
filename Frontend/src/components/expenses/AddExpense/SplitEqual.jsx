@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const SplitEqual = ({ selectedGroup, amount }) => {
   if (!selectedGroup) return null;

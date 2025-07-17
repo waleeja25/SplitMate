@@ -7,13 +7,11 @@ import NavBar from './components/ui/NavBar';
 import CreateGroup from './components/groups/CreateGroup';
 import MyFriends from './components/friends/MyFriends';
 import MyGroups from './components/groups/MyGroups';
-// import AddExpense from './components/expenses/AddExpense';
+import SettleUp from './components/dashboard/settleUp';
 import AllExpenses from './components/expenses/AllExpenses';
 import AddExpenseForm from './components/expenses/AddExpense/AddExpenseForm';
-
 import { displayList } from './components/ui/displayList';
 
-// We’ll receive friends/groups as props from App.jsx
 export const getRouter = (friends, setFriends, groups, setGroups) =>
   createBrowserRouter([
     {
@@ -76,5 +74,10 @@ export const getRouter = (friends, setFriends, groups, setGroups) =>
     {
       path: '/allExpenses',
       element: <AllExpenses />,
+    },
+    {
+      path: '/settleUp',
+      element: <SettleUp groups={groups} friends={friends}/>
+
     },
   ]);

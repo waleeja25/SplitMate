@@ -4,7 +4,6 @@ import { getCategoryById, getCategoryIcon } from '../../lib/expense-categories';
 const AllExpenses = () => {
   const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
   const sessionUser = localStorage.getItem("username");
-
   const groupWiseMap = {};
 
   allExpenses.forEach((expense) => {
@@ -71,7 +70,7 @@ const AllExpenses = () => {
 
                   {(owedToYou.length > 0 || youOwe.length > 0) && (
                     <div className="mt-4">
-                      {owedToYou.length > 0 && (
+                      {/* {owedToYou.length > 0 && ( */}
                         <div className="mb-2">
                           <h4 className="font-semibold text-green-700">Owed to You</h4>
                           <ul className="list-disc ml-6 text-sm">
@@ -80,20 +79,26 @@ const AllExpenses = () => {
                             ))}
                           </ul>
                         </div>
-                      )}
+                      {/* )} */}
 
-                      {youOwe.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold text-red-700">You Owe</h4>
-                          <ul className="list-disc ml-6 text-sm">
-                            {youOwe.map((line, i) => (
-                              <li key={i}>{line}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {/* {youOwe.length > 0 && ( */}
+    <div>
+  <h4 className="font-semibold text-red-700">You Owe</h4>
+
+  {youOwe.length > 0 ? (
+    <ul className="list-disc ml-6 text-sm">
+      {youOwe.map((line, i) => (
+        <li key={i}>{line}</li>
+      ))}
+    </ul>
+  ) : (
+    <p className="text-sm text-gray-500 ml-6">None</p>
+  )}
+</div>
+
+                      {/* )} */}
                     </div>
-                  )}
+                  )} 
                 </div>
               );
             })}

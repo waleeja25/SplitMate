@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllCategories } from '../../../lib/expense-categories';
-
+import { updateBalances } from './helpers';
 import SplitEqual from './SplitEqual';
 import SplitPercentage from './SplitPercentage';
 import SplitExact from './SplitExact';
@@ -40,11 +40,6 @@ const AddExpenseForm = ({ groups }) => {
     const navigate = useNavigate();
     const sessionUser = localStorage.getItem('username');
     const selectedGroup = groups.find((group) => group.name === groupSelected);
-
-    // const total =
-    //     selectedGroup && selectedGroup.members.length > 0
-    //         ? (parseFloat(amount || 0) / selectedGroup.members.length).toFixed(2)
-    //         : '0.00';
 
     const handleAddItem = () => {
         setItems([...items, { name: '', cost: '', assignedTo: '' }]);
@@ -128,7 +123,7 @@ const AddExpenseForm = ({ groups }) => {
 
         const existing = JSON.parse(localStorage.getItem("expenses") || "[]");
         localStorage.setItem("expenses", JSON.stringify([...existing, expense]));
-
+        updateBalances(summary, paidBy)
         setSubmittedExpense(expense);
         setShowSummary(true);
 

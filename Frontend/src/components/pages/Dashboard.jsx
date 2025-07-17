@@ -20,6 +20,9 @@ const Dashboard = () => {
   function AllExpense() {
     navigate('/allExpenses');
   }
+  function SettleUp() {
+    navigate('/settleUp');
+  }
   return (
     <div>
       <DashboardNavbar />
@@ -52,7 +55,7 @@ const Dashboard = () => {
       </div>
 
       <div className="m-12 p-8 border-2 border-black bg-white rounded-xl shadow-md">
-        <button onClick={AllExpense} className="text-xl font-semibold">Settle up</button>
+        <button onClick={SettleUp} className="text-xl font-semibold">Settle up</button>
         <p className="text-gray-700">Content goes here.</p>
       </div>
     </div>
