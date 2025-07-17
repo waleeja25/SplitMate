@@ -41,10 +41,10 @@ const AddExpenseForm = ({ groups }) => {
     const sessionUser = localStorage.getItem('username');
     const selectedGroup = groups.find((group) => group.name === groupSelected);
 
-    const total =
-        selectedGroup && selectedGroup.members.length > 0
-            ? (parseFloat(amount || 0) / selectedGroup.members.length).toFixed(2)
-            : '0.00';
+    // const total =
+    //     selectedGroup && selectedGroup.members.length > 0
+    //         ? (parseFloat(amount || 0) / selectedGroup.members.length).toFixed(2)
+    //         : '0.00';
 
     const handleAddItem = () => {
         setItems([...items, { name: '', cost: '', assignedTo: '' }]);
@@ -62,7 +62,6 @@ const AddExpenseForm = ({ groups }) => {
         const expenseAmount = parseFloat(amount || 0);
         let summary = {};
 
-        // 🧠 Validation for exact split
         if (splitType === 'exact') {
             const total = Object.values(exactAmounts).reduce((a, b) => a + parseFloat(b || 0), 0);
             if (Math.abs(total - expenseAmount) > 0.01) {
@@ -72,7 +71,6 @@ const AddExpenseForm = ({ groups }) => {
             summary = calculateExactSplit(selectedGroup.members, exactAmounts, paidBy);
         }
 
-        // 🧠 Validation for itemized split
         if (splitType === 'itemizedExpense') {
             for (const item of items) {
                 if (!item.name || !item.cost || !item.assignedTo) {
@@ -91,7 +89,6 @@ const AddExpenseForm = ({ groups }) => {
 
             summary = result.summary;
 
-            // ⚠️ Set itemized totals now before expense object
             setItemizedTotals({
                 memberTotals: result.memberTotals,
                 subtotal: result.subtotal,
@@ -135,7 +132,7 @@ const AddExpenseForm = ({ groups }) => {
         setSubmittedExpense(expense);
         setShowSummary(true);
 
-        // Reset form
+
         setAmount('');
         setCategory('');
         setDate('');
