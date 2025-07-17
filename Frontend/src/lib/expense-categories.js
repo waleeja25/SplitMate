@@ -1,5 +1,3 @@
-// src/lib/expense-categories.js
-
 import {
   Coffee,
   ShoppingBag,
@@ -30,7 +28,6 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-// Category config with id, display name, and icon
 export const EXPENSE_CATEGORIES = {
   foodDrink: { id: "foodDrink", name: "Food & Drink", icon: Utensils },
   coffee: { id: "coffee", name: "Coffee", icon: Coffee },
