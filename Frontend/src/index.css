@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Base font and border colors */
+
+body {
+  background-color: rgb(245 252 250);
+}
+input,
+select,
+button {
+  color: #333;
+  border-color: #ccc;
+}
+
+input:focus,
+select:focus {
+  border-color: #2a806d;
+  outline: none;
+}
+
+/* Custom button colors */
+.btn-primary {
+  background-color: #2a806d;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1cc29f;
+}
+
+/* Highlight selected split type */
+.split-selected {
+  background-color: #2a806d;
+  color: white;
+  border-color: #2a806d;
+}
