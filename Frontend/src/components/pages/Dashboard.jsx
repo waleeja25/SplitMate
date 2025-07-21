@@ -67,6 +67,7 @@
 import React from 'react';
 import DashboardNavbar from '../dashboard/DashboardNavbar';
 import { useNavigate } from 'react-router-dom';
+import SettleUp from '../dashboard/SettleUp';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -82,10 +83,11 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-[#F6F9F8] min-h-screen">
+    <div className="bg-[rgb(245,252,250)] min-h-screen">
       <DashboardNavbar />
       <div className="text-2xl font-bold text-center mt-8 text-[#2A806D]">Welcome {user}</div>
 
+      <SettleUp />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-12">
         {[
           { label: 'Create a Group', action: routes.createGroup },

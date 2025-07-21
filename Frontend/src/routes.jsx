@@ -5,7 +5,7 @@ import SignUp from './components/pages/SignUp';
 import Dashboard from './components/pages/Dashboard';
 import NavBar from './components/ui/NavBar';
 import CreateGroup from './components/groups/CreateGroup';
-import MyFriends from './components/friends/MyFriends';
+import MyFriends from './components/groups/MyFriends';
 import MyGroups from './components/groups/MyGroups';
 import SettleUp from './components/dashboard/settleUp';
 import AllExpenses from './components/expenses/AllExpenses';

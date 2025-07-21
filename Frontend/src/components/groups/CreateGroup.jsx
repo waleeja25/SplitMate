@@ -312,17 +312,17 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
     // </div>
 
 
-<>
+    <div className="bg-[rgb(245,252,250)] min-h-screen">
 
 {/* OUTSIDE THE CARD – MAIN HEADING */}
-<div className="text-center mb-8 p-7">
+<div className="text-center mb-8 p-7 ">
   <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">Create a New Group</h1>
   <p className="text-[#4B4B4B] mt-1">Group your friends to split expenses easily and keep everything organized.</p>
   <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
 </div>
 
 {/* GROUP CARD CONTAINER */}
-<div className="mt-12 p-8 bg-[rgb(255,255,255)] border border-gray-300 rounded-xl shadow-md max-w-xl mx-auto transition-all duration-300">
+<div className="mt-8 p-8 bg-[rgb(255,255,255)] border border-gray-300 rounded-xl shadow-md max-w-xl mx-auto transition-all duration-300">
 
   {/* ALERTS */}
   {addGroup &&
@@ -330,8 +330,7 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       type: "success",
       title: "Success",
       message: "Group added successfully",
-      color: "#a5d6a7",
-      icon: <FaCheckCircle />,
+      color: "#a5d6a7",    
     })}
 
   {groupError &&
@@ -339,7 +338,6 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       type: "error",
       title: "Error",
       message: "Group name is required",
-      icon: <FaExclamationCircle />,
     })}
 
   {singlememberError &&
@@ -347,7 +345,6 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       type: "error",
       title: "Error",
       message: "At least one member must be added to the group.",
-      icon: <FaExclamationCircle />,
     })}
 
   {(memberNameError || memberEmailError) &&
@@ -360,7 +357,6 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
           : memberNameError
           ? "Name is missing."
           : "Email is missing.",
-      icon: <FaExclamationCircle />,
     })}
 
   {/* GROUP NAME FORM */}
@@ -429,84 +425,96 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       </div>
 
       {/* FRIEND LIST DROPDOWN */}
-      {friendList && (
-        <div className="bg-gray-100 p-4 rounded mb-6 text-gray-700">
-          <h2 className="text-lg font-semibold mb-2">Select Friend to Add</h2>
+     {/* FRIEND SELECTION FROM EXISTING LIST */}
+{friendList && (
+  <div className="bg-white p-6 rounded-2xl shadow border border-[#B2E2D2] mb-6 text-[#4B4B4B]">
+    <h2 className="text-xl font-semibold text-[#2A806D] mb-4">
+      Select Friend to Add
+    </h2>
 
-          {friends.length === 0 ? (
-            <p>No friends added yet.</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <select
-                value={selectedFriendIndex}
-                onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
-                className="p-2 border rounded"
-              >
-                <option value="">-- Choose a friend --</option>
-                {friends.map((friend, index) => (
-                  <option key={index} value={index}>
-                    {friend.name} ({friend.email})
-                  </option>
-                ))}
-              </select>
+    {friends.length === 0 ? (
+      <p className="text-sm text-[#4B4B4B] italic">No friends added yet.</p>
+    ) : (
+      <div className="flex flex-col gap-4">
+        <select
+          value={selectedFriendIndex}
+          onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
+          className="p-2 rounded border border-[#B2E2D2] bg-[#F6F9F8] text-[#2A806D] font-medium"
+        >
+          <option value="">-- Choose a friend --</option>
+          {friends.map((friend, index) => (
+            <option key={index} value={index}>
+              {friend.name} ({friend.email})
+            </option>
+          ))}
+        </select>
 
-              <button
-                onClick={handleAddFriendToGroup}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                disabled={selectedFriendIndex === ""}
-              >
-                Add to Group
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+        <button
+          onClick={handleAddFriendToGroup}
+          className="bg-[#2A806D] hover:bg-[#246f5f] text-white px-4 py-2 rounded-lg transition"
+          disabled={selectedFriendIndex === ""}
+        >
+          Add to Group
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
-      {/* MANUAL MEMBER INPUT */}
-      {newMember && (
-        <div className="bg-gray-100 p-4 rounded mb-6">
-          <input
-            type="text"
-            placeholder="Member Name"
-            value={memberName}
-            onChange={(e) => {
-              setMemberName(e.target.value);
-              setMemberError(false);
-            }}
-            className="w-full mb-3 px-4 py-2 border border-gray-300 rounded"
-          />
-          <input
-            type="email"
-            placeholder="Member Email"
-            value={memberEmail}
-            onChange={(e) => {
-              setMemberEmail(e.target.value);
-              setMemberError(false);
-            }}
-            className="w-full mb-3 px-4 py-2 border border-gray-300 rounded"
-          />
-          <button
-            onClick={handleAddMember}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-          >
-            <FaPlusCircle /> Add Member
-          </button>
-        </div>
-      )}
+{/* MANUAL MEMBER INPUT SECTION */}
+{newMember && (
+  <div className="bg-white p-6 rounded-2xl shadow border border-[#B2E2D2] mb-6">
+    <h2 className="text-xl font-semibold text-[#2A806D] mb-4">
+      Add Member Manually
+    </h2>
 
-      {/* ADDED MEMBERS LIST */}
-      {members.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Added Members:</h3>
-          <ul className="list-disc pl-6 space-y-1 text-gray-700">
-            {members.map((member, index) => (
-              <li key={index}>
-                {member.name} ({member.email})
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+    <input
+      type="text"
+      placeholder="Member Name"
+      value={memberName}
+      onChange={(e) => {
+        setMemberName(e.target.value);
+        setMemberError(false);
+      }}
+      className="w-full mb-3 px-4 py-2 border border-[#ccc] rounded-lg text-[#4B4B4B]"
+    />
+
+    <input
+      type="email"
+      placeholder="Member Email"
+      value={memberEmail}
+      onChange={(e) => {
+        setMemberEmail(e.target.value);
+        setMemberError(false);
+      }}
+      className="w-full mb-4 px-4 py-2 border border-[#ccc] rounded-lg text-[#4B4B4B]"
+    />
+
+    <button
+      onClick={handleAddMember}
+      className="flex items-center gap-2 px-4 py-2 bg-[#2a806d] hover:bg-[#256e5f] text-white rounded-lg transition"
+    >
+      <FaPlusCircle /> Add Member
+    </button>
+  </div>
+)}
+
+{/* ADDED MEMBERS LIST */}
+{members.length > 0 && (
+  <div className="bg-[#F6F9F8] p-5 rounded-xl border border-[#B2E2D2]">
+    <h3 className="text-xl font-semibold text-[#2A806D] mb-3">
+      Added Members:
+    </h3>
+    <ul className="list-disc pl-5 space-y-2 text-[#4B4B4B]">
+      {members.map((member, index) => (
+        <li key={index} className="text-sm">
+          {member.name} ({member.email})
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
       {/* FINAL SUBMIT */}
       <button
@@ -519,7 +527,7 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
   )}
 </div>
 
-</>
+</div>
 
   );
 };

@@ -507,3 +507,236 @@ const AddExpense = ({ groups }) => {
 };
 
 export default AddExpense;
+ // <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white shadow rounded">
+        //     <h1 className="text-2xl font-bold mb-2">Add a New Expense</h1>
+
+        //     <label className="block mb-1 font-medium">Amount</label>
+        //     <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full p-2 mb-4 border rounded" />
+
+        //     <label className="block mb-1 font-medium">Category</label>
+        //     <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 mb-4 border rounded">
+        //         <option value="">-- Select Category --</option>
+        //         {getAllCategories().map(cat => (
+        //             <option key={cat.id} value={cat.id}>{cat.name}</option>
+        //         ))}
+        //     </select>
+
+
+
+        //     <DatePickerComponent date={date} setDate={setDate} />
+
+
+        //     {/* <label className="block mb-1 font-medium">Date</label>
+        //     <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full p-2 mb-4 border rounded" /> */}
+
+        //     <label className="block mb-1 font-medium">Group</label>
+        //     <select value={groupSelected} onChange={(e) => setGroupSelected(e.target.value)} className="w-full p-2 mb-4 border rounded">
+        //         <option value="">Select Group</option>
+        //         {groups.map((group, idx) => (
+        //             <option key={idx} value={group.name}>
+        //                 {group.name} ({group.members.length} members)
+        //             </option>
+        //         ))}
+
+        //     </select>
+
+        //     <label className="block mb-1 font-medium">Paid By</label>
+        //     <select value={paidBy} onChange={(e) => setPaidBy(e.target.value)} className="w-full p-2 mb-4 border rounded" disabled={!selectedGroup}>
+        //         <option value="">Select who paid</option>
+        //         {selectedGroup?.members.map((member, idx) => (
+        //             <option key={idx} value={member.name}>
+        //                 {member.name === sessionUser ? 'You' : member.name}
+        //             </option>
+        //         ))}
+        //     </select>
+
+        //     <label className="block mb-1 font-medium">Split Type</label>
+        //     <div className="flex gap-2 mb-4">
+        //         {['equal', 'percentage', 'exact', 'itemizedExpense'].map(type => (
+        //             <button key={type} type="button" onClick={() => setSplitType(type)} className={`px-3 py-1 border rounded ${splitType === type ? 'bg-cyan-700 text-white' : ''}`}>
+        //                 {type.charAt(0).toUpperCase() + type.slice(1)}
+        //             </button>
+        //         ))}
+        //     </div>
+
+        //     {splitType === 'equal' && selectedGroup && (
+        //         <SplitEqual selectedGroup={selectedGroup} amount={amount} />
+        //     )}
+        //     {splitType === 'percentage' && selectedGroup && (
+        //         <SplitPercentage percentages={percentages} setPercentages={setPercentages} amount={amount} selectedGroup={selectedGroup} />
+        //     )}
+        //     {splitType === 'exact' && selectedGroup && (
+        //         <SplitExact exactAmounts={exactAmounts} setExactAmounts={setExactAmounts} selectedGroup={selectedGroup} />
+        //     )}
+        //     {splitType === 'itemizedExpense' && selectedGroup && (
+        //         <SplitItemized
+        //             items={items}
+        //             setItems={setItems}
+        //             handleAddItem={handleAddItem}
+        //             taxPercent={taxPercent}
+        //             setTaxPercent={setTaxPercent}
+        //             tipPercent={tipPercent}
+        //             setTipPercent={setTipPercent}
+        //             selectedGroup={selectedGroup}
+        //             memberTotals={itemizedTotals.memberTotals}
+        //             subtotal={itemizedTotals.subtotal}
+        //             tax={itemizedTotals.tax}
+        //             tip={itemizedTotals.tip}
+        //             grandTotal={itemizedTotals.grandTotal}
+        //         />
+        //     )}
+
+
+        //     <button type="submit" className="w-full py-2 mt-4 bg-cyan-700 hover:bg-cyan-800 text-white rounded">
+        //         Add Expense
+        //     </button>
+
+        //     <ExpenseSummaryModal
+        //         show={showSummary}
+        //         expense={submittedExpense}
+        //         onClose={() => {
+        //             setShowSummary(false);
+        //             navigate('/allExpenses');
+        //         }}
+        //     />
+        // </form>
+
+//         <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white shadow rounded">
+//   <h1 className="text-2xl font-bold mb-2 text-[#2a806d]">Add a New Expense</h1>
+
+//   {/* Amount */}
+//   <label className="block mb-1 font-medium text-[#333]">Amount</label>
+//   <div className="relative mb-4">
+//     <input
+//       type="number"
+//       value={amount}
+//       onChange={(e) => setAmount(e.target.value)}
+//       className="w-full p-2 pr-10 border border-[#ccc] rounded text-[#333]"
+//     />
+//     <FaMoneyBillAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#2a806d]" />
+//   </div>
+
+//   {/* Category */}
+//   <label className="block mb-1 font-medium text-[#333]">Category</label>
+//   <div className="relative mb-4">
+//     <select
+//       value={category}
+//       onChange={(e) => setCategory(e.target.value)}
+//       className="w-full p-2 pr-10 border border-[#ccc] rounded text-[#333]"
+//     >
+//       <option value="">-- Select Category --</option>
+//       {getAllCategories().map((cat) => (
+//         <option key={cat.id} value={cat.id}>{cat.name}</option>
+//       ))}
+//     </select>
+//     <FaList className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#2a806d]" />
+//   </div>
+
+//   {/* Date */}
+//   <DatePickerComponent date={date} setDate={setDate} />
+
+//   {/* Group */}
+//   <label className="block mb-1 font-medium text-[#333]">Group</label>
+//   <div className="relative mb-4">
+//     <select
+//       value={groupSelected}
+//       onChange={(e) => setGroupSelected(e.target.value)}
+//       className="w-full p-2 pr-10 border border-[#ccc] rounded text-[#333]"
+//     >
+//       <option value="">Select Group</option>
+//       {groups.map((group, idx) => (
+//         <option key={idx} value={group.name}>
+//           {group.name} ({group.members.length} members)
+//         </option>
+//       ))}
+//     </select>
+//     <FaUsers className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#2a806d]" />
+//   </div>
+
+//   {/* Paid By */}
+//   <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+//   <div className="relative mb-4">
+//     <select
+//       value={paidBy}
+//       onChange={(e) => setPaidBy(e.target.value)}
+//       disabled={!selectedGroup}
+//       className="w-full p-2 pr-10 border border-[#ccc] rounded text-[#333]"
+//     >
+//       <option value="">Select who paid</option>
+//       {selectedGroup?.members.map((member, idx) => (
+//         <option key={idx} value={member.name}>
+//           {member.name === sessionUser ? 'You' : member.name}
+//         </option>
+//       ))}
+//     </select>
+//     <FaUser className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#2a806d]" />
+//   </div>
+
+//   {/* Split Type */}
+//   <label className="block mb-1 font-medium text-[#333]">Split Type</label>
+//   <div className="flex gap-2 mb-4">
+//     {['equal', 'percentage', 'exact', 'itemizedExpense'].map((type) => (
+//       <button
+//         key={type}
+//         type="button"
+//         onClick={() => setSplitType(type)}
+//         className={`px-3 py-1 border rounded ${
+//           splitType === type ? 'bg-[#2a806d] text-white' : 'text-[#333]'
+//         }`}
+//       >
+//         {type.charAt(0).toUpperCase() + type.slice(1)}
+//       </button>
+//     ))}
+//   </div>
+
+//   {/* Split Method */}
+//   {splitType === 'equal' && selectedGroup && (
+//     <SplitEqual selectedGroup={selectedGroup} amount={amount} />
+//   )}
+//   {splitType === 'percentage' && selectedGroup && (
+//     <SplitPercentage
+//       percentages={percentages}
+//       setPercentages={setPercentages}
+//       amount={amount}
+//       selectedGroup={selectedGroup}
+//     />
+//   )}
+//   {splitType === 'exact' && selectedGroup && (
+//     <SplitExact
+//       exactAmounts={exactAmounts}
+//       setExactAmounts={setExactAmounts}
+//       selectedGroup={selectedGroup}
+//     />
+//   )}
+//   {splitType === 'itemizedExpense' && selectedGroup && (
+//     <SplitItemized
+//       items={items}
+//       setItems={setItems}
+//       handleAddItem={handleAddItem}
+//       taxPercent={taxPercent}
+//       setTaxPercent={setTaxPercent}
+//       tipPercent={tipPercent}
+//       setTipPercent={setTipPercent}
+//       selectedGroup={selectedGroup}
+//       memberTotals={itemizedTotals.memberTotals}
+//       subtotal={itemizedTotals.subtotal}
+//       tax={itemizedTotals.tax}
+//       tip={itemizedTotals.tip}
+//       grandTotal={itemizedTotals.grandTotal}
+//     />
+//   )}
+
+//   {/* Submit Button */}
+//   <button type="submit" className="w-full py-2 mt-4 bg-[#2a806d] hover:bg-[#1cc29f] text-white rounded">
+//     Add Expense
+//   </button>
+
+//   <ExpenseSummaryModal
+//     show={showSummary}
+//     expense={submittedExpense}
+//     onClose={() => {
+//       setShowSummary(false);
+//       navigate('/allExpenses');
+//     }}
+//   />
+// </form>

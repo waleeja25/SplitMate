@@ -162,13 +162,15 @@ export function getUserBalances(userName) {
   const owes = [];
   const owed = [];
 
-  for (const [person, amount] of Object.entries(userData)) {
-    if (amount > 0) {
-      owed.push({ to: person, amount });
-    } else if (amount < 0) {
-      owes.push({ to: person, amount: -amount });
-    }
+for (const [person, amount] of Object.entries(userData)) {
+  const numAmount = Number(amount); 
+  if (numAmount > 0) {
+    owed.push({ to: person, amount: numAmount });
+  } else if (numAmount < 0) {
+    owes.push({ to: person, amount: -numAmount });
   }
+}
+
 
   return { owes, owed };
 }
@@ -179,8 +181,15 @@ export function settleUp(from, to, amount) {
   if (!balances[from]) balances[from] = {};
   if (!balances[to]) balances[to] = {};
 
-  balances[from][to] = (balances[from][to] || 0) - amount;
-  balances[to][from] = (balances[to][from] || 0) + amount;
+  balances[from][to] = (balances[from][to] || 0) + amount;
+  balances[to][from] = -balances[from][to];
+
+  if (balances[from][to] === 0) {
+  delete balances[from][to];
+  delete balances[to][from];
+}
+
 
   localStorage.setItem("balances", JSON.stringify(balances));
 }
+

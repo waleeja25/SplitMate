@@ -1,71 +1,317 @@
-import React, { useState } from 'react';
-import { getUserBalances, settleUp } from "../expenses/AddExpense/helpers"
+import React, { useState, useRef } from 'react';
+import { FaUser, FaExchangeAlt } from 'react-icons/fa';
+import { getUserBalances, settleUp } from "../expenses/AddExpense/helpers";
+import DatePickerComponent from '../ui/DatePickerComponent'
 
 const SettleUp = () => {
   const currentUser = localStorage.getItem('username');
+  const [payer, setPayer] = useState(currentUser);
   const [selectedFriend, setSelectedFriend] = useState('');
   const [amount, setAmount] = useState('');
   const { owes, owed } = getUserBalances(currentUser);
+  const [date, setDate] = useState('');
 
-  const handleSettle = () => {
-    if (!selectedFriend || !amount) return;
-    settleUp(currentUser, selectedFriend, parseFloat(amount));
-    alert(`Settled Rs ${amount} with ${selectedFriend}`);
-    setAmount('');
-    setSelectedFriend('');
+  const dialogRef = useRef();
+
+  const openDialog = () => {
+    dialogRef.current?.showModal();
   };
 
+  const handleSettle = () => {
+    if (!selectedFriend || !amount || !payer) return;
+    const receiver = payer === currentUser ? selectedFriend : currentUser;
+    settleUp(payer, receiver, parseFloat(amount));
+    alert(`Settled Rs ${amount} from ${payer} to ${receiver}`);
+    setAmount('');
+    setSelectedFriend('');
+    setPayer(currentUser);
+    dialogRef.current?.close();
+  };
+
+  const allFriends = [...owes, ...owed]
+    .map((entry) => entry.to)
+    .filter((name, idx, arr) => name !== currentUser && arr.indexOf(name) === idx);
+
   return (
-    <div className="p-4 border rounded bg-gray-100 max-w-md mx-auto mt-6">
-      <h2 className="text-lg font-bold mb-3">Settle Up</h2>
+    // <>
+    //   <button onClick={openDialog} className="btn btn-success">Settle Up</button>
 
-      <label className="block mb-1">Choose Friend</label>
-      <select
-        value={selectedFriend}
-        onChange={(e) => setSelectedFriend(e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-      >
-        <option value="">-- Select --</option>
-        {[...owes, ...owed].map((entry, idx) => (
-          <option key={idx} value={entry.to}>
-            {entry.to}
-          </option>
-        ))}
-      </select>
+    //   <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
+    //     <div className="modal-box p-0 overflow-hidden">
+    //       <header className="bg-[#f0f0f0] px-4 py-3 flex justify-between items-center">
+    //         <h2 className="text-lg font-bold">Settle Up</h2>
+    //         <form method="dialog">
+    //           <button className="text-2xl font-bold text-gray-600">×</button>
+    //         </form>
+    //       </header>
 
-      <label className="block mb-1">Amount</label>
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full p-2 mb-3 border rounded"
-      />
+    //       <div className="p-4 space-y-4">
+    //         <div className="flex items-center justify-center gap-4">
+    //           <div className="flex flex-col items-center">
+    //             <FaUser className="text-2xl text-green-700" />
+    //             <select
+    //               value={payer}
+    //               onChange={(e) => setPayer(e.target.value)}
+    //               className="mt-1 border rounded p-1 text-sm"
+    //             >
+    //               <option value={currentUser}>You ({currentUser})</option>
+    //               {allFriends.map((friend, idx) => (
+    //                 <option key={idx} value={friend}>
+    //                   {friend}
+    //                 </option>
+    //               ))}
+    //             </select>
+    //           </div>
 
-      <button
-        onClick={handleSettle}
-        className="bg-green-600 text-white px-4 py-2 rounded w-full"
-      >
-        Settle Payment
-      </button>
+    //           <FaExchangeAlt className="text-3xl text-gray-500" />
 
-      <div className="mt-4">
-        <h4 className="font-medium">You Owe</h4>
-        {owes.length === 0 ? <p>None</p> :
-          owes.map((entry, idx) => (
-            <p key={idx}>
-              {entry.to}: Rs {entry.amount.toFixed(2)}
-            </p>
-          ))}
+    //           <div className="flex flex-col items-center">
+    //             <FaUser className="text-2xl text-blue-700" />
+    //             <select
+    //               value={selectedFriend}
+    //               onChange={(e) => setSelectedFriend(e.target.value)}
+    //               className="mt-1 border rounded p-1 text-sm"
+    //             >
+    //               <option value="">Select</option>
+    //               {allFriends
+    //                 .filter((f) => f !== payer)
+    //                 .map((friend, idx) => (
+    //                   <option key={idx} value={friend}>
+    //                     {friend}
+    //                   </option>
+    //                 ))}
+    //               {payer !== currentUser && (
+    //                 <option value={currentUser}>You ({currentUser})</option>
+    //               )}
+    //             </select>
+    //           </div>
+    //         </div>
 
-        <h4 className="font-medium mt-3">Owed to You</h4>
-        {owed.length === 0 ? <p>None</p> :
-          owed.map((entry, idx) => (
-            <p key={idx}>
-              {entry.to}: Rs {entry.amount.toFixed(2)}
-            </p>
-          ))}
+    //         <div>
+    //           <label className="block mb-1 text-sm font-medium">Amount</label>
+    //           <div className="flex items-center border rounded px-2">
+    //             <span className="text-xl text-gray-500 pr-2">Rs</span>
+    //             <input
+    //               type="number"
+    //               placeholder="0.00"
+    //               value={amount}
+    //               onChange={(e) => setAmount(e.target.value)}
+    //               className="w-full p-2 outline-none"
+    //             />
+    //           </div>
+    //         </div>
+
+    //         <DatePickerComponent date={date} setDate={setDate} />
+
+    //       </div>
+    //       <footer className="flex justify-end gap-2 bg-[#f9f9f9] px-4 py-3">
+    //         <form method="dialog">
+    //           <button className="btn btn-sm btn-ghost">Cancel</button>
+    //         </form>
+    //         <button onClick={handleSettle} className="btn btn-sm btn-success">
+    //           Save
+    //         </button>
+    //       </footer>
+    //     </div>
+    //   </dialog>
+    // </>
+
+//     <>
+//   <button onClick={openDialog} className="btn bg-[#2A806D] text-white hover:bg-[#246f5f]">
+//     Settle Up
+//   </button>
+
+//   <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
+//     <div className="modal-box p-0 rounded-2xl overflow-hidden shadow-lg border border-[#B2E2D2] bg-[#F6F9F8]">
+
+//       {/* Header */}
+//       <header className="bg-[#B2E2D2] px-5 py-3 flex justify-between items-center">
+//         <h2 className="text-lg font-bold text-[#2A806D]">Settle Up</h2>
+//         <form method="dialog">
+//           <button className="text-2xl font-bold text-[#4B4B4B] hover:text-[#FF6B6B]">×</button>
+//         </form>
+//       </header>
+
+//       {/* Content */}
+//       <div className="p-5 space-y-5 text-[#4B4B4B]">
+//         <div className="flex items-center justify-center gap-6">
+//           {/* Payer */}
+//           <div className="flex flex-col items-center">
+//             <FaUser className="text-2xl text-[#2A806D]" />
+//             <select
+//               value={payer}
+//               onChange={(e) => setPayer(e.target.value)}
+//               className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm text-[#4B4B4B]"
+//             >
+//               <option value={currentUser}>You ({currentUser})</option>
+//               {allFriends.map((friend, idx) => (
+//                 <option key={idx} value={friend}>
+//                   {friend}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <FaExchangeAlt className="text-3xl text-[#4B4B4B]" />
+
+//           {/* Receiver */}
+//           <div className="flex flex-col items-center">
+//             <FaUser className="text-2xl text-[#FF6B6B]" />
+//             <select
+//               value={selectedFriend}
+//               onChange={(e) => setSelectedFriend(e.target.value)}
+//               className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm text-[#4B4B4B]"
+//             >
+//               <option value="">Select</option>
+//               {allFriends
+//                 .filter((f) => f !== payer)
+//                 .map((friend, idx) => (
+//                   <option key={idx} value={friend}>
+//                     {friend}
+//                   </option>
+//                 ))}
+//               {payer !== currentUser && (
+//                 <option value={currentUser}>You ({currentUser})</option>
+//               )}
+//             </select>
+//           </div>
+//         </div>
+
+//         {/* Amount */}
+//         <div>
+//           <label className="block mb-1 text-sm font-medium text-[#2A806D]">Amount</label>
+//           <div className="flex items-center border border-[#B2E2D2] rounded px-3 bg-white">
+//             <span className="text-lg text-[#4B4B4B] pr-2">Rs</span>
+//             <input
+//               type="number"
+//               placeholder="0.00"
+//               value={amount}
+//               onChange={(e) => setAmount(e.target.value)}
+//               className="w-full py-2 text-[#4B4B4B] outline-none bg-transparent"
+//             />
+//           </div>
+//         </div>
+
+//         {/* Date Picker */}
+//         <DatePickerComponent date={date} setDate={setDate} />
+//       </div>
+
+//       {/* Footer */}
+//       <footer className="flex justify-end gap-2 bg-[#EAF7F3] px-5 py-3">
+//         <form method="dialog">
+//           <button className="btn btn-sm bg-white border border-[#B2E2D2] text-[#4B4B4B] hover:bg-[#f0f0f0]">
+//             Cancel
+//           </button>
+//         </form>
+//         <button
+//           onClick={handleSettle}
+//           className="btn btn-sm bg-[#FF6B6B] text-white hover:bg-[#e95b5b]"
+//         >
+//           Save
+//         </button>
+//       </footer>
+//     </div>
+//   </dialog>
+// </>
+<>
+  <button onClick={openDialog} className="btn bg-[#2A806D] text-white hover:bg-[#246f5f]">
+    Settle Up
+  </button>
+
+  <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
+    <div className="modal-box p-0 rounded-2xl overflow-hidden shadow-lg border border-[#B2E2D2] bg-[#F6F9F8]">
+
+      {/* Header */}
+      <header className="border-b-2 border-[#2A806D] px-5 py-4 flex justify-center relative">
+        <h2 className="text-3xl font-bold text-[#2A806D]">Settle Up</h2>
+        <form method="dialog" className="absolute right-4 top-1/2 -translate-y-1/2">
+          <button className="text-2xl font-bold text-[#4B4B4B] hover:text-[#2A806D]">×</button>
+        </form>
+      </header>
+
+      {/* Content */}
+      <div className="p-6 space-y-5 text-[#4B4B4B]">
+        <div className="flex items-center justify-center gap-6">
+          {/* Payer */}
+          <div className="flex flex-col items-center">
+            <FaUser className="text-2xl text-[#2A806D]" />
+            <select
+              value={payer}
+              onChange={(e) => setPayer(e.target.value)}
+              className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
+            >
+              <option value={currentUser}>You ({currentUser})</option>
+              {allFriends.map((friend, idx) => (
+                <option key={idx} value={friend}>
+                  {friend}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <FaExchangeAlt className="text-3xl text-[#4B4B4B]" />
+
+          {/* Receiver */}
+          <div className="flex flex-col items-center">
+            <FaUser className="text-2xl text-[#2A806D]" />
+            <select
+              value={selectedFriend}
+              onChange={(e) => setSelectedFriend(e.target.value)}
+              className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
+            >
+              <option value="">Select</option>
+              {allFriends
+                .filter((f) => f !== payer)
+                .map((friend, idx) => (
+                  <option key={idx} value={friend}>
+                    {friend}
+                  </option>
+                ))}
+              {payer !== currentUser && (
+                <option value={currentUser}>You ({currentUser})</option>
+              )}
+            </select>
+          </div>
+        </div>
+
+        {/* Amount */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-[#2A806D]">Amount</label>
+          <div className="flex items-center border border-[#B2E2D2] rounded px-3 bg-white">
+            <span className="text-lg text-[#4B4B4B] pr-2">Rs</span>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full py-2 text-[#4B4B4B] outline-none bg-transparent"
+            />
+          </div>
+        </div>
+
+        {/* Date Picker */}
+        <DatePickerComponent date={date} setDate={setDate} />
       </div>
+
+      {/* Footer */}
+      <footer className="flex justify-end gap-3 bg-[#EAF7F3] px-6 py-4">
+        <form method="dialog">
+          <button className="btn px-5 py-2 text-sm bg-white border border-[#B2E2D2] text-[#4B4B4B] hover:bg-[#f0f0f0]">
+            Cancel
+          </button>
+        </form>
+        <button
+          onClick={handleSettle}
+          className="btn px-5 py-2 text-sm bg-[#2A806D] text-white hover:bg-[#246f5f]"
+        >
+          Save
+        </button>
+      </footer>
     </div>
+  </dialog>
+</>
+
+
   );
 };
 

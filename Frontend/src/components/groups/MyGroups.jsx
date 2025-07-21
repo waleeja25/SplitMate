@@ -9,8 +9,12 @@ const MyGroups = ({ groups }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 bg-[#F6F9F8] min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-[#2A806D] text-center">My Groups</h2>
+    <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
+<div className="text-center mb-8 p-7 ">
+  <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">My Groups</h1>
+  <p className="text-[#4B4B4B] mt-1">Welcome to your SplitMate circle.</p>
+  <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
+</div>
 
       {groups.length === 0 ? (
         <p className="text-center text-[#4B4B4B]">No groups created yet.</p>
