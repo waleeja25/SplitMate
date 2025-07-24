@@ -136,23 +136,32 @@ export function calculateItemizedSplit(members, items, taxPercent, tipPercent, p
     grandTotal,
   };
 }
-
-export function updateBalances(summary, paidBy) {
+export function updateBalances(summary, paidBy, amount, splitType) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
 
   for (const member in summary) {
     if (member === paidBy) continue;
 
-    const amount = summary[member];
+    const memberAmount = summary[member];
 
     if (!balances[member]) balances[member] = {};
     if (!balances[paidBy]) balances[paidBy] = {};
 
-    balances[member][paidBy] = (balances[member][paidBy] || 0) - amount;
-    balances[paidBy][member] = (balances[paidBy][member] || 0) + amount;
+    balances[member][paidBy] = (balances[member][paidBy] || 0) - memberAmount;
+    balances[paidBy][member] = (balances[paidBy][member] || 0) + memberAmount;
   }
 
   localStorage.setItem("balances", JSON.stringify(balances));
+
+  const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+  expenses.push({
+    paidBy,
+    amount,
+    summary,
+    splitType,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem("expenses", JSON.stringify(expenses));
 }
 
 export function getUserBalances(userName) {
@@ -170,8 +179,6 @@ for (const [person, amount] of Object.entries(userData)) {
     owes.push({ to: person, amount: -numAmount });
   }
 }
-
-
   return { owes, owed };
 }
 
@@ -193,3 +200,62 @@ export function settleUp(from, to, amount) {
   localStorage.setItem("balances", JSON.stringify(balances));
 }
 
+export function getMonthlyExpenses() {
+  const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+
+  // Step 1: Prepare monthly totals from actual data
+  const monthlyTotals = {};
+  expenses.forEach(({ amount, timestamp }) => {
+    const date = new Date(timestamp);
+    const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`; // e.g., "2025-7"
+    if (!monthlyTotals[monthKey]) monthlyTotals[monthKey] = 0;
+    monthlyTotals[monthKey] += Number(amount);
+  });
+
+  // Step 2: Generate all months (Jan to Dec) for current year
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  const fullYearMonths = Array.from({ length: 12 }, (_, index) => {
+    const key = `${currentYear}-${index + 1}`;
+    return {
+      month: key,
+      total: Number((monthlyTotals[key] || 0).toFixed(2)),
+    };
+  });
+
+  return fullYearMonths;
+}
+
+export function getDatewiseExpenses(monthKey) {
+  const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+
+  const [year, month] = monthKey.split("-").map(Number); // e.g. "2025-7"
+  const daysInMonth = new Date(year, month, 0).getDate(); // get total days in the month
+
+  // Initialize totals with all days = 0
+  const dateTotals = {};
+  for (let day = 1; day <= daysInMonth; day++) {
+    const paddedDay = String(day).padStart(2, "0");
+    dateTotals[`${year}-${month}-${paddedDay}`] = 0;
+  }
+
+  // Aggregate actual expenses
+  expenses.forEach(({ amount, timestamp }) => {
+    const date = new Date(timestamp);
+    const dYear = date.getFullYear();
+    const dMonth = date.getMonth() + 1;
+    const dDay = date.getDate();
+
+    if (dYear === year && dMonth === month) {
+      const dateKey = `${year}-${month}-${String(dDay).padStart(2, "0")}`;
+      dateTotals[dateKey] += Number(amount);
+    }
+  });
+
+  // Return as formatted array
+  return Object.entries(dateTotals).map(([date, total]) => ({
+    date,
+    total: Number(total.toFixed(2)),
+  }));
+}

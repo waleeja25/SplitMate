@@ -153,7 +153,7 @@ const AddExpenseForm = ({ groups }) => {
 
     const existing = JSON.parse(localStorage.getItem("expenses") || "[]");
     localStorage.setItem("expenses", JSON.stringify([...existing, expense]));
-    updateBalances(summary, paidBy)
+    updateBalances(summary, paidBy, amount, splitType)
     setSubmittedExpense(expense);
     setShowSummary(true);
 
