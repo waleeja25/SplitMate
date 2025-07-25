@@ -45,6 +45,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
             <span>{categoryName}</span>
           </div>
           <div className="text-m text-gray-500 text-m">{groupName}</div>
+          <div className="text-m text-gray-500 text-m">{expense.splitType}</div>
         </div>
 
         <div className="text-right min-w-[110px] text-[15px] space-y-1">

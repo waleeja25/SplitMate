@@ -6,6 +6,7 @@ const AllExpenses = () => {
   const groupWiseMap = {};
   const memberWiseMap = {};
   
+  
   allExpenses.forEach((expense) => {
     const { group, members, paidBy, summary = {}, category, amount, date, splitType } = expense;
 

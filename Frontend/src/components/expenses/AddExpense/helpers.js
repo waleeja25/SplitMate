@@ -1,22 +1,20 @@
 export function calculateEqualSplit(members, amount, paidBy) {
-  const perHead = parseFloat((amount / members.length).toFixed(2));
+  const totalMembers = members.length;
+  const splitAmount = parseFloat(amount) / totalMembers;
+
   const summary = {};
 
-  members.forEach(member => {
-    if (member.name !== paidBy) {
-      summary[member.name] = perHead;
-    } else {
-      summary[member.name] = 0;
-    }
+  members.forEach((member) => {
+    summary[member.name] = member.name === paidBy ? 0 : splitAmount;
   });
 
-  return summary;
+  return { summary };
 }
-
 
 export function calculatePercentageSplit(members, percentages, amount, paidBy) {
   const totalPercent = Object.values(percentages)
     .reduce((sum, val) => sum + parseFloat(val || 0), 0);
+
   if (totalPercent !== 100) {
     return { error: `Total percentage must be exactly 100%. You have ${totalPercent}%.` };
   }
@@ -24,107 +22,47 @@ export function calculatePercentageSplit(members, percentages, amount, paidBy) {
   const summary = {};
   members.forEach(member => {
     const percent = parseFloat(percentages[member.name] || 0);
-    const share = ((amount * percent) / 100).toFixed(2);
-    if (member.name !== paidBy) {
-      summary[member.name] = share;
-    }
+    summary[member.name] = member.name === paidBy ? 0 : (amount * percent) / 100;
   });
 
   return { summary };
 }
 
-// export function calculateExactSplit(members, exactAmounts, paidBy) {
-//   const summary = {};
-//   members.forEach(member => {
-//     const exact = parseFloat(exactAmounts[member.name] || 0).toFixed(2);
-//     if (member.name !== paidBy) {
-//       summary[member.name] = exact;
-//     }
-//   });
-//   return summary;
-// }
-
 
 export function calculateExactSplit(members, exactAmounts, paidBy) {
   const summary = {};
-
-  members.forEach((member) => {
-    const amount = parseFloat(exactAmounts[member.name] || 0);
-    if (member.name !== paidBy) {
-      summary[member.name] = amount.toFixed(2);
-    }
+  
+  members.forEach(member => {
+    const amount = parseFloat(exactAmounts[member.name]) || 0;
+    summary[member.name] = member.name === paidBy ? 0 : amount;
   });
 
-  return summary;
+  return { summary };
 }
 
-
-
-// export function calculateItemizedSplit(members, items, taxPercent, tipPercent, paidBy) {
-//   const memberTotals = {};
-//   members.forEach(m => memberTotals[m.name] = 0);
-
-//   items.forEach(item => {
-//     const cost = parseFloat(item.cost || 0);
-//     if (
-//   item.assignedTo &&
-//   Object.prototype.hasOwnProperty.call(memberTotals, item.assignedTo)
-// ) {
-//   memberTotals[item.assignedTo] += cost;
-// }
-
-//   });
-
-//   const subtotal = Object.values(memberTotals).reduce((a, b) => a + b, 0);
-//   const tax = (subtotal * taxPercent) / 100;
-//   const tip = (subtotal * tipPercent) / 100;
-
-//   const summary = {};
-//   members.forEach(member => {
-//     const base = memberTotals[member.name] || 0;
-//     const shareRatio = base / subtotal || 0;
-//     const total = (base + tax * shareRatio + tip * shareRatio).toFixed(2);
-//     if (member.name !== paidBy) {
-//       summary[member.name] = total;
-//     }
-//   });
-
-//   return { summary, memberTotals, subtotal, tax, tip, grandTotal: subtotal + tax + tip };
-// }
 export function calculateItemizedSplit(members, items, taxPercent, tipPercent, paidBy) {
   const memberTotals = {};
+  members.forEach(member => memberTotals[member.name] = 0);
 
-  // Initialize each member with 0
-  members.forEach(member => {
-    memberTotals[member.name] = 0;
-  });
-
-  // Assign each item's cost
   items.forEach(item => {
     const cost = parseFloat(item.cost || 0);
     const assignedTo = item.assignedTo;
-
-    if (assignedTo && assignedTo in memberTotals) {
+    if (assignedTo && memberTotals[assignedTo] !== undefined) {
       memberTotals[assignedTo] += cost;
     }
   });
 
-  // Calculate totals
   const subtotal = Object.values(memberTotals).reduce((sum, val) => sum + val, 0);
   const tax = (subtotal * taxPercent) / 100;
   const tip = (subtotal * tipPercent) / 100;
   const grandTotal = subtotal + tax + tip;
 
-  // Calculate each member's final share
   const summary = {};
   members.forEach(member => {
     const base = memberTotals[member.name] || 0;
     const shareRatio = subtotal > 0 ? base / subtotal : 0;
-    const total = base + tax * shareRatio + tip * shareRatio;
-
-    if (member.name !== paidBy) {
-      summary[member.name] = total.toFixed(2);
-    }
+    summary[member.name] = member.name === paidBy ? 0 : 
+      base + (tax * shareRatio) + (tip * shareRatio);
   });
 
   return {
@@ -133,23 +71,28 @@ export function calculateItemizedSplit(members, items, taxPercent, tipPercent, p
     subtotal,
     tax,
     tip,
-    grandTotal,
+    grandTotal
   };
 }
+
+
 export function updateBalances(summary, paidBy, amount, splitType, date) {
+  if (!summary || typeof summary !== 'object') return;
+
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-
-  for (const member in summary) {
-    if (member === paidBy) continue;
-
-    const memberAmount = summary[member];
-
-    if (!balances[member]) balances[member] = {};
-    if (!balances[paidBy]) balances[paidBy] = {};
-
-    balances[member][paidBy] = (balances[member][paidBy] || 0) - memberAmount;
-    balances[paidBy][member] = (balances[paidBy][member] || 0) + memberAmount;
-  }
+  if (!balances[paidBy]) balances[paidBy] = {};
+  
+  Object.entries(summary).forEach(([memberName, memberAmount]) => {
+  
+    if (memberName === paidBy || memberAmount === 0) return;   
+    if (!balances[memberName]) balances[memberName] = {};
+  
+    const amountNum = typeof memberAmount === 'string' ? 
+      parseFloat(memberAmount) : memberAmount;
+    
+    balances[memberName][paidBy] = (balances[memberName][paidBy] || 0) - amountNum;
+    balances[paidBy][memberName] = (balances[paidBy][memberName] || 0) + amountNum;
+  });
 
   localStorage.setItem("balances", JSON.stringify(balances));
 
@@ -157,28 +100,34 @@ export function updateBalances(summary, paidBy, amount, splitType, date) {
   expenses.push({
     paidBy,
     amount,
-    summary,
     splitType,
-    timestamp: date
+    summary,
+    timestamp: date || new Date().toISOString()
   });
   localStorage.setItem("expenses", JSON.stringify(expenses));
 }
 
-export function getUserBalances(userName) {
-  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-  const userData = balances[userName] || {};
 
+
+
+export function getUserBalances(currentUser) {
+  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
   const owes = [];
   const owed = [];
 
-for (const [person, amount] of Object.entries(userData)) {
-  const numAmount = Number(amount); 
-  if (numAmount > 0) {
-    owed.push({ to: person, amount: numAmount });
-  } else if (numAmount < 0) {
-    owes.push({ to: person, amount: -numAmount });
-  }
-}
+  Object.entries(balances).forEach(([otherUser, balanceMap]) => {
+    const amount = balanceMap[currentUser];
+    if (!amount) return;
+
+    const numAmount = Number(amount);
+
+    if (numAmount > 0) {
+      owed.push({ to: otherUser, amount: numAmount });
+    } else if (numAmount < 0) {
+      owes.push({ to: otherUser, amount: -numAmount });
+    }
+  });
+
   return { owes, owed };
 }
 

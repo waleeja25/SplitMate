@@ -92,8 +92,9 @@ const AddExpenseForm = ({ groups }) => {
         alert("Exact amounts do not match total.");
         return;
       }
-      summary = calculateExactSplit(people.members, exactAmounts, paidBy);
+      ({summary} = calculateExactSplit(people.members, exactAmounts, paidBy));
     }
+
 
     if (splitType === 'itemizedExpense') {
       for (const item of items) {
@@ -132,8 +133,10 @@ const AddExpenseForm = ({ groups }) => {
     }
 
     if (splitType === 'equal') {
-      summary = calculateEqualSplit(people.members, expenseAmount, paidBy);
+      // summary = calculateEqualSplit(people.members, expenseAmount, paidBy);
+      ({ summary } = calculateEqualSplit(people.members, expenseAmount, paidBy));
     }
+    console.log(summary);
 
     const expense = {
       amount: expenseAmount,
@@ -197,6 +200,7 @@ const AddExpenseForm = ({ groups }) => {
     }
   }, [splitType, people, items, taxPercent, tipPercent, paidBy]);
 
+  
 
   return (
     <div>
@@ -210,26 +214,6 @@ const AddExpenseForm = ({ groups }) => {
 
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto">
 
-        {/* <button
-          type="button"
-          onClick={() => {
-            setIsGroup(false)
-          }}
-          className={`px-3 py-1 border rounded
-                'bg-[#2a806d] text-black`}
-        >
-          Individual Expense
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setIsGroup(true)
-          }}
-          className={`px-3 py-1 border rounded
-                'bg-[#2a806d] text-black`}
-        >
-          Group Expense
-        </button> */}
         <div className="w-full flex mb-6 rounded-lg border border-[#2a806d]">
           <button
             type="button"

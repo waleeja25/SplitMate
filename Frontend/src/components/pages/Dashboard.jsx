@@ -15,16 +15,14 @@ import {
 import DashboardCards from '../dashboard/DashboardCards';
 
 const Dashboard = () => {
-  console.log(getMonthlyExpenses());
-console.log(getDatewiseExpenses("2025-06"));
-
-
   const [viewMode, setViewMode] = useState('monthly');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [barData, setBarData] = useState([]);
   const navigate = useNavigate();
   const user = localStorage.getItem('username');
   const { owes, owed } = getUserBalances(user);
+  console.log(owed);
+  console.log(owes);
 
   useEffect(() => {
     if (viewMode === "monthly") {

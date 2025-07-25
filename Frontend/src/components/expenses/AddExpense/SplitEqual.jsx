@@ -9,15 +9,6 @@ const SplitEqual = ({ selectedGroup, amount }) => {
       : '0.00';
 
   return (
-    // <div className="mb-4 text-green-700">
-    //   <h4 className="font-semibold mb-2">Each member owes: Rs {perHead}</h4>
-    //   {selectedGroup.members.map((member, idx) => (
-    //     <div key={idx}>
-    //       {member.name}: <strong>Rs {perHead}</strong>
-    //     </div>
-    //   ))}
-    // </div>
-
     <div className="mb-6 p-5 rounded-2xl bg-white shadow border border-[#d9f0ea]">
         <h4 className="text-2xl font-bold text-[#2a806d] mb-6">Split Equally</h4>
   <h4 className="text-xl font-bold text-[#2a806d] mb-4">
