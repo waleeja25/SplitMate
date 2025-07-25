@@ -3,62 +3,113 @@ import NavBar from "../ui/NavBar";
 
 export default function Home() {
   return (
-    <div >
+    <div className="font-['Poppins']">
       <NavBar />
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 flex flex-col items-center justify-center px-4 py-10">
-      {/* Logo / Title */}
-      <h1 className="text-4xl md:text-5xl font-bold text-cyan-800 mb-4">
-        SplitMate
-      </h1>
-
-      {/* Subtitle */}
-      <p className="text-lg text-gray-700 mb-8 text-center max-w-md">
-        Split group expenses. Fairly. Instantly.  
-        Create a group, track who paid, and settle up easily.
-      </p>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <Link href="/create">
-          <button className="px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white text-lg rounded-xl shadow">
-            ➕ Create a Group
-          </button>
-        </Link>
-
-        <Link href="/join">
-          <button className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg rounded-xl shadow">
-            🔗 Join a Group
-          </button>
-        </Link>
-      </div>
-
-      {/* How it Works Section */}
-      <div className="mt-16 max-w-2xl text-center">
-        <h2 className="text-2xl font-semibold mb-4 text-cyan-700">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-700">
-          <div>
-            <div className="text-3xl mb-2">🛠️</div>
-            <p className="font-semibold">Create a Group</p>
-            <p className="text-sm">Name your group and invite members</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">💸</div>
-            <p className="font-semibold">Add Expenses</p>
-            <p className="text-sm">Track who paid and for whom</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">✅</div>
-            <p className="font-semibold">Settle Up</p>
-            <p className="text-sm">Instantly calculate and simplify debts</p>
-          </div>
+      
+      {/* Hero Section */}
+      <section className="min-h-screen bg-gradient-to-b from-[rgba(42,128,109,0.1)] to-[rgb(245,252,250)] flex flex-col items-center justify-center px-4 py-20">
+        
+        {/* Main Heading */}
+        <div className="text-center mb-16 max-w-4xl">
+          <h1 className="text-5xl md:text-7xl font-bold text-[#2a806d] mb-6">
+            Split Expenses <span className="text-[#333]">Without the Hassle</span>
+          </h1>
+          <p className="text-xl text-[#333] leading-relaxed max-w-2xl mx-auto">
+            The simplest way to manage group expenses. Track who paid, calculate balances,
+            and settle up - all in one place.
+          </p>
         </div>
-      </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row gap-6 mb-40">
+          <Link 
+            to="/create"
+            className="px-8 py-4 bg-[#2a806d] hover:bg-[#20765f] text-white text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            Create New Group
+          </Link>
+          <Link 
+            to="/join"
+            className="px-8 py-4 bg-white hover:bg-[#f0f0f0] text-[#333] border border-[#ccc] text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            Join Existing Group
+          </Link>
+        </div>
+
+        {/* Feature Preview Image */}
+        <div className="w-full max-w-5xl mb-40 rounded-2xl overflow-hidden shadow-2xl">
+          <img 
+            src="https://placehold.co/1200x650" 
+            alt="SplitMate app interface showing expense tracking dashboard with charts and transaction list"
+            className="w-full h-auto"
+          />
+        </div>
+
+        {/* How It Works Section */}
+        <section className="w-full max-w-6xl mb-32">
+          <h2 className="text-4xl font-bold text-[#2a806d] text-center mb-16">How SplitMate Works</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Step 1 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl text-[#2a806d] mb-6">1</div>
+              <h3 className="text-2xl font-bold text-[#333] mb-4">Create Your Group</h3>
+              <p className="text-[#333]">
+                Start by creating a group and adding members. Give it a name that reflects your purpose - 
+                'Road Trip 2023' or 'Roommates Expenses'.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl text-[#2a806d] mb-6">2</div>
+              <h3 className="text-2xl font-bold text-[#333] mb-4">Add Expenses</h3>
+              <p className="text-[#333]">
+                Log any shared expenses. Split them equally or customize who paid and who owes. 
+                Add receipts for easy reference.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl text-[#2a806d] mb-6">3</div>
+              <h3 className="text-2xl font-bold text-[#333] mb-4">Settle Up</h3>
+              <p className="text-[#333]">
+                Let SplitMate calculate who owes whom. Send payment requests and mark them as 
+                paid when settled.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="w-full max-w-4xl mb-32 text-center">
+          <h2 className="text-3xl font-bold text-[#2a806d] mb-12">What People Are Saying</h2>
+          <div className="bg-white p-10 rounded-xl shadow-lg">
+            <p className="text-xl text-[#333] italic mb-8">
+              "SplitMate saved our group trips from endless spreadsheet arguments. Now we actually enjoy splitting bills!"
+            </p>
+            <p className="font-bold text-[#333]">— Sarah & Her Travel Friends</p>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <div className="text-center mb-20">
+          <h2 className="text-3xl font-bold text-[#2a806d] mb-8">Ready to Simplify Your Group Expenses?</h2>
+          <Link 
+            to="/create"
+            className="px-10 py-5 bg-[#2a806d] hover:bg-[#20765f] text-white text-xl rounded-xl shadow-lg transition-all duration-300 inline-block"
+          >
+            Get Started - It's Free
+          </Link>
+        </div>
+
+      </section>
 
       {/* Footer */}
-      <footer className="mt-20 text-gray-400 text-sm text-center">
-        Made with 💙 by Waleeja Ali • v1.0
+      <footer className="bg-[#2a806d] text-white p-8 text-center">
+        <p className="text-sm">© 2023 SplitMate | Made with ♥ by Waleeja Ali</p>
       </footer>
-    </div>
     </div>
   );
 }
