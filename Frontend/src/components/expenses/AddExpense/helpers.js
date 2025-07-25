@@ -200,30 +200,6 @@ export function settleUp(from, to, amount) {
   localStorage.setItem("balances", JSON.stringify(balances));
 }
 
-// export function getMonthlyExpenses() {
-//   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
-
-//   const monthlyTotals = {};
-//   expenses.forEach(({ amount, timestamp }) => {
-//     const date = new Date(timestamp);
-//     const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-//     if (!monthlyTotals[monthKey]) monthlyTotals[monthKey] = 0;
-//     monthlyTotals[monthKey] += Number(amount);
-//   });
-//   const now = new Date();
-//   const currentYear = now.getFullYear();
-
-//   const fullYearMonths = Array.from({ length: 12 }, (_, index) => {
-//     const key = `${currentYear}-${index + 1}`;
-//     return {
-//       month: key,
-//       total: Number((monthlyTotals[key] || 0).toFixed(2)),
-//     };
-//   });
-
-//   return fullYearMonths;
-// }
-
 export function getMonthlyExpenses() {
   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
 
@@ -248,37 +224,6 @@ export function getMonthlyExpenses() {
 
   return fullYearMonths;
 }
-
-
-// export function getDatewiseExpenses(monthKey) {
-//   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
-
-//   const [year, month] = monthKey.split("-").map(Number); 
-//   const daysInMonth = new Date(year, month, 0).getDate(); 
-
-//   const dateTotals = {};
-//   for (let day = 1; day <= daysInMonth; day++) {
-//     const paddedDay = String(day).padStart(2, "0");
-//     dateTotals[`${year}-${month}-${paddedDay}`] = 0;
-//   }
-
-//   expenses.forEach(({ amount, timestamp }) => {
-//     const date = new Date(timestamp);
-//     const dYear = date.getFullYear();
-//     const dMonth = date.getMonth() + 1;
-//     const dDay = date.getDate();
-
-//     if (dYear === year && dMonth === month) {
-//       const dateKey = `${year}-${month}-${String(dDay).padStart(2, "0")}`;
-//       dateTotals[dateKey] += Number(amount);
-//     }
-//   });
-
-//   return Object.entries(dateTotals).map(([date, total]) => ({
-//     date,
-//     total: Number(total.toFixed(2)),
-//   }));
-// }
 
 export function getDatewiseExpenses(monthKey) {
   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
