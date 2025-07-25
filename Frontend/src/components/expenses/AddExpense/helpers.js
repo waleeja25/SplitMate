@@ -110,26 +110,50 @@ export function updateBalances(summary, paidBy, amount, splitType, date) {
 
 
 
+// export function getUserBalances(currentUser) {
+//   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
+//   const owes = [];
+//   const owed = [];
+
+//   Object.entries(balances).forEach(([otherUser, balanceMap]) => {
+//     const amount = balanceMap[currentUser];
+//     if (!amount) return;
+
+//     const numAmount = Number(amount);
+
+//     if (numAmount > 0) {
+//       owed.push({ to: otherUser, amount: numAmount });
+//     } else if (numAmount < 0) {
+//       owes.push({ to: otherUser, amount: -numAmount });
+//     }
+//   });
+
+//   return { owes, owed };
+// }
+
 export function getUserBalances(currentUser) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
   const owes = [];
   const owed = [];
 
-  Object.entries(balances).forEach(([otherUser, balanceMap]) => {
-    const amount = balanceMap[currentUser];
-    if (!amount) return;
+  const currentUserBalances = balances[currentUser] || {};
 
+  Object.entries(currentUserBalances).forEach(([otherUser, amount]) => {
     const numAmount = Number(amount);
 
-    if (numAmount > 0) {
-      owed.push({ to: otherUser, amount: numAmount });
-    } else if (numAmount < 0) {
+    if (numAmount < 0) {
+      // You owe them
       owes.push({ to: otherUser, amount: -numAmount });
+    } else if (numAmount > 0) {
+      // They owe you
+      owed.push({ from: otherUser, amount: numAmount });
     }
   });
 
   return { owes, owed };
 }
+
+
 
 export function settleUp(from, to, amount) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");

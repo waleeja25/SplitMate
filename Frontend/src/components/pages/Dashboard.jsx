@@ -21,9 +21,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const user = localStorage.getItem('username');
   const { owes, owed } = getUserBalances(user);
-  console.log(owed);
-  console.log(owes);
-
+  // console.log(owed);
+  // console.log(owes);
+  
   useEffect(() => {
     if (viewMode === "monthly") {
       const monthlyData = getMonthlyExpenses();

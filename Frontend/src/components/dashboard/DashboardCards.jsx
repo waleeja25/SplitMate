@@ -9,7 +9,16 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
       
       <div className="bg-white border border-[#d9f0ea] shadow-md rounded-2xl p-6 text-center">
         <p className="text-sm font-medium text-gray-500 mb-1">Total Balance</p>
-        <h2 className="text-2xl font-bold text-[#2A806D]">Rs {totalBalance.toFixed(2)}</h2>
+        {totalBalance >= 0 ? (
+          <>
+                  <h2 className="text-2xl font-bold text-[#2A806D]">Rs {totalBalance.toFixed(2)}</h2>
+          </>
+        ) : (
+          <> 
+          <h2 className="text-2xl font-bold text-[#e75151]">Rs {totalBalance.toFixed(2)}</h2>
+          
+          </>
+        )}
       </div>
 
       <div
@@ -17,7 +26,7 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
         className="bg-white border border-[#f5d1bc] shadow-md rounded-2xl p-6 text-center hover:cursor-pointer transition-all duration-300"
       >
         <p className="text-sm font-medium text-gray-500 mb-1">You Owe</p>
-        <h2 className="text-2xl font-bold  text-[#ef4444]">Rs {totalYouOwe.toFixed(2)}</h2>
+        <h2 className="text-2xl font-bold  text-[#e75151]">Rs {totalYouOwe.toFixed(2)}</h2>
       </div>
 
       <div
@@ -57,7 +66,7 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
             <ul className="list-disc pl-5 text-sm space-y-2 text-black">
               {owed.map((line, i) => (
                 <li key={i}>
-                  <span className="font-semibold">{line.to}</span> owes you Rs {line.amount.toFixed(2)}
+                  <span className="font-semibold">{line.from}</span> owes you Rs {line.amount.toFixed(2)}
                 </li>
               ))}
             </ul>
