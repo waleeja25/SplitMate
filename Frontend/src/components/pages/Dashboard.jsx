@@ -15,6 +15,9 @@ import {
 import DashboardCards from '../dashboard/DashboardCards';
 
 const Dashboard = () => {
+  console.log(getMonthlyExpenses());
+console.log(getDatewiseExpenses("2025-06"));
+
 
   const [viewMode, setViewMode] = useState('monthly');
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -117,7 +120,7 @@ const Dashboard = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey={viewMode === "monthly" ? "month" : "date"}
-                interval={viewMode === "monthly" ? 0 : 3} // show all months or every 5th date
+                interval={viewMode === "monthly" ? 0 : 3} 
               />
               <YAxis />
               <Tooltip />
