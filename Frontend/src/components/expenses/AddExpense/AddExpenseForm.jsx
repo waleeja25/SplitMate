@@ -10,7 +10,6 @@ import ExpenseSummaryModal from './ExpenseSummaryModal';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePickerComponent from '../../ui/DatePickerComponent';
 
-
 import {
   calculateEqualSplit,
   calculatePercentageSplit,
@@ -18,7 +17,7 @@ import {
   calculateItemizedSplit,
 } from './helpers';
 
-const AddExpenseForm = ({ groups }) => {
+const AddExpenseForm = ({ groups , friends}) => {
   const [members, setMembers] = useState([]);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
@@ -294,9 +293,10 @@ const AddExpenseForm = ({ groups }) => {
               </select>
             </div>
           )}
-          {!isGroup && (
+
+           {!isGroup && (
             <>
-              <label className="block mb-1 font-medium text-[#333]">Add Member</label>
+              {/* <label className="block mb-1 font-medium text-[#333]">Add Member</label>
               <div className="rounded mb-6">
                 <input
                   type="text"
@@ -318,10 +318,60 @@ const AddExpenseForm = ({ groups }) => {
                 >
                   Add Member
                 </button>
-              </div>
+              </div> */}
+
+<label className="block mb-1 font-medium text-[#333]">Add Member</label>
+<div className="rounded mb-6 relative">
+  {/* Member Name input with datalist */}
+  <input
+    list="friend-suggestions"
+    type="text"
+    placeholder="Member's Name"
+    value={memberName}
+    onChange={(e) => {
+      const name = e.target.value;
+      setMemberName(name);
+      
+      // Auto-fill email if friend matched
+      const matchedFriend = friends.find(friend => friend.name === name);
+      if (matchedFriend) {
+        setMemberEmail(matchedFriend.email);
+      }
+    }}
+    className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
+  />
+
+  {/* Datalist with name + email */}
+  <datalist id="friend-suggestions">
+    {friends.map((friend, idx) => (
+      <option key={idx} value={friend.name}>
+        {friend.name} ({friend.email})
+      </option>
+    ))}
+  </datalist>
+
+  {/* Email input (auto-filled if friend is selected) */}
+  <input
+    type="email"
+    placeholder="Member's Email"
+    value={memberEmail}
+    onChange={(e) => setMemberEmail(e.target.value)}
+    className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
+  />
+
+  {/* Add button */}
+  <button
+    onClick={handleAddMember}
+    className="w-full btn bg-[#2a806d] text-white rounded py-2 hover:bg-[#246c5c]"
+  >
+    Add Member
+  </button>
+</div>
+
+
 
               {/* Display Members as Tabs */}
-              {members.length > 0 && (
+               {members.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {members.map((member, idx) => (
                     <span
@@ -343,9 +393,9 @@ const AddExpenseForm = ({ groups }) => {
                     </span>
                   ))}
                 </div>
-              )}
+              )} 
 
-              <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+               <label className="block mb-1 font-medium text-[#333]">Paid By</label>
               <select
                 value={paidBy}
                 onChange={(e) => setPaidBy(e.target.value)}
@@ -360,7 +410,7 @@ const AddExpenseForm = ({ groups }) => {
                 ))}
               </select>
             </>
-          )}
+          )} 
 
     
 

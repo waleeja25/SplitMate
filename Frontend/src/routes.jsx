@@ -10,6 +10,7 @@ import MyGroups from './components/groups/MyGroups';
 import SettleUp from './components/dashboard/settleUp';
 import AllExpenses from './components/expenses/AllExpenses';
 import AddExpenseForm from './components/expenses/AddExpense/AddExpenseForm';
+import IndividualExpensesCard from './components/expenses/IndividualExpensesCard';
 import { displayList } from './components/ui/displayList';
 
 export const getRouter = (friends, setFriends, groups, setGroups) =>
@@ -55,7 +56,12 @@ export const getRouter = (friends, setFriends, groups, setGroups) =>
           displayList={displayList}
         />
       ),
-    },
+    }, {
+path: '/myFriends/:friendName',
+element: <IndividualExpensesCard friends={friends} />,
+
+},
+
     {
       path: '/myGroups',
       element: (
@@ -69,7 +75,7 @@ export const getRouter = (friends, setFriends, groups, setGroups) =>
     },
     {
       path: '/addExpense',
-      element: <AddExpenseForm groups={groups} />,
+      element: <AddExpenseForm groups={groups} friends={friends}/>,
     },
     {
       path: '/allExpenses',

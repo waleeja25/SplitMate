@@ -229,3 +229,30 @@ export function getDatewiseExpenses(monthKey) {
     total: Number(total.toFixed(2)),
   }));
 }
+
+
+export function getExpensesForMember(memberName) {
+  const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+  const result = [];
+
+  allExpenses.forEach((expense) => {
+    const { group, members, paidBy, summary = {}, category, amount, date, splitType } = expense;
+
+    if (!group && Array.isArray(members)) {
+      const isInvolved = members.some((m) => m.name === memberName);
+
+      if (isInvolved) {
+        result.push({
+          paidBy,
+          category,
+          amount,
+          date,
+          splitType,
+          summary,
+        });
+      }
+    }
+  });
+
+  return result;
+}
