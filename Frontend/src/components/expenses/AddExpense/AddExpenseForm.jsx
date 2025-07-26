@@ -205,7 +205,7 @@ const AddExpenseForm = ({ groups }) => {
   return (
     <div>
       <div className="text-center mb-3 p-7">
-        <h1 className="text-3xl font-bold text-[#2a806d]">Add a New Expense</h1>
+<p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">Add a new Expense</p>
         <p className="text-[#4B4B4B] mt-1">
           Fill in the details below to split an expense across the group.
         </p>

@@ -23,9 +23,9 @@ const AllExpenses = () => {
     }
   });
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-[rgb(245,252,250)]">
+    <div className="p-6 max-w-3xl mx-auto bg-[rgb(245,252,250)] min-h-screen">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-[#2a806d] tracking-wide">All Expenses</h1>
+        <h1 className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">All Expenses</h1>
         <p className="text-[#333] mt-1">Track who paid, who owes, and how it splits.</p>
         <div className="mt-2 border-b-2 border-[#2a806d] w-3/4 mx-auto" />
       </div>

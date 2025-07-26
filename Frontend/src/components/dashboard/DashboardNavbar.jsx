@@ -1,41 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import logo from '../../assets/logo.png'
-import Avatar from '@mui/material/Avatar';
+import navLogo from '../../assets/navLogo.png'
+import UserAvatar from '../ui/UseAvatar';
 import { useNavigate } from 'react-router-dom';
 
-const  DashboardNavbar= () => {
-  const navigate= useNavigate(); 
+const DashboardNavbar = () => {
+  const navigate = useNavigate();
   const username = localStorage.getItem('username') || 'Guest';
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
-  function stringToColor(string) {
-    let hash = 0;
-    for (let i = 0; i < string.length; i++) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-    return color;
-  }
-
-function stringAvatar(name) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-      width: 35,       
-      height: 35,
-      fontSize: 18,     
-    },
-    children: name[0].toUpperCase(),
-  };
-}
-
-
- useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
@@ -47,44 +21,43 @@ function stringAvatar(name) {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/')
+    navigate('/');
   };
 
   return (
-    <div>
-      <nav className="flex items-center justify-between px-6 py-2 shadow-md bg-white">
-      
-        <div className="flex items-center gap-4 ml-10">
-          <img src={logo} alt="SplitMate Logo" className="h-12" />
-          <p className="text-xl font-semibold text-gray-700">Welcome to SplitMate</p>
-        </div>
+    <nav className="flex items-center justify-between px-4 md:px-8 py-1 bg-[#f0faf6] border-[#e1f6f0] shadow-lg ">
+      {/* Logo + Welcome Text */}
+      <div className="flex items-center gap-4">
+        <img src={navLogo} alt="SplitMate Logo" className="h-10 w-auto" />
+        <p className="text-lg font-medium text-[#2A806D] tracking-wide">
+           <span className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">SplitMate</span>
+        </p>
+      </div>
 
-        <div className="relative flex items-center gap-3 mr-12" ref={dropdownRef}>
-          <Avatar {...stringAvatar(username)}
-          
-          />
-          <button
-            className="text-xl font-semibold text-gray-700 focus:outline-none"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            {username} <span className="text-sm">▼</span>
-          </button>
+      {/* User Avatar & Dropdown */}
+      <div className="relative flex items-center gap-3" ref={dropdownRef}>
+        <UserAvatar name={username} size={35} />
+        <button
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#2A806D] focus:outline-none"
+        >
+          {username} <span className="ml-1 text-sm">▼</span>
+        </button>
 
-          {dropdownOpen && (
-            <ul className="absolute top-full right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10">
-              <li>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          )}
-        </div>
-      </nav>
-    </div>
+        {dropdownOpen && (
+          <ul className="absolute top-full right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-md z-20 transition-all duration-200">
+            <li>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#f0fdfa] hover:text-[#2A806D] transition"
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        )}
+      </div>
+    </nav>
   );
 };
 

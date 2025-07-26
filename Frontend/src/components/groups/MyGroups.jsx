@@ -10,11 +10,11 @@ const MyGroups = ({ groups }) => {
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
-<div className="text-center mb-8 p-7 ">
-  <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">My Groups</h1>
-  <p className="text-[#4B4B4B] mt-1">Welcome to your SplitMate circle.</p>
-  <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
-</div>
+      <div className="text-center mb-8 p-7 ">
+        <h1 className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">My Groups</h1>
+        <p className="text-[#4B4B4B] mt-1">Welcome to your SplitMate circle.</p>
+        <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
+      </div>
 
       {groups.length === 0 ? (
         <p className="text-center text-[#4B4B4B]">No groups created yet.</p>
@@ -33,9 +33,8 @@ const MyGroups = ({ groups }) => {
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                openGroupIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-              }`}
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroupIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}
             >
               <div className="bg-[#E7F9F6] px-4 py-4 text-[#4B4B4B] rounded-b-xl">
                 <h4 className="font-semibold mb-2 text-[#2A806D]">Members:</h4>

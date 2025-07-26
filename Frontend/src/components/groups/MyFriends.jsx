@@ -22,7 +22,7 @@ const MyFriends = ({ friends, setFriends, displayList }) => {
   };
 
   return (
-    <div className="p-6 rounded-xl bg-[#F6F9F8] text-[#4B4B4B]">
+    <div className="p-6 rounded-xl bg-[rgb(245,252,250)] min-h-screen">
       <h1 className="text-2xl font-bold text-[#2A806D] mb-4">My Friends</h1>
 
       <button

@@ -53,12 +53,12 @@ const LoginForm = () => {
     <div className="flex justify-center items-start min-h-screen bg-[#f5f5f5] pt-16 overflow-hidden font-['Montserrat']">
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
-        className="bg-white px-10 py-8 rounded-xl shadow-lg w-full max-w-md text-center"
+        className="bg-white px-10 py-7 rounded-xl shadow-lg w-full max-w-md text-center"
       >
         <img
           src={logo}
           alt="SplitMate Logo"
-          className="w-20 h-20 object-cover rounded-full mx-auto mb-4"
+          className="w-20 h-22 object-cover rounded-full mx-auto mb-4"
         />
         <h2 className="text-2xl text-gray-800 font-semibold">Login to SplitMate</h2>
         <p className="text-sm text-gray-500 mt-2 mb-4">Share expenses without the stress.</p>

@@ -72,7 +72,7 @@ const SignupForm = () => {
         <img
           src={logo}
           alt="SplitMate Logo"
-          className="w-20 h-20 object-cover rounded-full mx-auto mb-4"
+          className="w-20 h-22 object-cover rounded-full mx-auto mb-4"
         />
         <h2 className="text-2xl text-gray-800 font-semibold">
           Create your SplitMate account
