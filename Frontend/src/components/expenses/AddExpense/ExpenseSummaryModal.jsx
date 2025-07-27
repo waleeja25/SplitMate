@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { getCategoryById, getCategoryIcon } from '../../../lib/expense-categories';
 
 const ExpenseSummaryModal = ({ expense, onClose }) => {
-  const navigate = useNavigate();
   if (!expense) return null;
 
   const sessionUser = localStorage.getItem('username');
@@ -77,7 +76,6 @@ const ExpenseSummaryModal = ({ expense, onClose }) => {
             className="w-full bg-[#2a806d] hover:bg-[#256b5a] text-white font-semibold py-2 rounded-xl transition"
             onClick={() => {
               onClose();
-              navigate('/allExpenses');
             }}
           >
             Close

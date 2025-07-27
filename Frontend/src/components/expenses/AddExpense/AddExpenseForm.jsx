@@ -44,8 +44,6 @@ const AddExpenseForm = ({ groups , friends}) => {
     grandTotal: 0,
   });
 
-
-  const navigate = useNavigate();
   const sessionUser = localStorage.getItem('username');
   const selectedGroup = groups.find((group) => group.name === groupSelected);
   const people = useMemo(() => {
@@ -436,7 +434,7 @@ const AddExpenseForm = ({ groups , friends}) => {
 
         <button
           type="submit"
-          className="w-full py-2 mt-4 bg-[#2a806d] hover:bg-[#1cc29f] text-white rounded"
+          className="w-full py-2 mt-4 bg-[#2a806d] hover:bg-[#53b8a2] text-white rounded"
         >
           Add Expense
         </button>
@@ -446,7 +444,7 @@ const AddExpenseForm = ({ groups , friends}) => {
           expense={submittedExpense}
           onClose={() => {
             setShowSummary(false);
-            navigate('/allExpenses');
+    
           }}
         />
 

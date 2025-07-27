@@ -22,6 +22,7 @@ const AllExpenses = () => {
       });
     }
   });
+  
   return (
     <div className="p-6 max-w-3xl mx-auto bg-[rgb(245,252,250)] min-h-screen">
       <div className="text-center mb-8">
