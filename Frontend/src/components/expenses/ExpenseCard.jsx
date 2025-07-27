@@ -31,7 +31,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
   const payerLabel = expense.paidBy === sessionUser ? 'You' : expense.paidBy;
 
   return (
-    <div className="mb-5 bg-white border border-[#ccc] rounded-lg px-6 py-5 shadow hover:shadow-md transition">
+    <div className="mb-5 bg-white border border-[#ccc] rounded-lg px-5 py-4 shadow hover:shadow-md transition">
       <div className="flex justify-between items-start gap-4">
         
         <div className="flex flex-col items-center text-[#2a806d] font-bold">
@@ -45,25 +45,26 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
             <span>{categoryName}</span>
           </div>
           <div className="text-m text-gray-500 text-m">{groupName}</div>
-          <div className="text-m text-gray-500 text-m">{expense.splitType}</div>
+          <div className="text-sm text-gray-500 text-m">Split Type: {expense.splitType}</div>
         </div>
 
         <div className="text-right min-w-[110px] text-[15px] space-y-1">
-          <div className="text-[#333] font-semibold">{payerLabel} paid</div>
-          <div className="font-bold text-[#111] text-xl">Rs {expense.amount}</div>
+          <div className="text-[#474747] font-semibold italic">{payerLabel} paid</div>
+          <div className="font-bold text-[#111] text-base">Rs {expense.amount}</div>
 
           {totalOwedToYou > 0 && (
-            <div className="text-green-600 font-semibold">
-              You are owed <br />
-              <span className="font-bold text-lg">Rs {totalOwedToYou.toFixed(2)}</span>
+            <div className="text-gray-500 ">
+              <p className="text-gray-500 font-semibold italic">You are owed </p>
+              <span className="font-bold text-base text-green-600">Rs {totalOwedToYou.toFixed(2)}</span>
             </div>
           )}
 
           {totalYouOwe > 0 && (
-            <div className="text-red-600 font-semibold">
+            <div className="text-gray-500">
+              <p className="text-gray-500 font-semibold italic">
               You owe {expense.paidBy === sessionUser ? 'others' : expense.paidBy}
-              <br />
-              <span className="font-bold text-lg">Rs {totalYouOwe.toFixed(2)}</span>
+              </p>
+              <span className="font-bold text-red-600 text-base">Rs {totalYouOwe.toFixed(2)}</span>
             </div>
           )}
         </div>
@@ -82,7 +83,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
 
             <button
               onClick={() => console.log("Delete logic here")}
-              className="text-red-600 hover:text-red-700"
+              className="text-red-500 hover:text-red-700"
               title="Delete"
             >
               <FaTrashAlt size={18} />
@@ -90,7 +91,9 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
           </div>
 
           {expanded && (
+            
             <div className="mt-4 grid md:grid-cols-2 gap-6 text-[14px] font-medium">
+              
               <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
                 <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">Owed to You</h4>
                 {owedToYou.length > 0 ? (
