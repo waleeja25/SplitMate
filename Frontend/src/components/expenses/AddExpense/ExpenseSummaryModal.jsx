@@ -1,17 +1,37 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCategoryById, getCategoryIcon } from '../../../lib/expense-categories';
+import { useRef, useEffect } from 'react';
 
 const ExpenseSummaryModal = ({ expense, onClose }) => {
-  if (!expense) return null;
-
+ 
   const sessionUser = localStorage.getItem('username');
-  const categoryDetails = getCategoryById(expense.category);
-  const CategoryIcon = getCategoryIcon(expense.category);
+  // const categoryDetails = getCategoryById(expense.category);
+  // const CategoryIcon = getCategoryIcon(expense.category);
+  
+ const dialogRef = useRef(null);
+
+  useEffect(() => {
+    if (dialogRef.current && !dialogRef.current.open) {
+      dialogRef.current.showModal();
+    }
+  }, []);
+ if (!expense) return null;
+  const handleClose = () => {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+    onClose(); 
+  };
+   const visible = !!expense;
+  const categoryDetails = visible ? getCategoryById(expense.category) : null;
+  const CategoryIcon = visible ? getCategoryIcon(expense.category) : null;
+
 
   const owedToYou = [];
   const youOwe = [];
 
+  if (visible) {
   Object.entries(expense.summary).forEach(([name, amt]) => {
     if (expense.paidBy === sessionUser) {
       if (name !== sessionUser) owedToYou.push({ name, amt });
@@ -19,10 +39,11 @@ const ExpenseSummaryModal = ({ expense, onClose }) => {
       youOwe.push({ name: expense.paidBy, amt });
     }
   });
+}
 
   return (
 
-    <dialog open className="modal z-50">
+     <dialog ref={dialogRef} open className="modal z-50">
       <div className="modal-box bg-white rounded-2xl shadow border border-[#d9f0ea] max-w-md w-full p-6">
 
         {/* Header */}
@@ -74,9 +95,7 @@ const ExpenseSummaryModal = ({ expense, onClose }) => {
           <button
             type="button"
             className="w-full bg-[#2a806d] hover:bg-[#256b5a] text-white font-semibold py-2 rounded-xl transition"
-            onClick={() => {
-              onClose();
-            }}
+             onClick={handleClose}
           >
             Close
           </button>

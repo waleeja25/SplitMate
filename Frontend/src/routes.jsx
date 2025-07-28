@@ -12,6 +12,7 @@ import AllExpenses from './components/expenses/AllExpenses';
 import AddExpenseForm from './components/expenses/AddExpense/AddExpenseForm';
 import IndividualExpensesCard from './components/expenses/IndividualExpensesCard';
 import { displayList } from './components/ui/displayList';
+import GroupExpensesCard from './components/expenses/GroupExpensesCard'
 
 export const getRouter = (friends, setFriends, groups, setGroups) =>
   createBrowserRouter([
@@ -72,7 +73,11 @@ element: <IndividualExpensesCard friends={friends} />,
           friends={friends}
         />
       ),
-    },
+    }, {
+path: '/myGroups/:groupName',
+element: <GroupExpensesCard groups={groups} />,
+
+},
     {
       path: '/addExpense',
       element: <AddExpenseForm groups={groups} friends={friends}/>,

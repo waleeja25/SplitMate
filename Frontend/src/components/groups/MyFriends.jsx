@@ -156,15 +156,15 @@ const MyFriends = ({ friends, setFriends }) => {
   const handleFriendClick = (friend) => {
     navigate(`/myFriends/${encodeURIComponent(friend.name)}`, {
       state: { friend },
-    });
-    
+    });  
   };
+
   useEffect(() => {
     localStorage.setItem("friends", JSON.stringify(friends));
   }, [friends]);
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-[rgb(245,252,250)] min-h-screen">
+    <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
       <div className="text-center mb-8">
         <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#185144] via-[#36a186] to-[#2A806D]">
           My Friends

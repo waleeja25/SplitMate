@@ -256,3 +256,9 @@ export function getExpensesForMember(memberName) {
 
   return result;
 }
+
+export function getExpensesForGroup(groupName) {
+  const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+
+  return allExpenses.filter((expense) => expense.group === groupName);
+}
