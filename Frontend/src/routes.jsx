@@ -7,7 +7,7 @@ import NavBar from './components/ui/NavBar';
 import CreateGroup from './components/groups/CreateGroup';
 import MyFriends from './components/groups/MyFriends';
 import MyGroups from './components/groups/MyGroups';
-import SettleUp from './components/dashboard/settleUp';
+import SettleUp from './components/dashboard/SettleUp';
 import AllExpenses from './components/expenses/AllExpenses';
 import AddExpenseForm from './components/expenses/AddExpense/AddExpenseForm';
 import IndividualExpensesCard from './components/expenses/IndividualExpensesCard';

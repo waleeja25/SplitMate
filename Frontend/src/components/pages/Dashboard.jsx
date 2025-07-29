@@ -4,15 +4,6 @@ import {
   getDatewiseExpenses,
   getUserBalances,
 } from "../expenses/AddExpense/helpers";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 import DashboardCards from "../dashboard/DashboardCards";
 import Sidebar from "../dashboard/SideBar"
 import DashboardNavbar from '../dashboard/DashboardNavbar'
