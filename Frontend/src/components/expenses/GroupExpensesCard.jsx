@@ -1,9 +1,9 @@
-"use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowLeftRight, PlusCircle, Users } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getExpensesForGroup, getUserBalances } from "./AddExpense/helpers";
+import { getExpensesForGroup} from "./AddExpense/helpers";
 import { getCategoryById, getCategoryIcon } from "../../lib/expense-categories";
+import DiceBearAvatar from '../ui/DicebearAvatar'
 
 export default function GroupExpensesCard({ groups = [] }) {
   const navigate = useNavigate();
@@ -14,37 +14,13 @@ export default function GroupExpensesCard({ groups = [] }) {
 
   const matchedGroup = groups.find((g) => g.name === groupName);
   const members = matchedGroup?.members || [];
-  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-
-
-
-  // const owedToYou = [];
-  // const youOwe = [];
-  // let totalOwedToYou = 0;
-  // let totalYouOwe = 0;
-
-  // groupExpenses.forEach((expense) => {
-  //   if (!expense.summary || typeof expense.summary !== "object") return;
-
-  //   Object.entries(expense.summary).forEach(([debtor, amount]) => {
-  //     const amt = parseFloat(amount);
-  //     if (expense.paidBy === sessionUser && debtor !== sessionUser) {
-  //       totalOwedToYou += amt;
-  //       owedToYou.push(`${debtor} owes you Rs ${amt.toFixed(2)} `);
-  //     }
-  //     if (debtor === sessionUser && expense.paidBy !== sessionUser) {
-  //       totalYouOwe += amt;
-  //       youOwe.push(`You owe ${expense.paidBy} Rs ${amt.toFixed(2)} `);
-  //     }
-  //   });
-  // });
 
   let owedToYou = [];
   let youOwe = [];
   let totalOwedToYou = 0;
   let totalYouOwe = 0;
-  const owedToYouMap = {}; // name -> total amount they owe you
-  const youOweMap = {};    // name -> total amount you owe them
+  const owedToYouMap = {}; 
+  const youOweMap = {};    
 
   groupExpenses.forEach((expense) => {
     if (!expense.summary || typeof expense.summary !== "object") return;
@@ -76,7 +52,7 @@ export default function GroupExpensesCard({ groups = [] }) {
 
 
 
-
+console.log(groupExpenses)
 
   const settlements = [
     { from: "Ali", to: "Sara", amount: 2000 },
@@ -91,17 +67,18 @@ export default function GroupExpensesCard({ groups = [] }) {
         Back
       </button>
 
-      {/* Group Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-[#2a806d] p-4 rounded-md text-white">
-            <Users className="h-8 w-8" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-[#1c4f45]">{groupName}</h1>
-            <p className="text-sm text-gray-500 mt-1"> {members.length} member{members.length !== 1 && "s"}</p>
-          </div>
-        </div>
+         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="avatar">
+                    <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                      <DiceBearAvatar name={groupName} size={70} />
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">{groupName}</h1>
+                    <p className="text-sm text-gray-500">{members.length} member{members.length !== 1 && "s"}</p>
+                  </div>
+                </div>
 
         <div className="flex gap-2">
           <button onClick={() => navigate("/settleUp")} className="btn btn-outline text-[#2A806D] hover:bg-[#2A806D] hover:text-white">

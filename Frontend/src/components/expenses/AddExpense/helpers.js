@@ -108,29 +108,6 @@ export function updateBalances(summary, paidBy, amount, splitType, date) {
 }
 
 
-
-
-// export function getUserBalances(currentUser) {
-//   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-//   const owes = [];
-//   const owed = [];
-
-//   Object.entries(balances).forEach(([otherUser, balanceMap]) => {
-//     const amount = balanceMap[currentUser];
-//     if (!amount) return;
-
-//     const numAmount = Number(amount);
-
-//     if (numAmount > 0) {
-//       owed.push({ to: otherUser, amount: numAmount });
-//     } else if (numAmount < 0) {
-//       owes.push({ to: otherUser, amount: -numAmount });
-//     }
-//   });
-
-//   return { owes, owed };
-// }
-
 export function getUserBalances(currentUser) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
   const owes = [];
@@ -140,12 +117,12 @@ export function getUserBalances(currentUser) {
 
   Object.entries(currentUserBalances).forEach(([otherUser, amount]) => {
     const numAmount = Number(amount);
-
+    if (numAmount === 0) return;
+    const rounded = Math.round(numAmount * 100) / 100;
+if (rounded === 0) return;
     if (numAmount < 0) {
-      // You owe them
       owes.push({ to: otherUser, amount: -numAmount });
     } else if (numAmount > 0) {
-      // They owe you
       owed.push({ from: otherUser, amount: numAmount });
     }
   });
@@ -153,49 +130,25 @@ export function getUserBalances(currentUser) {
   return { owes, owed };
 }
 
+
+
 export function settleUp(from, to, amount) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
 
   if (!balances[from]) balances[from] = {};
   if (!balances[to]) balances[to] = {};
 
-  if (balances[from][to] != null) {
-    balances[from][to] -= amount;
-    if (balances[from][to] === 0) {
-      delete balances[from][to];
-    } else {
-      balances[to][from] = -balances[from][to];
-    }
-  } else if (balances[to][from] != null) {
-    balances[to][from] += amount;
-    if (balances[to][from] === 0) {
-      delete balances[to][from];
-    } else {
-      balances[from][to] = -balances[to][from];
-    }
-  }
+  balances[from][to] = (balances[from][to] || 0) + amount;
+  balances[to][from] = -balances[from][to];
 
-  localStorage.setItem("balances", JSON.stringify(balances));
+  if (balances[from][to] === 0) {
+  delete balances[from][to];
+  delete balances[to][from];
 }
 
 
-// export function settleUp(from, to, amount) {
-//   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-
-//   if (!balances[from]) balances[from] = {};
-//   if (!balances[to]) balances[to] = {};
-
-//   balances[from][to] = (balances[from][to] || 0) + amount;
-//   balances[to][from] = -balances[from][to];
-
-//   if (balances[from][to] === 0) {
-//   delete balances[from][to];
-//   delete balances[to][from];
-// }
-
-
-//   localStorage.setItem("balances", JSON.stringify(balances));
-// }
+  localStorage.setItem("balances", JSON.stringify(balances));
+}
 
 export function getMonthlyExpenses() {
   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
@@ -285,4 +238,53 @@ export function getExpensesForGroup(groupName) {
   const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
 
   return allExpenses.filter((expense) => expense.group === groupName);
+}
+
+export function getGroupUserBalances(currentUser, groupExpenses, groupMembers, groupName) {
+  const netBalances = {};
+
+  // Initialize net balances for each member
+  groupMembers.forEach(member => {
+    if (member !== currentUser) {
+      netBalances[member] = 0;
+    }
+  });
+
+  groupExpenses.forEach(expense => {
+    if (!expense || expense.group !== groupName) return; // only for this group
+    if (!expense.summary || typeof expense.summary !== 'object') return;
+
+    const payer = expense.paidBy;
+
+    Object.entries(expense.summary).forEach(([member, amount]) => {
+      const amt = parseFloat(amount);
+
+      if (member === payer) return;
+
+      // If current user paid, others owe them
+      if (payer === currentUser && member !== currentUser) {
+        netBalances[member] = (netBalances[member] || 0) + amt;
+      }
+
+      // If current user owes someone else
+      else if (member === currentUser && payer !== currentUser) {
+        netBalances[payer] = (netBalances[payer] || 0) - amt;
+      }
+    });
+  });
+
+  const owes = [];
+  const owed = [];
+
+  Object.entries(netBalances).forEach(([person, balance]) => {
+    const rounded = Math.round(balance * 100) / 100;
+
+    if (rounded > 0) {
+      owed.push({ from: person, amount: rounded }); // They owe currentUser
+    } else if (rounded < 0) {
+      owes.push({ to: person, amount: -rounded }); // CurrentUser owes them
+    }
+  });
+
+  return { owes, owed };
 }

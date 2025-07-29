@@ -20,8 +20,8 @@ export default function IndividualExpensesCard({ friends = [] }) {
   const totalYouOwe = youOweFriend.reduce((acc, item) => acc + item.amount, 0);
   const totalBalance = totalOwedToYou - totalYouOwe;
 
-  const owedToYou = friendOwesYou.map(item => `${item.from} owes you Rs ${item.amount.toFixed(2)}`);
-  const youOwe = youOweFriend.map(item => `You owe ${item.to} Rs ${item.amount.toFixed(2)}`);
+  // const owedToYou = friendOwesYou.map(item => `${item.from} owes you Rs ${item.amount.toFixed(2)}`);
+  // const youOwe = youOweFriend.map(item => `You owe ${item.to} Rs ${item.amount.toFixed(2)}`);
   
   const otherUser =
     friends.find((f) => f.name === friendName) || {
