@@ -4,7 +4,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 5px 24px;
   background-color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Montserrat', sans-serif;
@@ -14,26 +14,22 @@
   flex-wrap: nowrap;
 }
 
-/* Logo and brand text together */
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 12px; /* space between logo and text */
+  gap: 12px; 
   text-decoration: none;
   color: #333;
 }
 
-/* Logo image */
 .logo {
   width: 60px;
   height: 60px;
   object-fit: cover;
   border-radius: 50%;
-  border: 1px solid #ccc;
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Brand name (SplitMate) */
 .brand-name {
   font-size: 20px;
   font-weight: 700;
@@ -41,7 +37,6 @@
   margin: 0;
 }
 
-/* Right side actions */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -49,7 +44,6 @@
   white-space: nowrap;
 }
 
-/* Login */
 .login-link {
   color: #1cc29f;
   text-decoration: none;
@@ -63,7 +57,6 @@
   color: #17a185;
 }
 
-/* Signup */
 .signup-btn {
   background-color: #1cc29f;
   color: white;

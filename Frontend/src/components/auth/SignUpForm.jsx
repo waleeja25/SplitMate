@@ -115,7 +115,7 @@ const SignupForm = () => {
 
         <button
           type="submit"
-          className="w-full py-3 bg-[#1cc29f] text-white rounded-md font-bold text-base hover:bg-[#17a185] transition"
+          className="w-full py-3 text-white rounded-md font-bold text-base bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm transition"
         >
           Sign Up
         </button>

@@ -9,13 +9,14 @@ const NavBar = () => {
 <header className="navbar">
   <NavLink to="/" className="logo-container">
     <img src={navLogo} alt="Logo" className="logo" />
-    <p className="brand-name ">SplitMate</p>
+    <p className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">SplitMate</p>
   </NavLink>
   <div className="nav-actions">
-    <NavLink to="/login" className="login-link">
+    <NavLink to="/login" className="text-transparent font-semibold bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm hover:underline"
+>
       Log in
     </NavLink>
-    <NavLink to="/signup" className="signup-btn">
+    <NavLink to="/signup" className="signup-btn bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
       Sign up
     </NavLink>
   </div>
