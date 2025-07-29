@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 /* Base font and border colors */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.95); opacity: 0; }
+  50% { transform: scale(1.02); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+.animate-fade-in-up {
+  animation: fade-in 1.2s ease-out forwards;
+}
+.animate-fade-in-down {
+  animation: fade-in-down 1s ease-out forwards;
+}
+.animate-slide-in-up {
+  animation: slide-in-up 1.2s ease-out forwards;
+}
+.animate-bounce-in {
+  animation: bounce-in 1s ease-out forwards;
+}
 
 body {
   background-color: rgb(245 252 250);
