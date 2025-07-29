@@ -76,7 +76,7 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
   <dialog ref={owedDialogRef} className="modal">
     <div className="modal-box max-w-md bg-white shadow-lg border border-[#b2e2d2]">
       <h3 className="font-bold text-lg text-[#2A806D] mb-4">You Are Owed</h3>
-      {owed.length >= 0 ? (
+      {owed.length > 0 ? (
         <ul className="list-disc pl-5 text-sm space-y-2 text-black">
           {owed.map((line, i) => (
             <li key={i}>
