@@ -153,25 +153,49 @@ export function getUserBalances(currentUser) {
   return { owes, owed };
 }
 
-
-
 export function settleUp(from, to, amount) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
 
   if (!balances[from]) balances[from] = {};
   if (!balances[to]) balances[to] = {};
 
-  balances[from][to] = (balances[from][to] || 0) + amount;
-  balances[to][from] = -balances[from][to];
-
-  if (balances[from][to] === 0) {
-  delete balances[from][to];
-  delete balances[to][from];
-}
-
+  if (balances[from][to] != null) {
+    balances[from][to] -= amount;
+    if (balances[from][to] === 0) {
+      delete balances[from][to];
+    } else {
+      balances[to][from] = -balances[from][to];
+    }
+  } else if (balances[to][from] != null) {
+    balances[to][from] += amount;
+    if (balances[to][from] === 0) {
+      delete balances[to][from];
+    } else {
+      balances[from][to] = -balances[to][from];
+    }
+  }
 
   localStorage.setItem("balances", JSON.stringify(balances));
 }
+
+
+// export function settleUp(from, to, amount) {
+//   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
+
+//   if (!balances[from]) balances[from] = {};
+//   if (!balances[to]) balances[to] = {};
+
+//   balances[from][to] = (balances[from][to] || 0) + amount;
+//   balances[to][from] = -balances[from][to];
+
+//   if (balances[from][to] === 0) {
+//   delete balances[from][to];
+//   delete balances[to][from];
+// }
+
+
+//   localStorage.setItem("balances", JSON.stringify(balances));
+// }
 
 export function getMonthlyExpenses() {
   const expenses = JSON.parse(localStorage.getItem("expenses") || "[]");

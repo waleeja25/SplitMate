@@ -1,192 +1,8 @@
-// import { useState } from "react";
-// import { useNavigate, useParams } from "react-router-dom";
-// import { PlusCircle, ArrowLeftRight, ArrowLeft } from "lucide-react";
-// import UserAvatar from "../ui/UseAvatar";
-// import { getExpensesForMember } from "./AddExpense/helpers";
-// import { getCategoryById, getCategoryIcon } from "../../lib/expense-categories";
-
-// export default function IndividualExpensesCard({ friends = [] }) {
-//   const navigate = useNavigate();
-//   const { friendName } = useParams();
-//   const friendExpenses = getExpensesForMember(friendName);
-//   const [activeTab, setActiveTab] = useState("expenses");
-//   const sessionUser = localStorage.getItem('username');
-
-//   const owedToYou = [];
-//   const youOwe = [];
-//   let totalOwedToYou = 0;
-//   let totalYouOwe = 0;
-
-//   const otherUser =
-//     friends.find((f) => f.name === friendName) || {
-//       name: friendName || "Unknown",
-//       email: "not-found@example.com",
-//       imageUrl: "",
-//     };
-//   friendExpenses.forEach((expense) => {
-//     if (!expense.summary || typeof expense.summary !== "object") return;
-
-//     Object.entries(expense.summary).forEach(([debtor, amount]) => {
-//       const amt = parseFloat(amount);
-//       if (expense.paidBy === sessionUser && debtor !== sessionUser) {
-//         totalOwedToYou += amt;
-//         owedToYou.push(`${debtor} owes you Rs ${amt.toFixed(2)} for ${expense.category}`);
-//       }
-//       if (debtor === sessionUser && expense.paidBy !== sessionUser) {
-//         totalYouOwe += amt;
-//         youOwe.push(`You owe ${expense.paidBy} Rs ${amt.toFixed(2)} for ${expense.category}`);
-//       }
-//     });
-//   });
-
-//   const totalBalance = totalOwedToYou - totalYouOwe;
-
-//   const settlements = [
-//     { title: "Settled via cash", amount: 100 },
-//     { title: "Settled via bank", amount: 50 },
-//   ];
-
-//   console.log(friendExpenses);
-
-//   return (
-//     <div className="max-w-4xl mx-auto py-6 px-4 min-h-screen">
-//       <button onClick={() => navigate(-1)} className="btn btn-sm btn-outline mb-4">
-//         <ArrowLeft className="w-4 h-4 mr-2" />
-//         Back
-//       </button>
-
-//       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-//         <div className="flex items-center gap-4">
-//           <div className="avatar">
-//             <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-//               <UserAvatar name={otherUser} size={70} />
-//             </div>
-//           </div>
-//           <div>
-//             <h1 className="text-3xl font-bold text-primary">{otherUser.name}</h1>
-//             <p className="text-sm text-gray-500">{otherUser.email}</p>
-//           </div>
-//         </div>
-
-//         <div className="flex gap-2">
-//           <button 
-//           onClick={() => {
-//             navigate('/settleUp')
-//           }}
-//           className="btn btn-outline btn-primary">
-//             <ArrowLeftRight className="w-4 h-4 mr-2" />
-//             Settle up
-//           </button>
-//           <button 
-//           onClick={() => {
-//             navigate("/addExpense")
-//           }}
-//           className="btn btn-primary">
-//             <PlusCircle className="w-4 h-4 mr-2" />
-//             Add expense
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Balance Card */}
-//       <div className="card bg-base-100 shadow border mb-6">
-//         <div className="card-body">
-//           <h2 className="card-title">Balance</h2>
-//           <div className="flex justify-between items-center mt-2">
-//             <div>
-//               {totalBalance === 0 ? (
-//                 <p>You are all settled up</p>
-//               ) : totalBalance > 0 ? (
-//                 <p>
-//                   <span className="font-semibold">{otherUser.name}</span> owes you
-//                 </p>
-//               ) : (
-//                 <p>
-//                   You owe <span className="font-semibold">{otherUser.name}</span>
-//                 </p>
-//               )}
-//             </div>
-//             <div
-//               className={`text-2xl font-bold ${totalBalance > 0
-//                   ? "text-green-600"
-//                   : totalBalance < 0
-//                     ? "text-red-600"
-//                     : "text-gray-500"
-//                 }`}
-//             >
-//               {totalBalance > 0
-//                 ? `+Rs ${totalBalance.toFixed(2)}`
-//                 : totalBalance < 0
-//                   ? `-Rs ${Math.abs(totalBalance).toFixed(2)}`
-//                   : "Rs 0.00"}
-//             </div>
-
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Tabs */}
-//       <div className="tabs tabs-boxed mb-4">
-//         <a
-//           className={`tab ${activeTab === "expenses" ? "tab-active" : ""}`}
-//           onClick={() => setActiveTab("expenses")}
-//         >
-//           Expenses ({friendExpenses.length})
-//         </a>
-//         <a
-//           className={`tab ${activeTab === "settlements" ? "tab-active" : ""}`}
-//           onClick={() => setActiveTab("settlements")}
-//         >
-//           Settlements ({settlements.length})
-//         </a>
-//       </div>
-
-//       {/* Tab Content */}
-//       {activeTab === "expenses" && (
-//         <div className="space-y-2">
-
-//           {friendExpenses.map((expense, idx) => {
-//             const CategoryIcon = getCategoryIcon(expense.category);
-//             const categoryName = getCategoryById(expense.category).name
-//             return (
-//               <div key={idx} className="card bg-base-100 shadow border">
-//                 <div className="card-body">
-
-//                   <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-xl mt-2">
-//                     <CategoryIcon className="w-7 h-7" />
-//                     <span>{categoryName}</span>
-//                   </div>
-//                   <p className="text-sm text-gray-500">Amount: ${expense.amount}</p>
-//                 </div>
-//               </div>)
-
-//           })}
-
-//         </div>
-//       )}
-
-//       {activeTab === "settlements" && (
-//         <div className="space-y-2">
-//           {settlements.map((settlement, idx) => (
-//             <div key={idx} className="card bg-base-100 shadow border">
-//               <div className="card-body">
-//                 <h3 className="text-lg font-semibold">{settlement.title}</h3>
-//                 <p className="text-sm text-gray-500">Amount: ${settlement.amount}</p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PlusCircle, ArrowLeftRight, ArrowLeft } from "lucide-react";
 import UserAvatar from "../ui/UseAvatar";
-import { getExpensesForMember } from "./AddExpense/helpers";
+import { getExpensesForMember, getUserBalances } from "./AddExpense/helpers";
 import { getCategoryById, getCategoryIcon } from "../../lib/expense-categories";
 
 export default function IndividualExpensesCard({ friends = [] }) {
@@ -195,36 +11,25 @@ export default function IndividualExpensesCard({ friends = [] }) {
   const friendExpenses = getExpensesForMember(friendName);
   const [activeTab, setActiveTab] = useState("expenses");
   const sessionUser = localStorage.getItem("username");
+  const { owes, owed } = getUserBalances(sessionUser);
 
-  const owedToYou = [];
-  const youOwe = [];
-  let totalOwedToYou = 0;
-  let totalYouOwe = 0;
+  const friendOwesYou = owed.filter((item) => item.from === friendName);
+  const youOweFriend = owes.filter((item) => item.to === friendName);
 
+  const totalOwedToYou = friendOwesYou.reduce((acc, item) => acc + item.amount, 0);
+  const totalYouOwe = youOweFriend.reduce((acc, item) => acc + item.amount, 0);
+  const totalBalance = totalOwedToYou - totalYouOwe;
+
+  const owedToYou = friendOwesYou.map(item => `${item.from} owes you Rs ${item.amount.toFixed(2)}`);
+  const youOwe = youOweFriend.map(item => `You owe ${item.to} Rs ${item.amount.toFixed(2)}`);
+  
   const otherUser =
     friends.find((f) => f.name === friendName) || {
       name: friendName || "Unknown",
-      email: "not-found@example.com",
+      email:friendName.email || "not-found@example.com",
       imageUrl: "",
     };
 
-  friendExpenses.forEach((expense) => {
-    if (!expense.summary || typeof expense.summary !== "object") return;
-
-    Object.entries(expense.summary).forEach(([debtor, amount]) => {
-      const amt = parseFloat(amount);
-      if (expense.paidBy === sessionUser && debtor !== sessionUser) {
-        totalOwedToYou += amt;
-        owedToYou.push(`${debtor} owes you Rs ${amt.toFixed(2)} for ${expense.category}`);
-      }
-      if (debtor === sessionUser && expense.paidBy !== sessionUser) {
-        totalYouOwe += amt;
-        youOwe.push(`You owe ${expense.paidBy} Rs ${amt.toFixed(2)} for ${expense.category}`);
-      }
-    });
-  });
-
-  const totalBalance = totalOwedToYou - totalYouOwe;
 
   const settlements = [
     { title: "Settled via cash", amount: 100 },
@@ -233,13 +38,12 @@ export default function IndividualExpensesCard({ friends = [] }) {
 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 min-h-screen">
-      {/* Back Button */}
+
       <button onClick={() => navigate(-1)} className="btn  btn-sm mb-8 btn-outline text-[#2A806D] hover:bg-[#2A806D] hover:text-white">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back
       </button>
 
-      {/* User Info and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-4">
           <div className="avatar">
@@ -265,12 +69,13 @@ export default function IndividualExpensesCard({ friends = [] }) {
         </div>
       </div>
 
-      {/* Balance Card */}
-      {/* <div className="card bg-base-100 shadow border mb-6">
+      <div className="card bg-base-100 shadow border mb-6">
         <div className="card-body">
-          <h2 className="card-title">Balance</h2>
-          <div className="flex justify-between items-center mt-2">
-            <div>
+          <h2 className="text-3xl sm:text-2xl font-semibold">Total Balance</h2>
+
+          <div className="grid grid-cols-2 mt-4 items-center">
+
+            <div className="text-sm sm:text-base text-gray-700">
               {totalBalance === 0 ? (
                 <p className="text-gray-500">You are all settled up</p>
               ) : totalBalance > 0 ? (
@@ -283,68 +88,29 @@ export default function IndividualExpensesCard({ friends = [] }) {
                 </p>
               )}
             </div>
-            <div
-              className={`text-2xl font-bold ${
-                totalBalance > 0
-                  ? "text-green-600"
+
+            <div className="text-right">
+              <span
+                className={`text-xl sm:text-2xl font-bold ${totalBalance > 0
+                    ? "text-green-600"
+                    : totalBalance < 0
+                      ? "text-red-600"
+                      : "text-gray-500"
+                  }`}
+              >
+                {totalBalance > 0
+                  ? `+Rs ${totalBalance.toFixed(2)}`
                   : totalBalance < 0
-                  ? "text-red-600"
-                  : "text-gray-500"
-              }`}
-            >
-              {totalBalance > 0
-                ? `+Rs ${totalBalance.toFixed(2)}`
-                : totalBalance < 0
-                ? `-Rs ${Math.abs(totalBalance).toFixed(2)}`
-                : "Rs 0.00"}
+                    ? `-Rs ${Math.abs(totalBalance).toFixed(2)}`
+                    : "Rs 0.00"}
+              </span>
             </div>
           </div>
         </div>
-      </div> */}
-      <div className="card bg-base-100 shadow border mb-6">
-  <div className="card-body">
-    <h2 className="text-3xl sm:text-2xl font-semibold">Total Balance</h2>
-
-    <div className="grid grid-cols-2 mt-4 items-center">
-      {/* Left side: sentence */}
-      <div className="text-sm sm:text-base text-gray-700">
-        {totalBalance === 0 ? (
-          <p className="text-gray-500">You are all settled up</p>
-        ) : totalBalance > 0 ? (
-          <p>
-            <span className="font-semibold">{otherUser.name}</span> owes you
-          </p>
-        ) : (
-          <p>
-            You owe <span className="font-semibold">{otherUser.name}</span>
-          </p>
-        )}
       </div>
 
-      {/* Right side: amount */}
-      <div className="text-right">
-        <span
-          className={`text-xl sm:text-2xl font-bold ${
-            totalBalance > 0
-              ? "text-green-600"
-              : totalBalance < 0
-              ? "text-red-600"
-              : "text-gray-500"
-          }`}
-        >
-          {totalBalance > 0
-            ? `+Rs ${totalBalance.toFixed(2)}`
-            : totalBalance < 0
-            ? `-Rs ${Math.abs(totalBalance).toFixed(2)}`
-            : "Rs 0.00"}
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
 
 
-      {/* Tabs */}
       <div className="tabs tabs-boxed mb-4">
         <a
           className={`tab ${activeTab === "expenses" ? "tab-active" : ""}`}
@@ -360,7 +126,7 @@ export default function IndividualExpensesCard({ friends = [] }) {
         </a>
       </div>
 
-      {/* Expenses List */}
+
       {activeTab === "expenses" && (
         <div className="space-y-4">
           {friendExpenses.map((expense, idx) => {
@@ -368,58 +134,37 @@ export default function IndividualExpensesCard({ friends = [] }) {
             const categoryName = getCategoryById(expense.category).name;
 
             return (
-              // <div key={idx} className="card bg-white border shadow-sm hover:shadow-md transition">
-              //   <div className="card-body space-y-1">
-              //     <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-lg">
-              //       <CategoryIcon className="w-6 h-6" />
-              //       <span>{categoryName}</span>
-              //     </div>
-              //     <p className="text-sm text-gray-600">
-              //       Paid by <strong>{expense.paidBy}</strong> on{" "}
-              //       <span className="italic">{expense.date}</span>
-              //     </p>
-              //     <p className="text-sm text-gray-800">Total: Rs {expense.amount}</p>
-              //     <div className="text-xs text-gray-500 italic">
-              //       {Object.entries(expense.summary).map(([name, amt]) => (
-              //         <div key={name}>
-              //           {name === sessionUser ? "You" : name} owe Rs {amt}
-              //         </div>
-              //       ))}
-              //     </div>
-              //   </div>
-              // </div>
               <div key={idx} className="card bg-white border shadow-sm hover:shadow-md transition">
-  <div className="card-body space-y-1">
-    <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-2xl">
-      <CategoryIcon className="w-6 h-6" />
-      <span>{categoryName}</span>
-    </div>
+                <div className="card-body space-y-1">
+                  <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-2xl">
+                    <CategoryIcon className="w-6 h-6" />
+                    <span>{categoryName}</span>
+                  </div>
 
-    {/* Paid by and Owe summary side by side */}
-    <div className="flex justify-between items-start text-sm text-gray-600">
-      <p>
-        Paid by <strong>{expense.paidBy}</strong> on{" "}
-        <span className="italic">{expense.date}</span>
-      </p>
-      <div className="text-right text-gray-500 italic text-sm">
-        {Object.entries(expense.summary).map(([name, amt]) => (
-          <div key={name}>
-            {name === sessionUser ? "You" : name} owe Rs {amt.toFixed(2)}
-          </div>
-        ))}
-      </div>
-    </div>
+                  <div className="flex justify-between items-start text-sm text-gray-600">
+                    <p>
+                      Paid by <strong>{expense.paidBy}</strong> on{" "}
+                      <span className="italic">{expense.date}</span>
+                    </p>
+                    <div className="text-right text-gray-500 italic text-sm">
+                      {Object.entries(expense.summary).map(([name, amt]) => (
+                        <div key={name}>
+                          {name === sessionUser ? "You" : name} owe Rs {amt.toFixed(2)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-    <p className="text-sm text-gray-800">Total: Rs {expense.amount}</p>
-  </div>
-</div>
+                  <p className="text-sm text-gray-800">Total: Rs {expense.amount}</p>
+                </div>
+              </div>
 
             );
           })}
         </div>
       )}
 
-      {/* Settlements List */}
+
       {activeTab === "settlements" && (
         <div className="space-y-4">
           {settlements.map((settlement, idx) => (
