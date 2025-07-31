@@ -36,10 +36,10 @@ const UserSchema = new Schema(
 
     password: {
       type: String,
-      required: true,
-      minlength: 3,            
-      maxlength: 1024,
-      select: false,           
+      // required: true,
+      // minlength: 3,            
+      // maxlength: 1024,
+      // select: false,           
     },
   },
   {
