@@ -1,4 +1,3 @@
-// models/User.js
 const { Schema, model } = require('mongoose');
 const { v4: uuidv4 }  = require('uuid');
 const bcrypt          = require('bcryptjs');   
