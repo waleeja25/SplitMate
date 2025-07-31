@@ -2,9 +2,10 @@ const express = require('express');
 const connectDB = require('./db');
 const app = express();
 
-const users = require('./routes/User')
-const groups = require('./routes/Groups')
-const friends = require('./routes/Friends')
+const users = require('./routes/User');
+const groups = require('./routes/Groups');
+const friends = require('./routes/Friends');
+const expenses = require('./routes/Expenses');
 
 const PORT = 3001;
 
@@ -15,6 +16,7 @@ connectDB();
 app.use('/api' ,users)
 app.use('/api', groups)
 app.use('/api', friends);
+app.use('/api', expenses)
 
 app.get('/', (req, res) => {
     console.log("Get Handler");

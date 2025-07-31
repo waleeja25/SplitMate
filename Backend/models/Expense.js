@@ -26,11 +26,6 @@ const ExpenseSchema = new Schema(
       immutable: true,
     },
 
-    category: {
-      type: String,
-      trim: true,
-    },
-
     amount: {
       type: Number,
       required: true,
@@ -45,7 +40,7 @@ const ExpenseSchema = new Schema(
 
     splitType: {
       type: String,
-      enum: ["equal", "exact", "percentage", "itemized"],
+      enum: ["equal", "exact", "percentage", "itemizedExpense"],
       default: "equal",
     },
 
@@ -71,11 +66,10 @@ const ExpenseSchema = new Schema(
       validate: (v) => Array.isArray(v) && v.length > 1,
     },
 
-    summary: {
-      type: Map,
-      of: Number,
-      default: {},
-    },
+summary: {
+  type: Object,
+  default: {},
+},
 
     exactAmounts: {
       type: Map,
