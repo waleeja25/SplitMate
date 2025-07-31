@@ -153,6 +153,8 @@ const MyFriends = ({ friends, setFriends }) => {
     setError(false);
   };
 
+  console.log(friends);
+
   const handleFriendClick = (friend) => {
     navigate(`/myFriends/${encodeURIComponent(friend.name)}`, {
       state: { friend },
