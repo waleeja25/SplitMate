@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Settlement = require("../models/Settlement");
 
+
 router.post("/settlement", async (req, res) => {
   try {
     const { from, to, amount, paymentMode } = req.body;
@@ -19,7 +20,7 @@ router.post("/settlement", async (req, res) => {
   }
 });
 
-router.get("/settlement", async (req, res) => {
+router.get("/settlement", jwtAuthMiddleware,async (req, res) => {
   try {
     const settlements = await Settlement.find()
       .populate("from", "name email")
