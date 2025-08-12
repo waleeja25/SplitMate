@@ -39,6 +39,7 @@ router.post('/register', async (req, res) => {
     const newUser = new User({ name, email, password });
     await newUser.save();
 
+    const token = generateToken({ email: newUser.email, id: newUser._id });
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -46,7 +47,10 @@ router.post('/register', async (req, res) => {
         userId: newUser.userId,
         name: newUser.name,
         email: newUser.email,
-      },
+      }, 
+      token: {
+        token: token
+      }
     });
   } catch (err) {
     res.status(500).json({

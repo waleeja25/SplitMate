@@ -1,6 +1,6 @@
 const express = require('express');
 const connectDB = require('./db');
-const {jwtAuthMiddleware} = require('../jwt')
+const {jwtAuthMiddleware} = require('./jwt')
 
 const app = express();
 
@@ -9,7 +9,7 @@ const groups = require('./routes/Groups');
 const friends = require('./routes/Friends');
 const expenses = require('./routes/Expenses');
 const settlements = require('./routes/Settlements');
-
+const balances = require('./routes/Balances')
 const PORT = 3001;
 
 
@@ -21,6 +21,7 @@ app.use('/api',jwtAuthMiddleware, groups)
 app.use('/api',jwtAuthMiddleware, friends);
 app.use('/api',jwtAuthMiddleware, expenses)
 app.use('/api',jwtAuthMiddleware, settlements)
+app.use('/api',jwtAuthMiddleware, balances)
 
 app.get('/', (req, res) => {
     console.log("Get Handler");

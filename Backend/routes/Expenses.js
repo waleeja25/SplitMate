@@ -1,27 +1,62 @@
 const express = require("express");
 const router = express.Router();
 const Expense = require("../models/Expense");
-
+const User = require("../models/Users");
 
 router.post("/expense", async (req, res) => {
   try {
-if (req.body.splitType === 'percentage') {
-  const total = req.body.amount;
-  const converted = {};
-  for (let [email, percentage] of Object.entries(req.body.summary)) {
-    converted[email] = (percentage / 100) * total;
-  }
-  req.body.summary = converted;
-}
+    const {
+      amount,
+      category,
+      splitType,
+      paidBy,
+      group,
+      date,
+      members,
+      summary,
+      exactAmounts,
+      percentages,
+      items,
+      taxPercent,
+      tipPercent
+    } = req.body;
 
-    const expense = new Expense(req.body);
+    const memberEmails = members.map(m => m.email);
+    const foundUsers = await User.find({ email: { $in: memberEmails } });
+    if (foundUsers.length !== members.length) {
+      return res.status(400).json({ success: false, message: "One or more members not found" });
+    }
+
+    const expense = new Expense({
+      amount,
+      category,
+      splitType,
+      paidBy,
+      group,
+      date,
+      members,
+      summary,
+      exactAmounts,
+      percentages,
+      items,
+      taxPercent,
+      tipPercent
+    });
+
     await expense.save();
-    
-    res.status(201).json({ success: true, expense });
+
+    const populatedExpense = await expense.populate([
+      { path: "paidBy", select: "name email" },
+      { path: "group", select: "name" }
+    ]);
+
+    res.status(201).json({ success: true, expense: populatedExpense });
+
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 
 router.get("/expense", async (req, res) => {
@@ -118,8 +153,6 @@ router.get("/expense/friend/:userId/:friendEmail", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
-const User = require("../models/Users");
 async function getUserEmail(userId) {
   const user = await User.findById(userId).select("email");
   return user?.email || "";

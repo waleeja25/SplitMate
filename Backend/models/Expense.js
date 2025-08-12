@@ -63,13 +63,13 @@ const ExpenseSchema = new Schema(
 
     members: {
       type: [MemberSchema],
-      validate: (v) => Array.isArray(v) && v.length > 1,
+      validate: (v) => Array.isArray(v) && v.length >= 1,
     },
 
-summary: {
-  type: Object,
-  default: {},
-},
+    summary: {
+      type: Object,
+      default: {},
+    },
 
     exactAmounts: {
       type: Map,
