@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import alertDisplay from '../ui/alertDisplay.jsx';
 
-
 const LoginForm = () => {
   const [alert, setAlert] = useState(null);
   const navigate = useNavigate();
@@ -44,9 +43,42 @@ const LoginForm = () => {
     }
   }, [alert]);
 
-  const onSubmit = (data) => {
-    localStorage.setItem('username', data.username);
-    navigate('/dashboard');
+  const onSubmit = async (data) => {
+
+    try {
+      const res = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.username,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setAlert({
+          type: 'error',
+          title: 'Error',
+          message: result.message || 'Something went wrong',
+        });
+        return;
+      }
+      localStorage.setItem('token', result.token);
+      navigate('/dashboard');
+    } catch (err) {
+      setAlert({
+        type: 'error',
+        title: 'Error',
+        message: err.message,
+      });
+    }
+    // // localStorage.setItem('username', data.username);
+    // navigate('/dashboard');
   };
 
   return (

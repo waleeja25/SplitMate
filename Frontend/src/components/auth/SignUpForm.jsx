@@ -19,7 +19,7 @@ const SignupForm = () => {
 
   const onSubmit = async (data) => {
      try {
-      const res = await fetch('https://split-mate-26nj.vercel.app/api/register', {
+      const res = await fetch('http://localhost:3001/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,8 +54,6 @@ const SignupForm = () => {
         message: err.message,
       });
     }
-    // localStorage.setItem('username', data.username);
-    // navigate('/dashboard');
   };
 
   const onError = (errors) => {
