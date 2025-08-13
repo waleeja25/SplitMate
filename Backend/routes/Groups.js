@@ -2,16 +2,21 @@ const express = require("express");
 const router = express.Router();
 const Groups = require("../models/Groups");
 const User = require("../models/Users");
+const {jwtAuthMiddleware} = require("../jwt")
 
-router.get("/groups", async (req, res) => {
+router.get("/groups/my", jwtAuthMiddleware, async (req, res) => {
   try {
-    const groups = await Groups.find().populate("members", "name email");
-    res.status(200).json(groups);
+    const currentUserEmail = req.user.email;
+    const user = await User.findOne({ email: currentUserEmail });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    const groups = await Groups.find({ members: user._id }).populate("members", "name email");
+
+    res.status(200).json({ success: true, groups });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -74,6 +79,7 @@ router.post("/groups", async (req, res) => {
     });
   }
 });
+
 
 router.put("/groups/:groupId", async (req, res) => {
   const { groupId } = req.params;
