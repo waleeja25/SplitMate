@@ -6,14 +6,31 @@ const {jwtAuthMiddleware} = require('./jwt')
 const app = express();
 
 
-app.use(cors({
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173",                  // local dev
+//     "https://split-mate-2h84.vercel.app/"
+//   ],
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allow OPTIONS for preflight
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true // only if you want to send cookies or Authorization headers
+// }));
+
+// // ✅ Handle preflight requests explicitly
+// app.options('*', cors());
+
+const corsOptions = {
   origin: [
-  "http://localhost:3000",
-  "https://split-mate-2h84.vercel.app" 
-],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+    "http://localhost:5173",
+    "https://split-mate-2h84.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-}));
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ same config
 
 
 const users = require('./routes/User');
@@ -43,3 +60,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, ()=> {
     console.log("Server is Up");
 })
+
+
