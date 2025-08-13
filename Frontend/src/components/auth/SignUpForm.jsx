@@ -17,9 +17,45 @@ const SignupForm = () => {
 
   const password = watch('password');
 
-  const onSubmit = (data) => {
-    localStorage.setItem('username', data.username);
-    navigate('/dashboard');
+  const onSubmit = async (data) => {
+     try {
+      const res = await fetch('https://split-mate-26nj.vercel.app/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.username, 
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setAlert({
+          type: 'error',
+          title: 'Error',
+          message: result.message || 'Something went wrong',
+        });
+        return;
+      }
+
+      localStorage.setItem('token', result.token.token);
+      localStorage.setItem('username', result.user.name);
+      localStorage.setItem('email', result.user.email);
+
+      navigate('/login');
+    } catch (err) {
+      setAlert({
+        type: 'error',
+        title: 'Error',
+        message: err.message,
+      });
+    }
+    // localStorage.setItem('username', data.username);
+    // navigate('/dashboard');
   };
 
   const onError = (errors) => {
@@ -93,6 +129,23 @@ const SignupForm = () => {
           aria-invalid={errors.username ? 'true' : 'false'}
           className="w-full px-4 py-3 mt-3 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
         />
+
+        <input
+          type="text"
+          placeholder="Email"
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: 'Please enter a valid email address',
+            },
+          })}
+          aria-invalid={errors.email ? 'true' : 'false'}
+          className="w-full px-4 py-3 mt-3 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
+        />
+        {errors.email && (
+          <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+        )}
 
         <input
           type="password"

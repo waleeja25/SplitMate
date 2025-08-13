@@ -78,6 +78,24 @@ const LoginForm = () => {
         />
 
         <input
+          type="text"
+          placeholder="Email"
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: 'Please enter a valid email address',
+            },
+          })}
+          aria-invalid={errors.email ? 'true' : 'false'}
+          className="w-full px-4 py-3 mt-3 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
+        />
+        {errors.email && (
+          <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+        )}
+
+
+        <input
           type="password"
           placeholder="Password"
           {...register('password', { required: true })}

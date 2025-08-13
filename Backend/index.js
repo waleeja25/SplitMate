@@ -1,8 +1,21 @@
 const express = require('express');
 const connectDB = require('./db');
+const cors = require('cors');
 const {jwtAuthMiddleware} = require('./jwt')
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000", 
+  "https://split-mate-2h84.vercel.app/" 
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 
 const users = require('./routes/User');
 const groups = require('./routes/Groups');
