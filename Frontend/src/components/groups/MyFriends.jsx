@@ -56,7 +56,8 @@ const MyFriends = ({ friends, setFriends }) => {
         showAlert({
           type: "success",
           title: "Success",
-          message: "Friend added successfully"
+          message: "Friend added successfully",
+          color: "#a5d6a7",
         });
       } else {
         showAlert({
@@ -132,7 +133,8 @@ const MyFriends = ({ friends, setFriends }) => {
         showAlert({
           type: "success",
           title: "Deleted",
-          message: "Friend deleted successfully"
+          message: "Friend deleted successfully",
+           color: "#a5d6a7",
         });
 
       } else {
