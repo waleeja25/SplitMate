@@ -68,7 +68,11 @@ const LoginForm = () => {
         });
         return;
       }
+      localStorage.setItem("userId", result.user.userId || result.userId);
       localStorage.setItem('token', result.token);
+      localStorage.setItem('username', result.user.name);
+      localStorage.setItem('email', result.user.email);
+
       navigate('/dashboard');
     } catch (err) {
       setAlert({

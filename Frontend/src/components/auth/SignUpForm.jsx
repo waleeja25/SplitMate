@@ -42,7 +42,7 @@ const SignupForm = () => {
         return;
       }
 
-      localStorage.setItem('token', result.token.token);
+      localStorage.setItem('token', result.token);
       localStorage.setItem('username', result.user.name);
       localStorage.setItem('email', result.user.email);
 
