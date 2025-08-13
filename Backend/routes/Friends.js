@@ -98,16 +98,26 @@ router.delete('/friends/:friendId', async (req, res) => {
   const { friendId } = req.params;
 
   try {
-    const deleted = await Friend.findByIdAndDelete(friendId);
-
-    if (!deleted) {
+    const friendship = await Friend.findById(friendId);
+    if (!friendship) {
       return res.status(404).json({ success: false, message: 'Friend not found' });
     }
+
+    const userId = friendship.user;
+    const friendUserId = friendship.friend;
+
+    await Friend.deleteMany({
+      $or: [
+        { user: userId, friend: friendUserId },
+        { user: friendUserId, friend: userId }
+      ]
+    });
 
     res.status(200).json({ success: true, message: 'Friendship deleted successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 module.exports = router;
