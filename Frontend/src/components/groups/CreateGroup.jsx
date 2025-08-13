@@ -87,8 +87,6 @@ const CreateGroup = ({ friends, groups, setGroups }) => {
       members: [sessionMember, ...members],
     };
 
-
-
     setGroups([...groups, newGroup]);
 
     setAddGroup(true);

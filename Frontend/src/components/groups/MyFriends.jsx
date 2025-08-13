@@ -10,15 +10,15 @@ const MyFriends = ({ friends, setFriends }) => {
   const [friendEmail, setFriendEmail] = useState("");
   const [error, setError] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [alert, setAlert] = useState(null); 
+  const [alert, setAlert] = useState(null);
   const navigate = useNavigate();
 
   const showAlert = (alertObj) => {
-  setAlert(alertObj);
-  setTimeout(() => {
-    setAlert(null);
-  }, 3000); 
-};
+    setAlert(alertObj);
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
 
   const addFriends = async () => {
     if (!friendName || !friendEmail) {
@@ -44,6 +44,7 @@ const MyFriends = ({ friends, setFriends }) => {
           ...prev,
           {
             id: data.friend._id,
+            friendId: data.friend.friend._id,
             name: data.friend.friend.name,
             email: data.friend.friend.email
           }
@@ -52,27 +53,27 @@ const MyFriends = ({ friends, setFriends }) => {
         setFriendEmail("");
         setShowDialog(false);
         setError(false);
-         showAlert({
-        type: "success",
-        title: "Success",
-        message: "Friend added successfully"
-      });
-    } else {
+        showAlert({
+          type: "success",
+          title: "Success",
+          message: "Friend added successfully"
+        });
+      } else {
+        showAlert({
+          type: "error",
+          title: "Error",
+          message: data.message || "Failed to add friend"
+        });
+      }
+    } catch (err) {
+      console.log(err.message)
       showAlert({
         type: "error",
         title: "Error",
-        message: data.message || "Failed to add friend"
+        message: err.message
       });
     }
-  } catch (err) {
-    console.log(err.message)
-    showAlert({
-      type: "error",
-      title: "Error",
-      message: err.message
-    });
-  }
-};
+  };
   console.log(friends);
 
   const handleFriendClick = (friend) => {
@@ -111,44 +112,44 @@ const MyFriends = ({ friends, setFriends }) => {
     fetchFriends();
   }, [setFriends]);
 
-const handleDeleteFriend = async (friendId) => {
-  const token = localStorage.getItem("token");
+  const handleDeleteFriend = async (friendId) => {
+    const token = localStorage.getItem("token");
 
-  try {
-    const res = await fetch(`http://localhost:3001/api/friends/${friendId}`, {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      setFriends(prev => prev.filter(f => f.id !== friendId));
-
-      showAlert({
-        type: "success",
-        title: "Deleted",
-        message: "Friend deleted successfully"
+    try {
+      const res = await fetch(`http://localhost:3001/api/friends/${friendId}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
       });
 
-    } else {
+      const data = await res.json();
+
+      if (data.success) {
+        setFriends(prev => prev.filter(f => f.id !== friendId));
+
+        showAlert({
+          type: "success",
+          title: "Deleted",
+          message: "Friend deleted successfully"
+        });
+
+      } else {
+        showAlert({
+          type: "error",
+          title: "Error",
+          message: data.message || "Failed to delete friend"
+        });
+      }
+    } catch (err) {
       showAlert({
         type: "error",
         title: "Error",
-        message: data.message || "Failed to delete friend"
+        message: err.message
       });
     }
-  } catch (err) {
-    showAlert({
-      type: "error",
-      title: "Error",
-      message: err.message
-    });
-  }
-};
+  };
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
@@ -169,9 +170,9 @@ const handleDeleteFriend = async (friendId) => {
           <span>Add Friend</span>
         </button>
       </div>
-              <div className="text-left w-full">
-          {alert && alertDisplay(alert)}
-        </div>
+      <div className="text-left w-full">
+        {alert && alertDisplay(alert)}
+      </div>
 
 
       <div className="grid gap-4 mt-6">
