@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getAllCategories } from '../../../lib/expense-categories';
+import alertDisplay from '../../ui/alertDisplay';
 import { updateBalances } from './helpers';
 import SplitEqual from './SplitEqual';
 import SplitPercentage from './SplitPercentage';
@@ -9,19 +9,25 @@ import SplitItemized from './SplitItemized';
 import ExpenseSummaryModal from './ExpenseSummaryModal';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePickerComponent from '../../ui/DatePickerComponent';
-
+import { useExpenses } from '../../../context/UseExpenses';
 import {
   calculateEqualSplit,
   calculatePercentageSplit,
   calculateExactSplit,
   calculateItemizedSplit,
 } from './helpers';
+import { FaSpinner } from "react-icons/fa";
 
-const AddExpenseForm = ({ groups , friends}) => {
+const AddExpenseForm = () => {
+  const [alert, setAlert] = useState(null);
+  const { expenses, setExpenses } = useExpenses();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [groups, setGroups] = useState([]);
   const [members, setMembers] = useState([]);
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [friends, setFriends] = useState([])
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
@@ -35,6 +41,7 @@ const AddExpenseForm = ({ groups , friends}) => {
   const [tipPercent, setTipPercent] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [submittedExpense, setSubmittedExpense] = useState(null);
+
   const [isGroup, setIsGroup] = useState(true);
   const [itemizedTotals, setItemizedTotals] = useState({
     memberTotals: {},
@@ -44,11 +51,87 @@ const AddExpenseForm = ({ groups , friends}) => {
     grandTotal: 0,
   });
 
-  const sessionUser = localStorage.getItem('username');
+  expenses
+
+  const showAlert = (alertObj) => {
+    setAlert(alertObj);
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3001/api/groups/my", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          setGroups(data.groups);
+        } else {
+          console.error("Failed to fetch groups:", data.message);
+        }
+      } catch (err) {
+        console.error("Error fetching groups:", err);
+      }
+    };
+
+    fetchGroups();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          setFriends(
+            data.friends.map(f => ({
+              id: f._id,
+              name: f.friend.name,
+              email: f.friend.email,
+            }))
+          );
+        } else {
+          console.error(data.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchFriends();
+  }, []);
+
+
+  const currentUser = {
+    name: localStorage.getItem("username"),
+    email: localStorage.getItem("email")
+  };
+
   const selectedGroup = groups.find((group) => group.name === groupSelected);
+
   const people = useMemo(() => {
-    return selectedGroup ? selectedGroup : { members };
+    if (selectedGroup && Array.isArray(selectedGroup.members)) {
+      return { members: selectedGroup.members };
+    }
+    return { members: Array.isArray(members) ? members : [] };
   }, [selectedGroup, members]);
+
 
   const handleAddItem = () => {
     setItems([...items, { name: '', cost: '', assignedTo: '' }]);
@@ -58,7 +141,7 @@ const AddExpenseForm = ({ groups , friends}) => {
     e.preventDefault();
     if (members.length === 0) {
       setMembers([
-        { name: sessionUser },
+        { name: currentUser.name, email: currentUser.email },
         { name: memberName.trim(), email: memberEmail.trim() }
       ]);
     } else {
@@ -72,9 +155,9 @@ const AddExpenseForm = ({ groups , friends}) => {
   };
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     if (!amount || !category || !date) {
       alert('Please fill out all fields.');
       return;
@@ -89,7 +172,7 @@ const AddExpenseForm = ({ groups , friends}) => {
         alert("Exact amounts do not match total.");
         return;
       }
-      ({summary} = calculateExactSplit(people.members, exactAmounts, paidBy));
+      ({ summary } = calculateExactSplit(people.members, exactAmounts, paidBy));
     }
 
 
@@ -130,10 +213,15 @@ const AddExpenseForm = ({ groups , friends}) => {
     }
 
     if (splitType === 'equal') {
-      // summary = calculateEqualSplit(people.members, expenseAmount, paidBy);
       ({ summary } = calculateEqualSplit(people.members, expenseAmount, paidBy));
     }
-    console.log(summary);
+    const formattedMembers = Array.isArray(people.members)
+      ? people.members.map(m => ({ name: m.name, email: m.email }))
+      : [];
+    const groupMembers = groupSelected
+      ? groups.find(g => g.name === groupSelected)?.members || []
+      : [];
+
 
     const expense = {
       amount: expenseAmount,
@@ -148,34 +236,71 @@ const AddExpenseForm = ({ groups , friends}) => {
       taxPercent: splitType === 'itemizedExpense' ? taxPercent : null,
       tipPercent: splitType === 'itemizedExpense' ? tipPercent : null,
       summary,
-      members: groupSelected ? null : members,
+      members: groupSelected ? groupMembers : formattedMembers,
     };
 
-    const existing = JSON.parse(localStorage.getItem("expenses") || "[]");
-    localStorage.setItem("expenses", JSON.stringify([...existing, expense]));
-    updateBalances(summary, paidBy, amount, splitType, date)
-    setSubmittedExpense(expense);
-    setShowSummary(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch('http://localhost:3001/api/expense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(expense)
+      });
 
+      const result = await res.json();
 
-    setAmount('');
-    setCategory('');
-    setDate('');
-    setGroupSelected('');
-    setPaidBy('');
-    setPercentages({});
-    setExactAmounts({});
-    setItems([{ name: '', cost: '', assignedTo: '' }]);
-    setTaxPercent(0);
-    setTipPercent(0);
-    setSplitType('');
-    setItemizedTotals({
-      memberTotals: {},
-      subtotal: 0,
-      tax: 0,
-      tip: 0,
-      grandTotal: 0,
-    });
+      if (!res.ok) {
+        throw new Error(result.message || 'Failed to save expense.');
+      }
+
+      updateBalances(summary, paidBy, amount, splitType, date)
+      setExpenses(prev => [...prev, result.expense]);
+      setSubmittedExpense(result.expense);
+      setShowSummary(true);
+
+      showAlert({
+        type: "success",
+        title: "Success",
+        message: "Expense added successfully",
+        color: "#a5d6a7",
+      });
+
+      setAmount('');
+      setCategory('');
+      setDate('');
+      setGroupSelected('');
+      setPaidBy('');
+      setPercentages({});
+      setExactAmounts({});
+      setItems([{ name: '', cost: '', assignedTo: '' }]);
+      setTaxPercent(0);
+      setTipPercent(0);
+      setSplitType('');
+
+      setItemizedTotals({
+        memberTotals: {},
+        subtotal: 0,
+        tax: 0,
+        tip: 0,
+        grandTotal: 0,
+      });
+      setMembers([]);
+    } catch (err) {
+      console.log(err.message)
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: err.message
+      });
+    } finally {
+      setIsSubmitting(false); 
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
   };
   useEffect(() => {
     if (splitType === 'itemizedExpense' && people) {
@@ -197,14 +322,14 @@ const AddExpenseForm = ({ groups , friends}) => {
     }
   }, [splitType, people, items, taxPercent, tipPercent, paidBy]);
 
-  
+
 
   return (
     <div>
       <div className="text-center mb-3 p-7">
-<p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">Add a new Expense</p>
+        <p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">Add a new Expense</p>
         <p className="text-[#4B4B4B] mt-1">
-          Fill in the details below to split an expense across the group.
+          Log your expense and let us handle the split.
         </p>
         <div className="mt-2 border-b-2 border-[#2a806d] w-1/3 mx-auto" />
       </div>
@@ -232,187 +357,150 @@ const AddExpenseForm = ({ groups , friends}) => {
           </button>
         </div>
 
+        <div className="text-left w-full m-3">
+          {alert && alertDisplay(alert)}
+        </div>
 
+        <label className=" block mb-1 font-medium text-[#333]">Amount</label>
+        <input
+          type="number"
+          placeholder='0.00'
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+        />
 
- 
-            <label className=" block mb-1 font-medium text-[#333]">Amount</label>
-          <input
-            type="number"
-            placeholder='0.00'
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
-          />
+        <label className=" block mb-1 font-medium text-[#333]">Category</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+        >
+          <option value="">-- Select Category --</option>
+          {getAllCategories().map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
 
+        <DatePickerComponent date={date} setDate={setDate} />
+        {isGroup && (
+          <div>
+            <label className="block mb-1 font-medium text-[#333]">Group</label>
+            <select
+              value={groupSelected}
+              onChange={(e) => setGroupSelected(e.target.value)}
+              className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+            >
+              <option value="">Select Group</option>
+              {groups.map((group, idx) => (
+                <option key={idx} value={group.name}>
+                  {group.name} ({group.members.length} members)
+                </option>
+              ))}
+            </select>
 
-  
-          <label className=" block mb-1 font-medium text-[#333]">Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
-          >
-            <option value="">-- Select Category --</option>
-            {getAllCategories().map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
+            <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+            <select
+              value={paidBy}
+              onChange={(e) => setPaidBy(e.target.value)}
+              disabled={!selectedGroup}
+              className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+            >
+              <option value="">Select who paid</option>
+              {selectedGroup?.members.map((member, idx) => (
+                <option key={idx} value={member.name}>
+                  {member.name === currentUser ? 'You' : member.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-          <DatePickerComponent date={date} setDate={setDate} />
-          {isGroup && (
-            <div>
-              <label className="block mb-1 font-medium text-[#333]">Group</label>
-              <select
-                value={groupSelected}
-                onChange={(e) => setGroupSelected(e.target.value)}
-                className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
-              >
-                <option value="">Select Group</option>
-                {groups.map((group, idx) => (
-                  <option key={idx} value={group.name}>
-                    {group.name} ({group.members.length} members)
+        {!isGroup && (
+          <>
+            <label className="block mb-1 font-medium text-[#333]">Add Member</label>
+            <div className="rounded mb-6 relative">
+             
+              <input
+                list="friend-suggestions"
+                type="text"
+                placeholder="Member's Name"
+                value={memberName}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setMemberName(name);
+
+                  const matchedFriend = friends.find(friend => friend.name === name);
+                  if (matchedFriend) {
+                    setMemberEmail(matchedFriend.email);
+                  }
+                }}
+                className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
+              />
+
+              <datalist id="friend-suggestions">
+                {friends.map((friend, idx) => (
+                  <option key={idx} value={friend.name}>
+                    {friend.name} ({friend.email})
                   </option>
                 ))}
-              </select>
+              </datalist>
 
-              <label className="block mb-1 font-medium text-[#333]">Paid By</label>
-              <select
-                value={paidBy}
-                onChange={(e) => setPaidBy(e.target.value)}
-                disabled={!selectedGroup}
-                className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+              <input
+                type="email"
+                placeholder="Member's Email"
+                value={memberEmail}
+                onChange={(e) => setMemberEmail(e.target.value)}
+                className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
+              />
+
+              <button
+                onClick={handleAddMember}
+                className="w-full btn bg-[#2a806d] text-white rounded py-2 hover:bg-[#246c5c]"
               >
-                <option value="">Select who paid</option>
-                {selectedGroup?.members.map((member, idx) => (
-                  <option key={idx} value={member.name}>
-                    {member.name === sessionUser ? 'You' : member.name}
-                  </option>
-                ))}
-              </select>
+                Add Member
+              </button>
             </div>
-          )}
 
-           {!isGroup && (
-            <>
-              {/* <label className="block mb-1 font-medium text-[#333]">Add Member</label>
-              <div className="rounded mb-6">
-                <input
-                  type="text"
-                  placeholder="Member Name"
-                  value={memberName}
-                  onChange={(e) => setMemberName(e.target.value)}
-                  className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
-                />
-                <input
-                  type="email"
-                  placeholder="Member Email"
-                  value={memberEmail}
-                  onChange={(e) => setMemberEmail(e.target.value)}
-                  className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
-                />
-                <button
-                  onClick={handleAddMember}
-                  className="w-full btn bg-[#2a806d] text-white rounded py-2"
-                >
-                  Add Member
-                </button>
-              </div> */}
-
-<label className="block mb-1 font-medium text-[#333]">Add Member</label>
-<div className="rounded mb-6 relative">
-  {/* Member Name input with datalist */}
-  <input
-    list="friend-suggestions"
-    type="text"
-    placeholder="Member's Name"
-    value={memberName}
-    onChange={(e) => {
-      const name = e.target.value;
-      setMemberName(name);
-      
-      // Auto-fill email if friend matched
-      const matchedFriend = friends.find(friend => friend.name === name);
-      if (matchedFriend) {
-        setMemberEmail(matchedFriend.email);
-      }
-    }}
-    className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
-  />
-
-  {/* Datalist with name + email */}
-  <datalist id="friend-suggestions">
-    {friends.map((friend, idx) => (
-      <option key={idx} value={friend.name}>
-        {friend.name} ({friend.email})
-      </option>
-    ))}
-  </datalist>
-
-  {/* Email input (auto-filled if friend is selected) */}
-  <input
-    type="email"
-    placeholder="Member's Email"
-    value={memberEmail}
-    onChange={(e) => setMemberEmail(e.target.value)}
-    className="w-full p-2 mb-2 border border-[#ccc] rounded text-[#333]"
-  />
-
-  {/* Add button */}
-  <button
-    onClick={handleAddMember}
-    className="w-full btn bg-[#2a806d] text-white rounded py-2 hover:bg-[#246c5c]"
-  >
-    Add Member
-  </button>
-</div>
-
-
-
-              {/* Display Members as Tabs */}
-               {members.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {members.map((member, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-[#e6f4f1] text-[#2a806d] border border-[#2a806d] text-sm"
-                    >
-                      {member.name}
-                      {member.name === sessionUser && ' (You)'}
-                      <button
-                        onClick={() => {
-                          setMembers((prev) => prev.filter((_, i) => i !== idx));
-                          // Optional: update paidBy if deleted member was selected
-                          if (paidBy === member.name) setPaidBy("");
-                        }}
-                        className="ml-2 text-[#2a806d] hover:text-red-600 font-bold"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )} 
-
-               <label className="block mb-1 font-medium text-[#333]">Paid By</label>
-              <select
-                value={paidBy}
-                onChange={(e) => setPaidBy(e.target.value)}
-                disabled={members.length === 0}
-                className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
-              >
-                <option value="">Select who paid</option>
+            {members.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
                 {members.map((member, idx) => (
-                  <option key={idx} value={member.name}>
-                    {member.name} {member.name === sessionUser ? "(You)" : ""}
-                  </option>
+                  <span
+                    key={idx}
+                    className="inline-flex items-center px-3 py-1 rounded-full bg-[#e6f4f1] text-[#2a806d] border border-[#2a806d] text-sm"
+                  >
+                    {member.name}
+                    {member.name === currentUser?.name && ' (You)'}
+
+                    <button
+                      onClick={() => {
+                        setMembers((prev) => prev.filter((_, i) => i !== idx));
+                        if (paidBy === member.name) setPaidBy("");
+                      }}
+                      className="ml-2 text-[#2a806d] hover:text-red-600 font-bold"
+                    >
+                    </button>
+                  </span>
                 ))}
-              </select>
-            </>
-          )} 
+              </div>
+            )}
 
-    
-
-        
+            <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+            <select
+              value={paidBy}
+              onChange={(e) => setPaidBy(e.target.value)}
+              disabled={members.length === 0}
+              className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
+            >
+              <option value="">Select who paid</option>
+              {members.map((member, idx) => (
+                <option key={idx} value={member.name}>
+                  {member.name} {member.name === currentUser ? "(You)" : ""}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
 
         <label className="w-full block mb-1 font-medium text-[#333]">Split Type</label>
         <div className="w-full flex gap-2 mb-4">
@@ -434,9 +522,17 @@ const AddExpenseForm = ({ groups , friends}) => {
 
         <button
           type="submit"
-          className="w-full py-2 mt-4 bg-[#2a806d] hover:bg-[#53b8a2] text-white rounded"
+          disabled={isSubmitting}
+          className="w-full py-2 mt-4 bg-[#2a806d] hover:bg-[#53b8a2] text-white rounded flex items-center justify-center gap-2"
         >
-          Add Expense
+          {isSubmitting ? (
+            <>
+              <FaSpinner className="animate-spin" />
+              Submitting Your Expense
+            </>
+          ) : (
+            "Add Expense"
+          )}
         </button>
 
         <ExpenseSummaryModal
@@ -444,71 +540,10 @@ const AddExpenseForm = ({ groups , friends}) => {
           expense={submittedExpense}
           onClose={() => {
             setShowSummary(false);
-    
+
           }}
         />
 
-
-        {/* {dialogVisible && (
-<dialog open className="modal modal-bottom sm:modal-middle">
-  <form
-    method="dialog"
-    className={`modal-box ${
-      splitType === 'itemizedExpense'
-        ? 'w-[90vw] max-w-none'
-        : 'max-w-md'
-    }`}
-  >
-              <h3 className="font-bold text-lg">Split Expense - {splitType}</h3>
-              <div className="py-4">
-                {splitType === 'equal' && selectedGroup && (
-                  <SplitEqual selectedGroup={selectedGroup} amount={amount} />
-                )}
-                {splitType === 'percentage' && selectedGroup && (
-                  <SplitPercentage
-                    percentages={percentages}
-                    setPercentages={setPercentages}
-                    amount={amount}
-                    selectedGroup={selectedGroup}
-                  />
-                )}
-                {splitType === 'exact' && selectedGroup && (
-                  <SplitExact
-                    exactAmounts={exactAmounts}
-                    setExactAmounts={setExactAmounts}
-                    selectedGroup={selectedGroup}
-                  />
-                )}
-                {splitType === 'itemizedExpense' && selectedGroup && (
-                  <SplitItemized
-                    items={items}
-                    setItems={setItems}
-                    handleAddItem={handleAddItem}
-                    taxPercent={taxPercent}
-                    setTaxPercent={setTaxPercent}
-                    tipPercent={tipPercent}
-                    setTipPercent={setTipPercent}
-                    selectedGroup={selectedGroup}
-                    memberTotals={itemizedTotals.memberTotals}
-                    subtotal={itemizedTotals.subtotal}
-                    tax={itemizedTotals.tax}
-                    tip={itemizedTotals.tip}
-                    grandTotal={itemizedTotals.grandTotal}
-                  />
-                )}
-              </div>
-              <div className="modal-action">
-                <button
-                  type="button"
-                  onClick={() => setDialogVisible(false)}
-                  className="btn"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </dialog>
-        )} */}
         {dialogVisible && (
           <dialog open className="modal modal-bottom sm:modal-middle">
             <form
@@ -568,8 +603,6 @@ const AddExpenseForm = ({ groups , friends}) => {
             </form>
           </dialog>
         )}
-
-
       </form>
     </div>
 

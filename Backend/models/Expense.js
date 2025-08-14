@@ -83,10 +83,13 @@ const ExpenseSchema = new Schema(
       default: null,
     },
 
-    items: {
-      type: [String],
-      default: null,
-    },
+    items: [
+      {
+        name: String,
+        cost: Number,
+        assignedTo: String,
+      },
+    ],
 
     taxPercent: {
       type: Number,

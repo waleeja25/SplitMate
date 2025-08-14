@@ -2,6 +2,8 @@ import './App.css';
 import { RouterProvider } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getRouter } from './routes';
+import ExpensesProvider from './context/ExpensesProvider';
+
 
 function App() {
   const [friends, setFriends] = useState(() => {
@@ -31,11 +33,10 @@ function App() {
   }, [groups]);
 
   const router = getRouter(friends, setFriends, groups, setGroups);
-
-  return (
-    <div>
+ return (
+    <ExpensesProvider>
       <RouterProvider router={router} />
-    </div>
+    </ExpensesProvider>
   );
 }
 

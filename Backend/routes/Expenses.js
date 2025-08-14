@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Expense = require("../models/Expense");
 const User = require("../models/Users");
+const Group = require("../models/Groups")
 
 router.post("/expense", async (req, res) => {
   try {
@@ -21,18 +22,38 @@ router.post("/expense", async (req, res) => {
       tipPercent
     } = req.body;
 
-    const memberEmails = members.map(m => m.email);
-    const foundUsers = await User.find({ email: { $in: memberEmails } });
-    if (foundUsers.length !== members.length) {
-      return res.status(400).json({ success: false, message: "One or more members not found" });
+    let foundUsers = [];
+    if (members && members.length > 0) {
+      const memberEmails = members.map(m => m.email);
+      foundUsers = await User.find({ email: { $in: memberEmails } });
+    }
+    for (const member of members) {
+  let user = await User.findOne({ email: member.email });
+  if (!user) {
+    user = new User({ name: member.name, email: member.email });
+    await user.save();
+  }
+}
+
+    const paidByUser = await User.findOne({ name: paidBy });
+    if (!paidByUser) {
+      return res.status(400).json({ success: false, message: "PaidBy user not found" });
     }
 
+    let groupRef = null;
+    if (group) {
+      const foundGroup = await Group.findOne({ name: group });
+      if (!foundGroup) {
+        return res.status(400).json({ success: false, message: "Group not found" });
+      }
+      groupRef = foundGroup._id;
+    }
     const expense = new Expense({
       amount,
       category,
       splitType,
-      paidBy,
-      group,
+      paidBy: paidByUser._id,
+      group: groupRef,
       date,
       members,
       summary,
@@ -44,7 +65,6 @@ router.post("/expense", async (req, res) => {
     });
 
     await expense.save();
-
     const populatedExpense = await expense.populate([
       { path: "paidBy", select: "name email" },
       { path: "group", select: "name" }
@@ -53,10 +73,10 @@ router.post("/expense", async (req, res) => {
     res.status(201).json({ success: true, expense: populatedExpense });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
 
 
 router.get("/expense", async (req, res) => {
