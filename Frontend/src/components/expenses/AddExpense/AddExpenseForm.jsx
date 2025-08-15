@@ -159,7 +159,12 @@ const AddExpenseForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     if (!amount || !category || !date) {
-      alert('Please fill out all fields.');
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: 'Please fill out all fields.'
+      });
+      setIsSubmitting(false);
       return;
     }
 
@@ -169,7 +174,12 @@ const AddExpenseForm = () => {
     if (splitType === 'exact') {
       const total = Object.values(exactAmounts).reduce((a, b) => a + parseFloat(b || 0), 0);
       if (Math.abs(total - expenseAmount) > 0.01) {
-        alert("Exact amounts do not match total.");
+        showAlert({
+          type: "error",
+          title: "Mismatch",
+          message: "Exact amounts do not match total."
+        });
+        setIsSubmitting(false);
         return;
       }
       ({ summary } = calculateExactSplit(people.members, exactAmounts, paidBy));
@@ -179,7 +189,12 @@ const AddExpenseForm = () => {
     if (splitType === 'itemizedExpense') {
       for (const item of items) {
         if (!item.name || !item.cost || !item.assignedTo) {
-          alert("All item fields must be filled.");
+          showAlert({
+            type: "error",
+            title: "Error",
+            message: "All items must be filled."
+          });
+          setIsSubmitting(false);
           return;
         }
       }
@@ -206,7 +221,13 @@ const AddExpenseForm = () => {
     if (splitType === 'percentage') {
       const result = calculatePercentageSplit(people.members, percentages, expenseAmount, paidBy);
       if (result.error) {
-        alert(result.error);
+        showAlert({
+          type: "error",
+          title: "Error",
+          message: result.error
+        });
+
+        setIsSubmitting(false);
         return;
       }
       summary = result.summary;
@@ -217,12 +238,12 @@ const AddExpenseForm = () => {
     }
 
     const formattedMembers = Array.isArray(people.members)
-    ? people.members.map(m => ({
-        userId: m._id, 
+      ? people.members.map(m => ({
+        userId: m._id,
         name: m.name,
         email: m.email,
       }))
-    : [];
+      : [];
 
     const groupMembers = groupSelected
       ? groups.find(g => g.name === groupSelected)?.members || []
@@ -301,7 +322,7 @@ const AddExpenseForm = () => {
         message: err.message
       });
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -426,7 +447,7 @@ const AddExpenseForm = () => {
           <>
             <label className="block mb-1 font-medium text-[#333]">Add Member</label>
             <div className="rounded mb-6 relative">
-             
+
               <input
                 list="friend-suggestions"
                 type="text"

@@ -6,7 +6,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser, handleDeleteExpense }) =
   const [expanded, setExpanded] = useState(false);
   const CategoryIcon = getCategoryIcon(expense.category);
   const categoryName = getCategoryById(expense.category).name;
-
+  const [showModal, setShowModal] = useState(false);
   const dateObj = new Date(expense.date);
   const month = dateObj.toLocaleString('default', { month: 'short' });
   const day = dateObj.getDate();
@@ -48,7 +48,51 @@ const ExpenseCard = ({ expense, groupName, sessionUser, handleDeleteExpense }) =
               <CategoryIcon className="w-7 h-7" />
               <span>{categoryName}</span>
             </div>
-            <div className="text-m text-gray-500 text-m">{groupName}</div>
+            {expense.groupName === "Multiple people" ? (
+              <>
+                <div
+                  className="tooltip tooltip-top hidden sm:inline-block"
+                  data-tip={expense.tooltip}
+                >
+                  <span
+                    className="text-m text-gray-500 cursor-pointer"
+                    onClick={() => setShowModal(true)}
+                  >
+                    {expense.groupName}
+                  </span>
+                </div>
+
+                <span
+                  className="sm:hidden text-m text-gray-500 underline cursor-pointer"
+                  onClick={() => setShowModal(true)}
+                >
+                  {groupName}
+                </span>
+              </>
+            ) : (
+              <div className="text-m text-gray-500">{groupName}</div>
+            )}
+            {showModal && (
+              <div className="modal modal-open">
+                <div className="modal-box">
+                  <h3 className="font-bold text-lg">Members</h3>
+                  <ul className="list-disc ml-5 mt-2">
+                    {expense.tooltip.split(", ").map((name, idx) => (
+                      <li key={idx}>{name}</li>
+                    ))}
+                  </ul>
+                  <div className="modal-action">
+                    <button
+                      className="btn  bg-[#2a806d] hover:bg-[#53b8a2] text-white"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="text-sm text-gray-500 text-m">Split Type: {expense.splitType}</div>
           </div>
 

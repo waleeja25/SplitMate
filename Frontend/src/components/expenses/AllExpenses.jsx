@@ -15,7 +15,7 @@ const AllExpenses = () => {
 
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
-    const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState(null);
   const showAlert = (alertObj) => {
     setAlert(alertObj);
     setTimeout(() => {
@@ -43,10 +43,27 @@ const AllExpenses = () => {
         }
 
         const flatExpenses = data.expenses.map(expense => {
-          const groupName = expense.group ? expense.group.name :
-            expense.members?.find(m => m.userId !== sessionUser.userId)?.name || "No Group";
-          return { ...expense, groupName };
+          const otherMembers = (expense.members || [])
+            .filter(m => String(m.userId.email) !== String(sessionUser.email))
+            .map(m => m.name);
+
+          let groupName;
+          let tooltip = "";
+
+          if (expense.group) {
+            groupName = expense.group.name;
+          } else if (otherMembers.length === 1) {
+            groupName = otherMembers[0];
+          } else if (otherMembers.length > 1) {
+            groupName = "Multiple people";
+            tooltip = otherMembers.join(", ");
+          } else {
+            groupName = "No Group";
+          }
+
+          return { ...expense, groupName, tooltip };
         });
+
 
         setExpenses(flatExpenses);
 
@@ -119,7 +136,7 @@ const AllExpenses = () => {
         <p className="text-[#333] mt-1 italic">Track who paid, who owes, and how it splits.</p>
         <div className="mt-2 border-b-2 border-[#2a806d] w-3/4 mx-auto" />
       </div>
-            <div className="text-left w-full">
+      <div className="text-left w-full">
         {alert && alertDisplay(alert)}
       </div>
       {expenses.length === 0 ? (
