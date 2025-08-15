@@ -69,6 +69,7 @@ const LoginForm = () => {
         return;
       }
       localStorage.setItem("userId", result.user.userId || result.userId);
+      localStorage.setItem("objectId", result.user._id); 
       localStorage.setItem('token', result.token);
       localStorage.setItem('username', result.user.name);
       localStorage.setItem('email', result.user.email);
@@ -81,8 +82,6 @@ const LoginForm = () => {
         message: err.message,
       });
     }
-    // // localStorage.setItem('username', data.username);
-    // navigate('/dashboard');
   };
 
   return (

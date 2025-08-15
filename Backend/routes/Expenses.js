@@ -1,8 +1,50 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Expense = require("../models/Expense");
 const User = require("../models/Users");
-const Group = require("../models/Groups")
+const Group = require("../models/Groups");
+
+router.get("/expenses/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId" });
+    }
+
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    const expenses = await Expense.find({
+      "members.userId": objectUserId,
+    })
+      .sort({ createdAt: -1 })
+      .populate("paidBy", "name email")
+      .populate("group", "name")
+      .populate("members.userId", "name email");
+
+    if (expenses.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No expenses found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: expenses.length,
+      expenses,
+    });
+  } catch (err) {
+    console.error("Error fetching expenses:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
 
 router.post("/expense", async (req, res) => {
   try {
@@ -19,32 +61,41 @@ router.post("/expense", async (req, res) => {
       percentages,
       items,
       taxPercent,
-      tipPercent
+      tipPercent,
     } = req.body;
 
-    let foundUsers = [];
-    if (members && members.length > 0) {
-      const memberEmails = members.map(m => m.email);
-      foundUsers = await User.find({ email: { $in: memberEmails } });
+    if (!members || members.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Members are required" });
     }
-    for (const member of members) {
-  let user = await User.findOne({ email: member.email });
-  if (!user) {
-    user = new User({ name: member.name, email: member.email });
-    await user.save();
-  }
-}
 
+    const updatedMembers = [];
+    for (const member of members) {
+      let user = await User.findOne({ email: member.email });
+      if (!user) {
+        user = new User({ name: member.name, email: member.email });
+        await user.save();
+      }
+      updatedMembers.push({
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+      });
+    }
     const paidByUser = await User.findOne({ name: paidBy });
     if (!paidByUser) {
-      return res.status(400).json({ success: false, message: "PaidBy user not found" });
+      return res
+        .status(400)
+        .json({ success: false, message: "PaidBy user not found" });
     }
-
     let groupRef = null;
     if (group) {
       const foundGroup = await Group.findOne({ name: group });
       if (!foundGroup) {
-        return res.status(400).json({ success: false, message: "Group not found" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Group not found" });
       }
       groupRef = foundGroup._id;
     }
@@ -55,43 +106,25 @@ router.post("/expense", async (req, res) => {
       paidBy: paidByUser._id,
       group: groupRef,
       date,
-      members,
+      members: updatedMembers,
       summary,
       exactAmounts,
       percentages,
       items,
       taxPercent,
-      tipPercent
+      tipPercent,
     });
 
     await expense.save();
+
     const populatedExpense = await expense.populate([
       { path: "paidBy", select: "name email" },
-      { path: "group", select: "name" }
+      { path: "group", select: "name" },
     ]);
 
     res.status(201).json({ success: true, expense: populatedExpense });
-
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-
-router.get("/expense", async (req, res) => {
-  const { groupId, userId } = req.query;
-
-  let filter = {};
-  if (groupId) filter.group = groupId;
-  if (userId) filter.paidBy = userId;
-
-  try {
-    const expenses = await Expense.find(filter)
-      .populate("paidBy", "name email")
-      .populate("group", "name");
-    res.status(200).json({ success: true, expenses });
-  } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -103,7 +136,9 @@ router.get("/expense/:expenseId", async (req, res) => {
       .populate("group", "name");
 
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found" });
     }
 
     res.status(200).json({ success: true, expense });
@@ -111,7 +146,6 @@ router.get("/expense/:expenseId", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
 
 router.put("/expense/:expenseId", async (req, res) => {
   try {
@@ -121,20 +155,27 @@ router.put("/expense/:expenseId", async (req, res) => {
       { new: true }
     );
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found" });
     }
-    res.status(200).json({ success: true, message: "Expense updated", expense });
+    res
+      .status(200)
+      .json({ success: true, message: "Expense updated", expense });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }
 });
 
-
 router.delete("/expense/:expenseId", async (req, res) => {
   try {
-    const expense = await Expense.findOneAndDelete({ expenseId: req.params.expenseId });
+    const expense = await Expense.findOneAndDelete({
+      expenseId: req.params.expenseId,
+    });
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found" });
     }
     res.status(200).json({ success: true, message: "Expense deleted" });
   } catch (err) {
@@ -154,7 +195,6 @@ router.get("/expense/group/:groupId", async (req, res) => {
   }
 });
 
-
 router.get("/expense/friend/:userId/:friendEmail", async (req, res) => {
   const { userId, friendEmail } = req.params;
 
@@ -162,8 +202,12 @@ router.get("/expense/friend/:userId/:friendEmail", async (req, res) => {
     const expenses = await Expense.find({
       $or: [
         { paidBy: userId, "members.email": friendEmail },
-        { "members.email": (await getUserEmail(userId)), paidBy: { $ne: userId }, "members.email": friendEmail },
-      ]
+        {
+          "members.email": await getUserEmail(userId),
+          paidBy: { $ne: userId },
+          "members.email": friendEmail,
+        },
+      ],
     })
       .populate("paidBy", "name email")
       .populate("group", "name");
@@ -177,6 +221,5 @@ async function getUserEmail(userId) {
   const user = await User.findById(userId).select("email");
   return user?.email || "";
 }
-
 
 module.exports = router;

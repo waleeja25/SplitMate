@@ -1,30 +1,70 @@
+import { useMemo } from 'react';
 import ExpenseCard from './ExpenseCard';
+import { useState, useEffect } from 'react';
 
 const AllExpenses = () => {
-  const allExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
-  const sessionUser = localStorage.getItem("username");
-  const groupWiseMap = {};
-  const memberWiseMap = {};
-  
-  
-  allExpenses.forEach((expense) => {
-    const { group, members, paidBy, summary = {}, category, amount, date, splitType } = expense;
 
-    if (group) {
-      if (!groupWiseMap[group]) groupWiseMap[group] = [];
-      groupWiseMap[group].push({ category, amount, paidBy, summary, date, splitType });
-    }
-    if (!group && Array.isArray(members)) {
-      members.forEach((member) => {
-        const memberName = member.name;
-        if (!memberWiseMap[memberName]) memberWiseMap[memberName] = [];
-        memberWiseMap[memberName].push({ category, amount, paidBy, summary, date, splitType });
-      });
-    }
-  });
+  const sessionUser = useMemo(() => {
+    return {
+      token: localStorage.getItem("token"),
+      name: localStorage.getItem("username"),
+      email: localStorage.getItem("email"),
+      userId: localStorage.getItem("userId"),
+      objectId: localStorage.getItem("objectId")
+    };
+  }, []);
 
-  console.log(allExpenses)
-  
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      if (!sessionUser?.token || !sessionUser?.userId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`http://localhost:3001/api/expenses/${sessionUser.objectId}`, {
+          headers: {
+            'Authorization': `Bearer ${sessionUser.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          console.error("Backend error:", data);
+          throw new Error(data.message || 'Server error');
+        }
+
+        const flatExpenses = data.expenses.map(expense => {
+          const groupName = expense.group ? expense.group.name :
+            expense.members?.find(m => m.userId !== sessionUser.userId)?.name || "No Group";
+          return { ...expense, groupName };
+        });
+
+        setExpenses(flatExpenses);
+
+      } catch (err) {
+        console.error("Error fetching expenses:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpenses();
+  }, [sessionUser]);
+
+  console.log(expenses);
+
+
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen gap-4">
+        <div className="w-16 h-16 border-4 border-t-4 border-[#2A806D] border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-[#2A806D] text-lg font-medium">Loading your Expenses...</p>
+      </div>
+    );
+  }
   return (
     <div className="p-6 max-w-3xl mx-auto bg-[rgb(245,252,250)] min-h-screen">
       <div className="text-center mb-8">
@@ -32,39 +72,18 @@ const AllExpenses = () => {
         <p className="text-[#333] mt-1 italic">Track who paid, who owes, and how it splits.</p>
         <div className="mt-2 border-b-2 border-[#2a806d] w-3/4 mx-auto" />
       </div>
-
-      {(Object.keys(groupWiseMap).length === 0) && (Object.keys(memberWiseMap).length === 0) ? (
+      {expenses.length === 0 ? (
         <p className="text-center text-gray-500">No expenses found.</p>
       ) : (
-        Object.entries(groupWiseMap).map(([groupName, groupExpenses], idx) => (
-          <div key={idx} className="mb-10">
-            {groupExpenses.map((expense, eIdx) => (
-              <ExpenseCard
-                key={eIdx}
-                expense={expense}
-                groupName={groupName}
-                sessionUser={sessionUser}
-              />
-            ))}
-          </div>
+        expenses.map((expense, idx) => (
+          <ExpenseCard
+            key={idx}
+            expense={expense}
+            groupName={expense.groupName}
+            sessionUser={sessionUser}
+          />
         ))
       )}
-
- {Object.entries(memberWiseMap).map(([memberName, memberExpenses], idx) => {
-  if (memberName === sessionUser) return null; 
-  return (
-    <div key={idx} className="mb-10">
-      {memberExpenses.map((expense, eIdx) => (
-        <ExpenseCard
-          key={eIdx}
-          expense={expense}
-          groupName={memberName}
-          sessionUser={sessionUser}
-        />
-      ))}
-    </div>
-  );
-})}
     </div>
   );
 };

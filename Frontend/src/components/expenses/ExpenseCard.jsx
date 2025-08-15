@@ -16,24 +16,24 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
   let totalOwedToYou = 0;
   let totalYouOwe = 0;
 
+  const payerName = expense.paidBy?.name || "Unknown";
+  const payerLabel = payerName === sessionUser.name ? "You" : payerName;
+
   Object.entries(expense.summary).forEach(([debtor, amount]) => {
     const amt = parseFloat(amount);
-    if (expense.paidBy === sessionUser && debtor !== sessionUser) {
+    if (payerName === sessionUser.name && debtor !== sessionUser.name) {
       totalOwedToYou += amt;
       owedToYou.push(`${debtor} owes you Rs ${amt.toFixed(2)}`);
     }
-    if (debtor === sessionUser && expense.paidBy !== sessionUser) {
+    if (debtor === sessionUser.name && payerName !== sessionUser.name) {
       totalYouOwe += amt;
-      youOwe.push(`You owe ${expense.paidBy} Rs ${amt.toFixed(2)}`);
+      youOwe.push(`You owe ${payerName} Rs ${amt.toFixed(2)}`);
     }
   });
-
-  const payerLabel = expense.paidBy === sessionUser ? 'You' : expense.paidBy;
-
   return (
     <div className="mb-5 bg-white border border-[#ccc] rounded-lg px-5 py-4 shadow hover:shadow-md transition">
       <div className="flex justify-between items-start gap-4">
-        
+
         <div className="flex flex-col items-center text-[#2a806d] font-bold">
           <div className="text-2xl">{month}</div>
           <div className="text-2xl">{day}</div>
@@ -62,7 +62,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
           {totalYouOwe > 0 && (
             <div className="text-gray-500">
               <p className="text-gray-500 font-semibold italic">
-              You owe {expense.paidBy === sessionUser ? 'others' : expense.paidBy}
+                You owe {payerName === sessionUser.name ? 'others' : payerName}
               </p>
               <span className="font-bold text-red-600 text-base">Rs {totalYouOwe.toFixed(2)}</span>
             </div>
@@ -91,9 +91,7 @@ const ExpenseCard = ({ expense, groupName, sessionUser }) => {
           </div>
 
           {expanded && (
-            
             <div className="mt-4 grid md:grid-cols-2 gap-6 text-[14px] font-medium">
-              
               <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
                 <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">Owed to You</h4>
                 {owedToYou.length > 0 ? (

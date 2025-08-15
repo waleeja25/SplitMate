@@ -215,13 +215,18 @@ const AddExpenseForm = () => {
     if (splitType === 'equal') {
       ({ summary } = calculateEqualSplit(people.members, expenseAmount, paidBy));
     }
+
     const formattedMembers = Array.isArray(people.members)
-      ? people.members.map(m => ({ name: m.name, email: m.email }))
-      : [];
+    ? people.members.map(m => ({
+        userId: m._id, 
+        name: m.name,
+        email: m.email,
+      }))
+    : [];
+
     const groupMembers = groupSelected
       ? groups.find(g => g.name === groupSelected)?.members || []
       : [];
-
 
     const expense = {
       amount: expenseAmount,
@@ -302,6 +307,7 @@ const AddExpenseForm = () => {
 
     setIsSubmitting(false);
   };
+
   useEffect(() => {
     if (splitType === 'itemizedExpense' && people) {
       const result = calculateItemizedSplit(

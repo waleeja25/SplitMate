@@ -3,6 +3,11 @@ const { v4: uuidv4 } = require("uuid");
 
 const MemberSchema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
