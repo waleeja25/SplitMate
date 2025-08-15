@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import ExpenseCard from './ExpenseCard';
 import { useState, useEffect } from 'react';
-
+import alertDisplay from '../ui/alertDisplay';
 const AllExpenses = () => {
-
   const sessionUser = useMemo(() => {
     return {
       token: localStorage.getItem("token"),
@@ -16,6 +15,13 @@ const AllExpenses = () => {
 
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+    const [alert, setAlert] = useState(null);
+  const showAlert = (alertObj) => {
+    setAlert(alertObj);
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -56,6 +62,47 @@ const AllExpenses = () => {
 
   console.log(expenses);
 
+  const handleDeleteExpense = async (expenseId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`http://localhost:3001/api/expense/${expenseId}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setExpenses(prev => prev.filter(f => f.expenseId !== expenseId));
+
+        showAlert({
+          type: "success",
+          title: "Deleted",
+          message: "Expense deleted successfully",
+          color: "#a5d6a7",
+        });
+
+      } else {
+        showAlert({
+          type: "error",
+          title: "Error",
+          message: data.message || "Failed to delete expense"
+        });
+      }
+    } catch (err) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: err.message
+      });
+    }
+  };
+
+
 
   if (loading) {
     return (
@@ -72,6 +119,9 @@ const AllExpenses = () => {
         <p className="text-[#333] mt-1 italic">Track who paid, who owes, and how it splits.</p>
         <div className="mt-2 border-b-2 border-[#2a806d] w-3/4 mx-auto" />
       </div>
+            <div className="text-left w-full">
+        {alert && alertDisplay(alert)}
+      </div>
       {expenses.length === 0 ? (
         <p className="text-center text-gray-500">No expenses found.</p>
       ) : (
@@ -81,6 +131,7 @@ const AllExpenses = () => {
             expense={expense}
             groupName={expense.groupName}
             sessionUser={sessionUser}
+            handleDeleteExpense={handleDeleteExpense}
           />
         ))
       )}
