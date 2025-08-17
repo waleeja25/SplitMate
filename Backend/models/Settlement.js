@@ -43,7 +43,7 @@ const SettlementSchema = new Schema(
 
     type: {
       type: String,
-      enum: ['group', 'friend'],
+      enum: ['group', 'individual'],
       required: true,
     },
 

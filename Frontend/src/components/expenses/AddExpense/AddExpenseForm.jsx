@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getAllCategories } from '../../../lib/expense-categories';
 import alertDisplay from '../../ui/alertDisplay';
-import { updateBalances } from './helpers';
+import { updateBalances, BalanceUpdate } from './helpers';
 import SplitEqual from './SplitEqual';
 import SplitPercentage from './SplitPercentage';
 import SplitExact from './SplitExact';
@@ -120,7 +120,10 @@ const AddExpenseForm = () => {
 
   const currentUser = {
     name: localStorage.getItem("username"),
-    email: localStorage.getItem("email")
+    email: localStorage.getItem("email"),
+    userId:localStorage.getItem("userId"),
+    objectId:localStorage.getItem("objectId"),
+    token: localStorage.getItem("token")
   };
 
   const selectedGroup = groups.find((group) => group.name === groupSelected);
@@ -248,7 +251,6 @@ const AddExpenseForm = () => {
     const groupMembers = groupSelected
       ? groups.find(g => g.name === groupSelected)?.members || []
       : [];
-
     const expense = {
       amount: expenseAmount,
       category,
@@ -266,7 +268,7 @@ const AddExpenseForm = () => {
     };
 
     try {
-      const token = localStorage.getItem("token");
+      const token = currentUser.token
       const res = await fetch('http://localhost:3001/api/expense', {
         method: 'POST',
         headers: {
@@ -283,6 +285,7 @@ const AddExpenseForm = () => {
       }
 
       updateBalances(summary, paidBy, amount, splitType, date)
+      BalanceUpdate(summary, paidBy, amount, splitType, currentUser.token)
       setExpenses(prev => [...prev, result.expense]);
       setSubmittedExpense(result.expense);
       setShowSummary(true);
@@ -408,7 +411,7 @@ const AddExpenseForm = () => {
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
         </select>
-
+      <label className="block mb-1 font-medium">Select Date</label>
         <DatePickerComponent date={date} setDate={setDate} />
         {isGroup && (
           <div>

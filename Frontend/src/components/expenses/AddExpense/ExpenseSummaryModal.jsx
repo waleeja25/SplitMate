@@ -33,6 +33,7 @@ const ExpenseSummaryModal = ({ show, onClose }) => {
 
   if (visible) {
     const paidByName = typeof latestExpense.paidBy === "object" ? latestExpense.paidBy.name : latestExpense.paidBy;
+
     Object.entries(latestExpense.summary).forEach(([memberKey, amt]) => {
       const memberName = typeof memberKey === "object" ? memberKey.name : memberKey;
 
@@ -46,7 +47,6 @@ const ExpenseSummaryModal = ({ show, onClose }) => {
       }
     });
   }
-
 
   return (
 

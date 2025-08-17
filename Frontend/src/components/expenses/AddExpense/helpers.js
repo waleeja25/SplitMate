@@ -280,11 +280,51 @@ export function getGroupUserBalances(currentUser, groupExpenses, groupMembers, g
     const rounded = Math.round(balance * 100) / 100;
 
     if (rounded > 0) {
-      owed.push({ from: person, amount: rounded }); // They owe currentUser
+      owed.push({ from: person, amount: rounded }); 
     } else if (rounded < 0) {
-      owes.push({ to: person, amount: -rounded }); // CurrentUser owes them
+      owes.push({ to: person, amount: -rounded }); 
     }
   });
 
   return { owes, owed };
+}
+
+
+export async function settleUpBackend(from, to, amount, token) {
+  try {
+    const res = await fetch("http://localhost:3001/api/balances/settle", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ from, to, amount })
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Settlement failed");
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+export async function BalanceUpdate( summary, paidBy, amount, splitType , token) {
+  try {
+    const res = await fetch("http://localhost:3001/api/balances/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ summary, paidBy, amount, splitType})
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Balance Update failed");
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }

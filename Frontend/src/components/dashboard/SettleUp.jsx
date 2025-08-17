@@ -1,138 +1,356 @@
-import { useState } from 'react';
-import { FaExchangeAlt } from 'react-icons/fa';
-import {  settleUp } from "../expenses/AddExpense/helpers";
-import DatePickerComponent from '../ui/DatePickerComponent';
-import UserAvatar from '../ui/UseAvatar';
+import { useState } from "react";
+import { FaExchangeAlt } from "react-icons/fa";
+import { settleUp } from "../expenses/AddExpense/helpers";
+import DatePickerComponent from "../ui/DatePickerComponent";
+import UserAvatar from "../ui/UseAvatar";
+import { useEffect } from "react";
+import GroupSettlement from "./GroupSettlement";
+import alertDisplay from "../ui/alertDisplay";
 
 const SettleUpPage = () => {
-  const currentUser = localStorage.getItem('username');
-  const [payer, setPayer] = useState(currentUser);
-  const [selectedFriend, setSelectedFriend] = useState('');
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
+  const currentUser = {
+    name: localStorage.getItem("username"),
+    email: localStorage.getItem("email"),
+    userId: localStorage.getItem("userId"),
+    token: localStorage.getItem("token"),
+    objectId: localStorage.getItem("objectId"),
+  };
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [friends, setFriends] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [payer, setPayer] = useState(currentUser.objectId);
+  const [receiver, setReceiver] = useState("");
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [alert, setAlert] = useState("");
 
-  const handleSettle = () => {
-    if (!selectedFriend || !amount || !payer) return;
-    const receiver = payer === currentUser ? selectedFriend : currentUser;
-    settleUp(payer, receiver, parseFloat(amount));
-    alert(`Settled Rs ${amount} from ${payer} to ${receiver}`);
-    setAmount('');
-    setSelectedFriend('');
-    setPayer(currentUser);
+  const showAlert = (alertObj) => {
+    setAlert(alertObj);
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setFriends(
+            data.friends.map((f) => ({
+              id: f.friend._id,
+              name: f.friend.name,
+              email: f.friend.email,
+            }))
+          );
+        } else {
+          console.error(data.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchFriends();
+  }, [setFriends]);
+
+  const [paymentMode, setPaymentMode] = useState("");
+  const [transactionType, setTransactionType] = useState("individual");
+
+  const handleSettle = async () => {
+    if (!receiver || !amount || !payer) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: "Please fill all required fields",
+      });
+      return;
+    }
+    let payerName =
+      payer === currentUser.objectId
+        ? currentUser.name
+        : friends.find((f) => f.id === payer)?.name || "Unknown";
+    let receiverName =
+      receiver === currentUser.objectId
+        ? currentUser.name
+        : friends.find((f) => f.id === receiver)?.name || "Unknown";
+    try {
+      const token = currentUser.token;
+
+      if (transactionType === "individual") {
+        const payload = {
+          from: payer,
+          to: receiver,
+          amount: parseFloat(amount),
+          paymentMode,
+          type: "individual",
+          date,
+        };
+
+        const res = await fetch("http://localhost:3001/api/settlement", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Individual settlement failed");
+        }
+        settleUp(payer, receiver, parseFloat(amount));
+      } else if (transactionType === "group") {
+        const groupId = selectedGroup;
+        if (!groupId) throw new Error("No group selected");
+
+        const group = groups.find((g) => g._id === groupId);
+        console.log("Selected group details:", group);
+        const payload = {
+          from: payer,
+          to: receiver,
+          amount: parseFloat(amount),
+          paymentMode,
+          type: transactionType,
+          group: groupId,
+          date,
+        };
+        const res = await fetch("http://localhost:3001/api/settlement", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Settlement failed");
+        }
+      }
+
+      showAlert({
+        type: "success",
+        title: "Success",
+        message: `Settled Rs ${amount} from ${payerName} to ${receiverName}`,
+        color: "#a5d6a7",
+      });
+
+      setAmount("");
+      setPayer(currentUser.objectId);
+      setReceiver("");
+      setPaymentMode("online");
+      setTransactionType("individual");
+    } catch (err) {
+      console.error(err);
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: err.message || "Something went wrong",
+      });
+    }
   };
 
   const owes = [];
   const owed = [];
-  // const allFriends = [...owes, ...owed]
-  //   .map((entry) => entry.to)
-  //   .filter((name, idx, arr) => name !== currentUser && arr.indexOf(name) === idx);
-    const balances = JSON.parse(localStorage.getItem("balances") || "{}");
+  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
 
-Object.keys(balances).forEach((user) => {
-  if (user === currentUser) return;
+  Object.keys(balances).forEach((user) => {
+    if (user === currentUser.name) return;
 
-  const fromOtherToMe = balances[user]?.[currentUser] || 0;
-  const fromMeToOther = balances[currentUser]?.[user] || 0;
+    const fromOtherToMe = balances[user]?.[currentUser.name] || 0;
+    const fromMeToOther = balances[currentUser.name]?.[user] || 0;
 
-  if (fromMeToOther > 0) owes.push(user);
-  if (fromOtherToMe > 0) owed.push(user);
-});
+    if (fromMeToOther > 0) owes.push(user);
+    if (fromOtherToMe > 0) owed.push(user);
+  });
 
-const activeFriends = Array.from(new Set([...owes, ...owed])); 
+  const pendingFriends = Array.from(new Set([...owes, ...owed]))
+    .map((name) => friends.find((f) => f.name === name))
+    .filter(Boolean);
 
-
+  const friendsToShow =
+    transactionType === "individual" ? pendingFriends : friends;
+  const payerOptions = friendsToShow.filter((f) => f !== receiver);
   return (
-        <div className="max-w-xl mx-auto p-6 bg-[rgb(245,252,250)] min-h-screen">
-<div className="max-w-md mx-auto p-5 bg-white border border-[#B2E2D2] rounded-xl shadow text-[#4B4B4B] mt-8 ">
-  <header className="border-b border-[#2A806D] px-7 py-6 text-center">
-      <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#185144] via-[#36a186] to-[#2A806D]">
-              Settle Up
-            </h1>
-      </header>
+    <div className="max-w-3xl mx-auto p-6 bg-[rgb(245,252,250)] min-h-screen">
+      <div className="w-full max-w-xl mx-auto p-5 bg-white border border-[#B2E2D2] rounded-xl shadow text-[#4B4B4B] mt-7 ">
+        <div className="flex border-b border-[#B2E2D2]">
+          <button
+            onClick={() => setTransactionType("individual")}
+            className={`flex-1 py-3 text-center font-medium ${
+              transactionType === "individual"
+                ? "border-b-2 border-[#2A806D] text-[#2A806D]"
+                : "text-gray-500 hover:text-[#2A806D]"
+            }`}
+          >
+            Individual
+          </button>
+          <button
+            onClick={() => setTransactionType("group")}
+            className={`flex-1 py-3 text-center font-medium ${
+              transactionType === "group"
+                ? "border-b-2 border-[#2A806D] text-[#2A806D]"
+                : "text-gray-500 hover:text-[#2A806D]"
+            }`}
+          >
+            Group
+          </button>
+        </div>
+        <div className="text-left w-full m-3">
+          {alert && alertDisplay(alert)}
+        </div>
 
-      <div className="p-6 space-y-6 text-[#4B4B4B]">
-        <div className="flex items-center justify-center gap-6">
-         
-          <div className="flex flex-col items-center">
-              <UserAvatar name={payer} size={48}/>
-           <select
-    value={payer}
-    onChange={(e) => setPayer(e.target.value)}
-    className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
-  >
-    <option value={currentUser}>You ({currentUser})</option>
-    {activeFriends
-      .filter((f) => f !== currentUser)
-      .map((friend, idx) => (
-        <option key={idx} value={friend}>
-          {friend}
-        </option>
-      ))}
-  </select>
+        <header className="px-7 py-6 text-center">
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#185144] via-[#36a186] to-[#2A806D]">
+            Settle Up
+          </h1>
+        </header>
+
+        {transactionType === "group" ? (
+          <GroupSettlement
+            groups={groups}
+            setGroups={setGroups}
+            payer={payer}
+            setPayer={setPayer}
+            receiver={receiver}
+            setReceiver={setReceiver}
+            currentUser={currentUser}
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
+          />
+        ) : (
+          <>
+            <div className="p-3 space-y-6 text-[#4B4B4B]">
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex flex-col items-center">
+                  <UserAvatar name={payer} size={48} />
+                  <select
+                    value={payer}
+                    onChange={(e) => setPayer(e.target.value)}
+                    className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
+                  >
+                    <option value={currentUser.objectId}>
+                      You ({currentUser.name})
+                    </option>
+
+                    {payerOptions
+                      .filter((f) => f.name !== currentUser.name)
+                      .map((friend) => (
+                        <option key={friend.id} value={friend.id}>
+                          {friend.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <FaExchangeAlt
+                  style={{ fontSize: "2rem" }}
+                  className="text-[#4B4B4B]"
+                />
+
+                <div className="flex flex-col items-center">
+                  <UserAvatar name={receiver} size={48} />
+
+                  <select
+                    value={receiver}
+                    onChange={(e) => setReceiver(e.target.value)}
+                    className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
+                  >
+                    <option value="" disabled>
+                      Select a receiver
+                    </option>
+                    {friends.map((friend) => (
+                      <option key={friend.id} value={friend.id}>
+                        {friend.name === currentUser.name
+                          ? `You (${currentUser.name})`
+                          : friend.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="p-6 space-y-3 text-[#4B4B4B]">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium text-[#2A806D]">
+                Date
+              </label>
+              <DatePickerComponent date={date} setDate={setDate} />
+            </div>
+
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium text-[#2A806D]">
+                Amount
+              </label>
+              <div className="flex items-center border border-[#B2E2D2] rounded px-3 bg-white">
+                <span className="text-lg text-[#4B4B4B] pr-2">Rs</span>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full py-2 text-[#4B4B4B] outline-none bg-transparent"
+                />
+              </div>
+            </div>
           </div>
 
- <FaExchangeAlt style={{ fontSize: "4rem" }} className="text-[#4B4B4B]" />
-
-
-          {/* Receiver */}
-          <div className="flex flex-col items-center">
-            <UserAvatar name={selectedFriend} size={48}/>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-[#2A806D]">
+              Payment Mode
+            </label>
             <select
-    value={selectedFriend}
-    onChange={(e) => setSelectedFriend(e.target.value)}
-    className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
-  >
-    <option value="">Select</option>
-    <option value={currentUser}>You ({currentUser})</option>
-    {activeFriends
-      .filter((f) => f !== payer)
-      .map((friend, idx) => (
-        <option key={idx} value={friend}>
-          {friend === currentUser ? `You (${currentUser})` : friend}
-        </option>
-      ))}
-  </select>
+              value={paymentMode}
+              onChange={(e) => setPaymentMode(e.target.value)}
+              className="w-full border border-[#B2E2D2] bg-white rounded px-3 py-2 text-sm"
+            >
+              <option value="" disabled>
+                Select Payment Mode
+              </option>
+              <option value="online">Online</option>
+              <option value="cash">Cash</option>
+            </select>
           </div>
         </div>
 
-        {/* Amount */}
-        <div>
-          <label className="block mb-1 text-sm font-medium text-[#2A806D]">Amount</label>
-          <div className="flex items-center border border-[#B2E2D2] rounded px-3 bg-white">
-            <span className="text-lg text-[#4B4B4B] pr-2">Rs</span>
-            <input
-              type="number"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full py-2 text-[#4B4B4B] outline-none bg-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Date Picker */}
-        <DatePickerComponent date={date} setDate={setDate} />
+        <footer className="flex justify-end gap-3 px-6 py-4">
+          <button
+            onClick={() => {
+              setAmount("");
+              setPayer(currentUser);
+              setPaymentMode("online");
+              setTransactionType("individual");
+            }}
+            className="btn px-5 py-2 text-sm bg-white border border-[#B2E2D2] text-[#4B4B4B] hover:bg-[#f0f0f0]"
+          >
+            Reset
+          </button>
+          <button
+            onClick={handleSettle}
+            className="btn px-5 py-2 text-sm bg-[#2A806D] text-white hover:bg-[#246f5f]"
+          >
+            Save
+          </button>
+        </footer>
       </div>
-
-      <footer className="flex justify-end gap-3 px-6 py-4">
-        <button
-          onClick={() => {
-            setAmount('');
-            setSelectedFriend('');
-            setPayer(currentUser);
-          }}
-          className="btn px-5 py-2 text-sm bg-white border border-[#B2E2D2] text-[#4B4B4B] hover:bg-[#f0f0f0]"
-        >
-          Reset
-        </button>
-        <button
-          onClick={handleSettle}
-          className="btn px-5 py-2 text-sm bg-[#2A806D] text-white hover:bg-[#246f5f]"
-        >
-          Save
-        </button>
-      </footer>
-    </div>
     </div>
   );
 };
