@@ -58,7 +58,7 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
         <ul className="list-disc pl-5 text-sm space-y-2 text-black">
           {owes.map((line, i) => (
             <li key={i}>
-              You owe <span className="font-semibold">{line.to}</span> Rs {line.amount.toFixed(2)}
+              You owe <span className="font-semibold">{line.name}</span> Rs {line.amount.toFixed(2)}
             </li>
           ))}
         </ul>
@@ -80,7 +80,7 @@ const DashboardCards = ({ totalBalance, totalYouOwe, totalOwedToYou, owes, owed 
         <ul className="list-disc pl-5 text-sm space-y-2 text-black">
           {owed.map((line, i) => (
             <li key={i}>
-              <span className="font-semibold">{line.from}</span> owes you Rs {line.amount.toFixed(2)}
+              <span className="font-semibold">{line.name}</span> owes you Rs {line.amount.toFixed(2)}
             </li>
           ))}
         </ul>

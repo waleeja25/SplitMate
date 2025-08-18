@@ -98,8 +98,8 @@ const ExpenseCard = ({
               </div>
             )}
 
-            <div className="text-sm text-gray-500 text-m">
-              Split Type: {expense.splitType}
+            <div className="text-sm text-gray-500 text-m italic">
+              {expense.splitType} split
             </div>
           </div>
 
@@ -129,7 +129,7 @@ const ExpenseCard = ({
                   {payerName === sessionUser.name ? "others" : payerName}
                 </p>
                 <span className="font-bold text-red-600 text-base">
-                  Rs {totalYouOwe.toFixed(2)}
+                 Rs {Math.abs(Number(totalYouOwe)).toFixed(2)}
                 </span>
               </div>
             )}

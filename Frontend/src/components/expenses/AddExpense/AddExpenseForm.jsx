@@ -7,9 +7,9 @@ import SplitPercentage from './SplitPercentage';
 import SplitExact from './SplitExact';
 import SplitItemized from './SplitItemized';
 import ExpenseSummaryModal from './ExpenseSummaryModal';
+import { useExpenses } from '../../../context/UseExpenses';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePickerComponent from '../../ui/DatePickerComponent';
-import { useExpenses } from '../../../context/UseExpenses';
 import {
   calculateEqualSplit,
   calculatePercentageSplit,
@@ -19,6 +19,7 @@ import {
 import { FaSpinner } from "react-icons/fa";
 
 const AddExpenseForm = () => {
+  const { fetchExpenses } = useExpenses();  
   const [alert, setAlert] = useState(null);
   const { expenses, setExpenses } = useExpenses();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +58,7 @@ const AddExpenseForm = () => {
     setAlert(alertObj);
     setTimeout(() => {
       setAlert(null);
-    }, 3000);
+    }, 7000);
   };
   useEffect(() => {
     const fetchGroups = async () => {
@@ -328,7 +329,7 @@ const AddExpenseForm = () => {
       setIsSubmitting(false);
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
+   fetchExpenses(); 
     setIsSubmitting(false);
   };
 
@@ -385,10 +386,6 @@ const AddExpenseForm = () => {
           >
             Group Expense
           </button>
-        </div>
-
-        <div className="text-left w-full m-3">
-          {alert && alertDisplay(alert)}
         </div>
 
         <label className=" block mb-1 font-medium text-[#333]">Amount</label>
@@ -570,8 +567,9 @@ const AddExpenseForm = () => {
           expense={submittedExpense}
           onClose={() => {
             setShowSummary(false);
-
           }}
+          alert={alert}
+          alertDisplay={alertDisplay}
         />
 
         {dialogVisible && (
