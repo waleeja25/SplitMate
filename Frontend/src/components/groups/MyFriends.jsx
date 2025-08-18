@@ -75,11 +75,11 @@ const MyFriends = ({ friends, setFriends }) => {
       });
     }
   };
-  console.log(friends);
+  console.log(friends)
 
-  const handleFriendClick = (friend) => {
-    navigate(`/myFriends/${encodeURIComponent(friend.name)}`, {
-      state: { friend },
+  const handleFriendClick = (friendId) => {
+    navigate(`/myFriends/${encodeURIComponent(friendId)}`, {
+      state: { friends },
     });
   };
 
@@ -99,6 +99,7 @@ const MyFriends = ({ friends, setFriends }) => {
         if (data.success) {
           setFriends(data.friends.map(f => ({
             id: f._id,
+            friendId: f.friend._id,  
             name: f.friend.name,
             email: f.friend.email
           })));
@@ -152,6 +153,7 @@ const MyFriends = ({ friends, setFriends }) => {
       });
     }
   };
+  console.log("Friend Id " ,friends._id)
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
@@ -188,7 +190,7 @@ const MyFriends = ({ friends, setFriends }) => {
             >
               <div
                 className="flex items-center gap-4 cursor-pointer"
-                onClick={() => handleFriendClick(friend)}
+                onClick={() => handleFriendClick(friend.friendId)}
               >
                 <UserAvatar name={friend.name} size={40} />
                 <div>
@@ -198,7 +200,7 @@ const MyFriends = ({ friends, setFriends }) => {
               </div>
 
               <button
-                onClick={() => handleDeleteFriend(friend.id)}
+                onClick={() => handleDeleteFriend(friend.friendId)}
                 className="text-red-500 hover:text-red-700 p-2 rounded"
               >
                 <FiTrash2 size={20} />

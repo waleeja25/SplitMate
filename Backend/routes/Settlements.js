@@ -116,4 +116,27 @@ router.get("/settlement/group/:groupId", async (req, res) => {
   }
 });
 
+router.get("/settlement/:userId/:friendId", async (req, res) => {
+  try {
+    const { userId, friendId } = req.params;
+
+    const settlements = await Settlement.find({
+      $or: [
+        { from: userId, to: friendId },
+        { from: friendId, to: userId },
+      ],
+    })
+      .populate("from", "name email")
+      .populate("to", "name email")
+      .populate("group", "name")
+      .select("amount date paymentMode type")
+      .sort({ date: -1 }); 
+
+    res.status(200).json({ success: true, settlements });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 module.exports = router;

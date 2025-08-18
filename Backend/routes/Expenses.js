@@ -195,18 +195,14 @@ router.get("/expense/group/:groupId", async (req, res) => {
   }
 });
 
-router.get("/expense/friend/:userId/:friendEmail", async (req, res) => {
-  const { userId, friendEmail } = req.params;
+router.get("/expense/friend/:userId/:friendId", async (req, res) => {
+  const { userId, friendId } = req.params;
 
   try {
     const expenses = await Expense.find({
       $or: [
-        { paidBy: userId, "members.email": friendEmail },
-        {
-          "members.email": await getUserEmail(userId),
-          paidBy: { $ne: userId },
-          "members.email": friendEmail,
-        },
+        { paidBy: userId, "members.userId": friendId },
+        { paidBy: friendId, "members.userId": userId },
       ],
     })
       .populate("paidBy", "name email")
@@ -217,6 +213,8 @@ router.get("/expense/friend/:userId/:friendEmail", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+
 async function getUserEmail(userId) {
   const user = await User.findById(userId).select("email");
   return user?.email || "";

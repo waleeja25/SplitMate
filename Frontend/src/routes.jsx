@@ -58,7 +58,7 @@ export const getRouter = (friends, setFriends, groups, setGroups) =>
         />
       ),
     }, {
-path: '/myFriends/:friendName',
+path: '/myFriends/:friendId',
 element: <IndividualExpensesCard friends={friends} />,
 
 },

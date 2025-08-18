@@ -35,6 +35,39 @@ router.get("/balances/:userId", async (req, res) => {
   }
 });
 
+router.get("/balances/:userId/:friendId", async (req, res) => {
+  try {
+    const { userId, friendId } = req.params;
+
+    let balancesDoc = await Balance.findOne({ userId }).lean();
+
+    if (!balancesDoc || !balancesDoc.balances) {
+      return res.status(200).json({
+        success: true,
+        balance: 0, // default if no balance record exists
+      });
+    }
+
+    const amount = balancesDoc.balances[friendId] || 0;
+
+    // Optionally fetch friend details
+    const friend = await User.findById(friendId, "name email");
+
+    res.status(200).json({
+      success: true,
+      balance: {
+        userId: friendId,
+        name: friend?.name || "Unknown",
+        email: friend?.email || "Unknown",
+        amount,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 router.post("/balances/update", async (req, res) => {
   try {
     const { summary, paidBy, amount } = req.body;
