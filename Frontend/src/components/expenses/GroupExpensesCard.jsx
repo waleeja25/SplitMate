@@ -82,20 +82,18 @@ export default function GroupExpensesCard() {
           const owedToYouArr = [];
           const youOweArr = [];
 
-          console.log(userBalances);
-          Object.entries(userBalances).forEach(([otherName, amt]) => {
-            const member = members.find((m) => m.name === otherName);
-            if (!member) return;
+          Object.entries(userBalances).forEach(([otherId, info]) => {
+            otherId;
+            const { name, amount } = info;
 
-            if (amt > 0) {
-              owedToYouArr.push(`${member.name} owes you Rs ${amt.toFixed(2)}`);
-            } else if (amt < 0) {
+            if (amount > 0) {
+              owedToYouArr.push(`${name} owes you Rs ${amount.toFixed(2)}`);
+            } else if (amount < 0) {
               youOweArr.push(
-                `You owe ${member.name} Rs ${Math.abs(amt).toFixed(2)}`
+                `You owe ${name} Rs ${Math.abs(amount).toFixed(2)}`
               );
             }
           });
-
           setOwedToYou(owedToYouArr);
           setYouOwe(youOweArr);
         }

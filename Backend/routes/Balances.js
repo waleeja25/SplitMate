@@ -229,25 +229,19 @@ router.post("/balances/settle", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+const roundTwo = (num) => Math.round(num * 100) / 100;
 
 router.get("/group-balances/:groupId/:userId", async (req, res) => {
   try {
     const { groupId, userId } = req.params;
 
-    const group = await Group.findById(groupId).populate(
-      "members",
-      "name email"
-    );
+    const group = await Group.findById(groupId).populate("members", "name email");
     if (!group)
-      return res
-        .status(404)
-        .json({ success: false, message: "Group not found" });
+      return res.status(404).json({ success: false, message: "Group not found" });
 
     const isMember = group.members.some((m) => m._id.toString() === userId);
     if (!isMember)
-      return res
-        .status(400)
-        .json({ success: false, message: "User not in this group" });
+      return res.status(400).json({ success: false, message: "User not in this group" });
 
     const balanceDoc = await GroupBalance.findOne({
       groupId: group._id,
@@ -260,16 +254,22 @@ router.get("/group-balances/:groupId/:userId", async (req, res) => {
     if (balanceDoc && balanceDoc.balances) {
       for (const [key, amount] of Object.entries(balanceDoc.balances)) {
         if (group.members.some((m) => m._id.toString() === key)) {
-          userBalances[key] = amount;
-          netBalance += amount;
+          userBalances[key] = roundTwo(amount);
+          netBalance += roundTwo(amount);
         }
       }
     }
 
-    const balancesWithNames = {};
+    const balancesWithIds = {};
     for (const [key, amount] of Object.entries(userBalances)) {
       const member = group.members.find((m) => m._id.toString() === key);
-      if (member) balancesWithNames[member.name] = amount;
+      if (member) {
+        balancesWithIds[member._id.toString()] = {
+          name: member.name,
+          email: member.email,
+            amount: Math.round(amount * 100) / 100,
+        };
+      }
     }
 
     res.status(200).json({
@@ -278,8 +278,8 @@ router.get("/group-balances/:groupId/:userId", async (req, res) => {
       groupName: group.name,
       user: {
         userId,
-        balances: balancesWithNames,
-        netBalance,
+        balances: balancesWithIds,
+         netBalance: Math.round(netBalance * 100) / 100,
       },
     });
   } catch (err) {
