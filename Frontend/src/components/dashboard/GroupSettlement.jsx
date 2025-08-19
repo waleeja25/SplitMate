@@ -13,6 +13,7 @@ const SettleUpPage = ({
   currentUser,
   selectedGroup,
   setSelectedGroup,
+  payerOptions,
 }) => {
   const [groupMembers, setGroupMembers] = useState([]);
   useEffect(() => {
@@ -47,8 +48,6 @@ const SettleUpPage = ({
     }
   };
 
-  console.log("Payer", payer);
-  console.log("Receiver", receiver);
   return (
     <div>
       <div className="flex flex-col items-center mb-4 px-7">
@@ -77,9 +76,18 @@ const SettleUpPage = ({
             onChange={(e) => setPayer(e.target.value)}
             className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
           >
-            <option value={currentUser.objectId}>
-              You ({currentUser.name})
+            <option value="" disabled>
+              Select a payer
             </option>
+            <option value={currentUser.objectId}>{currentUser.name}</option>
+
+            {payerOptions
+              .filter((f) => f.name !== currentUser.name)
+              .map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -90,31 +98,20 @@ const SettleUpPage = ({
 
         <div className="flex flex-col items-center">
           <UserAvatar name={receiver} size={48} />
-          {selectedGroup ? (
-            <select
-              value={receiver}
-              onChange={(e) => setReceiver(e.target.value)}
-              className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
-            >
-              <option value="" disabled>
-                Select a Receiver
-              </option>
-              {groupMembers
-
-                .filter((member) => member.name !== currentUser.name)
-                .map((member) => (
-                  <option key={member._id} value={member._id}>
-                    {member.name === currentUser.name
-                      ? `You (${currentUser.name})`
-                      : member.name}
-                  </option>
-                ))}
-            </select>
-          ) : (
-            <p className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm">
+          <select
+            value={receiver}
+            onChange={(e) => setReceiver(e.target.value)}
+            className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
+          >
+            <option value="" disabled>
               Select a receiver
-            </p>
-          )}
+            </option>
+            {groupMembers.map((member) => (
+              <option key={member._id} value={member._id}>
+                {member.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ const SettleUpPage = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [payer, setPayer] = useState(currentUser.objectId);
+  const [payer, setPayer] = useState("");
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -159,7 +159,7 @@ const SettleUpPage = () => {
       });
 
       setAmount("");
-      setPayer(currentUser.objectId);
+      setPayer("");
       setReceiver("");
       setPaymentMode("online");
       setTransactionType("individual");
@@ -173,27 +173,21 @@ const SettleUpPage = () => {
     }
   };
 
-  const owes = [];
-  const owed = [];
-  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
+  let payerOptions = [];
+  if (transactionType === "individual") {
+    payerOptions = friends;
+  } else if (transactionType === "group") {
+    const group = groups.find((g) => g._id === selectedGroup);
+    if (group) {
+      payerOptions = group.members.map((m) => ({
+        id: m._id,
+        name: m.name,
+        email: m.email,
+      }));
+    }
+  }
 
-  Object.keys(balances).forEach((user) => {
-    if (user === currentUser.name) return;
-
-    const fromOtherToMe = balances[user]?.[currentUser.name] || 0;
-    const fromMeToOther = balances[currentUser.name]?.[user] || 0;
-
-    if (fromMeToOther > 0) owes.push(user);
-    if (fromOtherToMe > 0) owed.push(user);
-  });
-
-  const pendingFriends = Array.from(new Set([...owes, ...owed]))
-    .map((name) => friends.find((f) => f.name === name))
-    .filter(Boolean);
-
-  const friendsToShow =
-    transactionType === "individual" ? pendingFriends : friends;
-  const payerOptions = friendsToShow.filter((f) => f !== receiver);
+  payerOptions = payerOptions.filter((f) => f.id !== receiver);
   return (
     <div className="max-w-3xl mx-auto p-6 bg-[rgb(245,252,250)] min-h-screen">
       <div className="w-full max-w-xl mx-auto p-5 bg-white border border-[#B2E2D2] rounded-xl shadow text-[#4B4B4B] mt-7 ">
@@ -240,6 +234,7 @@ const SettleUpPage = () => {
             currentUser={currentUser}
             selectedGroup={selectedGroup}
             setSelectedGroup={setSelectedGroup}
+            payerOptions={payerOptions}
           />
         ) : (
           <>
@@ -252,15 +247,19 @@ const SettleUpPage = () => {
                     onChange={(e) => setPayer(e.target.value)}
                     className="mt-2 border border-[#B2E2D2] bg-white rounded px-3 py-1 text-sm"
                   >
+                    <option value="" disabled>
+                      Select a payer
+                    </option>
+
                     <option value={currentUser.objectId}>
-                      You ({currentUser.name})
+                      {currentUser.name}
                     </option>
 
                     {payerOptions
                       .filter((f) => f.name !== currentUser.name)
-                      .map((friend) => (
-                        <option key={friend.id} value={friend.id}>
-                          {friend.name}
+                      .map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
                         </option>
                       ))}
                   </select>
@@ -282,11 +281,13 @@ const SettleUpPage = () => {
                     <option value="" disabled>
                       Select a receiver
                     </option>
-                    {friends.map((friend) => (
+                    <option value={currentUser.objectId}>
+                      {currentUser.name}
+                    </option>
+
+                    {payerOptions.map((friend) => (
                       <option key={friend.id} value={friend.id}>
-                        {friend.name === currentUser.name
-                          ? `You (${currentUser.name})`
-                          : friend.name}
+                        {friend.name}
                       </option>
                     ))}
                   </select>
