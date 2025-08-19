@@ -31,6 +31,20 @@ const SettleUpPage = () => {
     }, 3000);
   };
 
+  const getUserNameById = (id) => {
+    if (id === currentUser.objectId) return currentUser.name;
+
+    if (transactionType === "individual") {
+      return friends.find((f) => f.id === id)?.name || "Unknown";
+    } else if (transactionType === "group") {
+      const group = groups.find((g) => g._id === selectedGroup);
+      return (
+        group?.members.find((m) => m._id.toString() === id)?.name || "Unknown"
+      );
+    }
+    return "Unknown";
+  };
+
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -75,14 +89,9 @@ const SettleUpPage = () => {
       });
       return;
     }
-    let payerName =
-      payer === currentUser.objectId
-        ? currentUser.name
-        : friends.find((f) => f.id === payer)?.name || "Unknown";
-    let receiverName =
-      receiver === currentUser.objectId
-        ? currentUser.name
-        : friends.find((f) => f.id === receiver)?.name || "Unknown";
+    let payerName = getUserNameById(payer);
+    let receiverName = getUserNameById(receiver);
+
     try {
       const token = currentUser.token;
 

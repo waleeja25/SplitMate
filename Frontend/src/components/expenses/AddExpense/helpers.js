@@ -122,28 +122,6 @@ export function updateBalances(summary, paidBy, amount, splitType, date) {
   localStorage.setItem("expenses", JSON.stringify(expenses));
 }
 
-export function getUserBalances(currentUser) {
-  const balances = JSON.parse(localStorage.getItem("balances") || "{}");
-  const owes = [];
-  const owed = [];
-
-  const currentUserBalances = balances[currentUser] || {};
-
-  Object.entries(currentUserBalances).forEach(([otherUser, amount]) => {
-    const numAmount = Number(amount);
-    if (numAmount === 0) return;
-    const rounded = Math.round(numAmount * 100) / 100;
-    if (rounded === 0) return;
-    if (numAmount < 0) {
-      owes.push({ to: otherUser, amount: -numAmount });
-    } else if (numAmount > 0) {
-      owed.push({ from: otherUser, amount: numAmount });
-    }
-  });
-
-  return { owes, owed };
-}
-
 export function settleUp(from, to, amount) {
   const balances = JSON.parse(localStorage.getItem("balances") || "{}");
 
@@ -215,118 +193,7 @@ export function getDatewiseExpenses(monthKey, expenses) {
   }));
 }
 
-export function getExpensesForMember(memberName, expenses) {
-  const result = [];
-
-  expenses.forEach((expense) => {
-    const {
-      group,
-      members,
-      paidBy,
-      summary = {},
-      category,
-      amount,
-      date,
-      splitType,
-    } = expense;
-
-    if (!group && Array.isArray(members)) {
-      const isInvolved = members.some((m) => m.name === memberName);
-
-      if (isInvolved) {
-        result.push({
-          paidBy,
-          category,
-          amount,
-          date,
-          splitType,
-          summary,
-        });
-      }
-    }
-  });
-
-  return result;
-}
-
-export function getExpensesForGroup(groupName, expenses) {
-  return expenses.filter((expense) => expense.group === groupName);
-}
-
-export function getGroupUserBalances(
-  currentUser,
-  groupExpenses,
-  groupMembers,
-  groupName
-) {
-  const netBalances = {};
-
-  // Initialize net balances for each member
-  groupMembers.forEach((member) => {
-    if (member !== currentUser) {
-      netBalances[member] = 0;
-    }
-  });
-
-  groupExpenses.forEach((expense) => {
-    if (!expense || expense.group !== groupName) return; // only for this group
-    if (!expense.summary || typeof expense.summary !== "object") return;
-
-    const payer = expense.paidBy;
-
-    Object.entries(expense.summary).forEach(([member, amount]) => {
-      const amt = parseFloat(amount);
-
-      if (member === payer) return;
-
-      // If current user paid, others owe them
-      if (payer === currentUser && member !== currentUser) {
-        netBalances[member] = (netBalances[member] || 0) + amt;
-      }
-
-      // If current user owes someone else
-      else if (member === currentUser && payer !== currentUser) {
-        netBalances[payer] = (netBalances[payer] || 0) - amt;
-      }
-    });
-  });
-
-  const owes = [];
-  const owed = [];
-
-  Object.entries(netBalances).forEach(([person, balance]) => {
-    const rounded = Math.round(balance * 100) / 100;
-
-    if (rounded > 0) {
-      owed.push({ from: person, amount: rounded });
-    } else if (rounded < 0) {
-      owes.push({ to: person, amount: -rounded });
-    }
-  });
-
-  return { owes, owed };
-}
-
-export async function settleUpBackend(from, to, amount, token) {
-  try {
-    const res = await fetch("http://localhost:3001/api/balances/settle", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ from, to, amount }),
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message || "Settlement failed");
-    return data;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-}
-export async function BalanceUpdate(summary, paidBy, amount, splitType, token) {
+export async function BalanceUpdate(payload, token) {
   try {
     const res = await fetch("http://localhost:3001/api/balances/update", {
       method: "POST",
@@ -334,7 +201,7 @@ export async function BalanceUpdate(summary, paidBy, amount, splitType, token) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ summary, paidBy, amount, splitType }),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
@@ -345,3 +212,4 @@ export async function BalanceUpdate(summary, paidBy, amount, splitType, token) {
     throw err;
   }
 }
+

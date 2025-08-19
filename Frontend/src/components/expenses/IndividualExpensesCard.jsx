@@ -175,20 +175,39 @@ export default function IndividualExpensesCard({ friends = [] }) {
         </div>
       </div>
 
-      <div className="tabs tabs-boxed mb-4">
-        <a
-          className={`tab ${activeTab === "expenses" ? "tab-active" : ""}`}
+      <div
+        role="tablist"
+        className="flex space-x-2 mb-4 rounded-xl bg-[#e5f6f3] p-1"
+      >
+        {/* Expenses Tab */}
+        <button
+          role="tab"
+          className={`flex-1 text-center font-medium text-[#2a806d] py-2 rounded-lg transition ${
+            activeTab === "expenses"
+              ? "bg-white shadow-md tab-active"
+              : "hover:bg-[#d1eee5]"
+          }`}
           onClick={() => setActiveTab("expenses")}
         >
-          Expenses ({friendExpenses.length})
-        </a>
-        <a
-          className={`tab ${activeTab === "settlements" ? "tab-active" : ""}`}
+          Expenses{" "}
+          <span className="font-semibold">({friendExpenses.length})</span>
+        </button>
+
+        {/* Settlements Tab */}
+        <button
+          role="tab"
+          className={`flex-1 text-center font-medium text-[#2a806d] py-2 rounded-lg transition ${
+            activeTab === "settlements"
+              ? "bg-white shadow-md tab-active"
+              : "hover:bg-[#d1eee5]"
+          }`}
           onClick={() => setActiveTab("settlements")}
         >
-          Settlements ({settlements.length})
-        </a>
+          Settlements{" "}
+          <span className="font-semibold">({settlements.length})</span>
+        </button>
       </div>
+
       {activeTab === "expenses" && (
         <div className="space-y-4">
           {friendExpenses.map((expense, idx) => {

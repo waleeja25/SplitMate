@@ -183,9 +183,32 @@ router.delete("/expense/:expenseId", async (req, res) => {
   }
 });
 
-router.get("/expense/group/:groupId", async (req, res) => {
+router.get("/expense/group/:groupId/user/:userId", async (req, res) => {
   try {
-    const expenses = await Expense.find({ group: req.params.groupId })
+    const { groupId, userId } = req.params;
+
+    const group = await Group.findById(groupId).populate(
+      "members",
+      "_id name email"
+    );
+    if (!group) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+    }
+
+    const isMember = group.members.some((m) => m._id.toString() === userId);
+    if (!isMember) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "User is not a member of this group",
+        });
+    }
+
+    const expenses = await Expense.find({ group: groupId })
+      .sort({ createdAt: -1 })
       .populate("paidBy", "name email")
       .populate("group", "name");
 
@@ -205,6 +228,7 @@ router.get("/expense/friend/:userId/:friendId", async (req, res) => {
         { paidBy: friendId, "members.userId": userId },
       ],
     })
+      .sort({ createdAt: -1 })
       .populate("paidBy", "name email")
       .populate("group", "name");
 
@@ -213,11 +237,5 @@ router.get("/expense/friend/:userId/:friendId", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
-
-async function getUserEmail(userId) {
-  const user = await User.findById(userId).select("email");
-  return user?.email || "";
-}
 
 module.exports = router;

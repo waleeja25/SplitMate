@@ -285,8 +285,16 @@ const AddExpenseForm = () => {
         throw new Error(result.message || 'Failed to save expense.');
       }
 
+       const balancePayload = { summary, paidBy, amount };
+  if (groupSelected) {
+    const group = groups.find(g => g.name === groupSelected);
+    if (group) balancePayload.groupId = group._id.toString();
+  }
+
+  BalanceUpdate(balancePayload, currentUser.token);
+
       updateBalances(summary, paidBy, amount, splitType, date)
-      BalanceUpdate(summary, paidBy, amount, splitType, currentUser.token)
+     // BalanceUpdate(summary, paidBy, amount, splitType, currentUser.token)
       setExpenses(prev => [...prev, result.expense]);
       setSubmittedExpense(result.expense);
       setShowSummary(true);

@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Balance = require("../models/Balances");
 const User = require("../models/Users");
+const Group = require("../models/Groups");
+const mongoose = require("mongoose");
+const GroupBalance = require("../models/GroupBalance");
 
 router.get("/balances/:userId", async (req, res) => {
   try {
@@ -44,13 +47,11 @@ router.get("/balances/:userId/:friendId", async (req, res) => {
     if (!balancesDoc || !balancesDoc.balances) {
       return res.status(200).json({
         success: true,
-        balance: 0, // default if no balance record exists
+        balance: 0,
       });
     }
 
     const amount = balancesDoc.balances[friendId] || 0;
-
-    // Optionally fetch friend details
     const friend = await User.findById(friendId, "name email");
 
     res.status(200).json({
@@ -67,10 +68,10 @@ router.get("/balances/:userId/:friendId", async (req, res) => {
   }
 });
 
-
 router.post("/balances/update", async (req, res) => {
   try {
-    const { summary, paidBy, amount } = req.body;
+    const { summary, paidBy, amount, groupId } = req.body;
+
     if (!summary || !paidBy || !amount) {
       return res
         .status(400)
@@ -84,6 +85,16 @@ router.post("/balances/update", async (req, res) => {
         .json({ success: false, message: "PaidBy user not found" });
     }
     const paidById = paidByUser._id.toString();
+
+    let group = null;
+    if (groupId) {
+      group = await Group.findById(groupId).populate("members", "name");
+      if (!group) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Group not found" });
+      }
+    }
 
     for (const [name, userAmount] of Object.entries(summary)) {
       const user = await User.findOne({ name });
@@ -107,9 +118,43 @@ router.post("/balances/update", async (req, res) => {
         (creditorBalance.balances.get(userId) || 0) + amt
       );
       await creditorBalance.save();
+
+      if (groupId) {
+        let debtorGroup = await GroupBalance.findOne({ groupId, userId });
+        if (!debtorGroup) debtorGroup = new GroupBalance({ groupId, userId });
+
+        debtorGroup.balances.set(
+          paidById,
+          (debtorGroup.balances.get(paidById) || 0) - amt
+        );
+
+        debtorGroup.netBalance = Array.from(
+          debtorGroup.balances.values()
+        ).reduce((sum, val) => sum + val, 0);
+
+        await debtorGroup.save();
+
+        let creditorGroup = await GroupBalance.findOne({
+          groupId,
+          userId: paidById,
+        });
+        if (!creditorGroup)
+          creditorGroup = new GroupBalance({ groupId, userId: paidById });
+
+        creditorGroup.balances.set(
+          userId,
+          (creditorGroup.balances.get(userId) || 0) + amt
+        );
+
+        creditorGroup.netBalance = Array.from(
+          creditorGroup.balances.values()
+        ).reduce((sum, val) => sum + val, 0);
+
+        await creditorGroup.save();
+      }
     }
 
-    res.status(200).json({ success: true, message: "Balances updated ✅" });
+    res.status(200).json({ success: true, message: "Balances updated" });
   } catch (err) {
     console.error("Balance update error:", err);
     res.status(500).json({ success: false, message: err.message });
@@ -179,6 +224,64 @@ router.post("/balances/settle", async (req, res) => {
     res
       .status(200)
       .json({ success: true, message: "Partial settlement completed" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.get("/group-balances/:groupId/:userId", async (req, res) => {
+  try {
+    const { groupId, userId } = req.params;
+
+    const group = await Group.findById(groupId).populate(
+      "members",
+      "name email"
+    );
+    if (!group)
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+
+    const isMember = group.members.some((m) => m._id.toString() === userId);
+    if (!isMember)
+      return res
+        .status(400)
+        .json({ success: false, message: "User not in this group" });
+
+    const balanceDoc = await GroupBalance.findOne({
+      groupId: group._id,
+      userId: new mongoose.Types.ObjectId(userId),
+    }).lean();
+
+    let userBalances = {};
+    let netBalance = 0;
+
+    if (balanceDoc && balanceDoc.balances) {
+      for (const [key, amount] of Object.entries(balanceDoc.balances)) {
+        if (group.members.some((m) => m._id.toString() === key)) {
+          userBalances[key] = amount;
+          netBalance += amount;
+        }
+      }
+    }
+
+    const balancesWithNames = {};
+    for (const [key, amount] of Object.entries(userBalances)) {
+      const member = group.members.find((m) => m._id.toString() === key);
+      if (member) balancesWithNames[member.name] = amount;
+    }
+
+    res.status(200).json({
+      success: true,
+      groupId,
+      groupName: group.name,
+      user: {
+        userId,
+        balances: balancesWithNames,
+        netBalance,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: err.message });
