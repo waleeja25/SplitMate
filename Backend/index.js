@@ -2,15 +2,18 @@ const express = require('express');
 const connectDB = require('./db');
 const cors = require('cors');
 const {jwtAuthMiddleware} = require('./jwt')
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
 
 const corsOptions = {
-  // origin: [
-  //   "http://localhost:5173",
-  //   // "https://split-mate-2h84.vercel.app"
-  // ],
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL
+  ],
+  // origin: process.env.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   // credentials: true
