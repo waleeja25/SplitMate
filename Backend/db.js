@@ -29,10 +29,16 @@ async function connectDB() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }).then((mongoose) => mongoose);
+cached.promise = mongoose.connect(process.env.MONGODB_URI)
+  .then((mongoose) => {
+    console.log("MongoDB Connected");
+    return mongoose;
+  })
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err);
+    throw err;
+  });
+
   }
 
   cached.conn = await cached.promise;
