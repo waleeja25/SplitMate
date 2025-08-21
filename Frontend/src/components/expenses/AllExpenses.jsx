@@ -88,7 +88,7 @@ const AllExpenses = () => {
       if (!deletedExpense) throw new Error("Expense not found");
       console.log("Delete Expense", deletedExpense);
       const res = await fetch(
-        `http://localhost:3001/api/expense/${expenseId}`,
+        `${backendUrl}/api/expense/${expenseId}`,
         {
           method: "DELETE",
           headers: {

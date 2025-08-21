@@ -11,6 +11,7 @@ const MyFriends = ({ friends, setFriends }) => {
   const [error, setError] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [alert, setAlert] = useState(null);
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const navigate = useNavigate();
 
   const showAlert = (alertObj) => {
@@ -28,7 +29,7 @@ const MyFriends = ({ friends, setFriends }) => {
     try {
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3001/api/friends`, {
+      const res = await fetch(`${backendUrl}/api/friends`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +90,7 @@ const MyFriends = ({ friends, setFriends }) => {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+        const res = await fetch(`${backendUrl}/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
@@ -112,13 +113,13 @@ const MyFriends = ({ friends, setFriends }) => {
     };
 
     fetchFriends();
-  }, [setFriends]);
+  }, [setFriends,backendUrl]);
 
   const handleDeleteFriend = async (friendId) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:3001/api/friends/${friendId}`, {
+      const res = await fetch(`${backendUrl}/api/friends/${friendId}`, {
         method: 'DELETE',
         headers: {
           "Content-Type": "application/json",

@@ -3,6 +3,7 @@ import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import alertDisplay from "../ui/alertDisplay.jsx";
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const LoginForm = () => {
   const [alert, setAlert] = useState(null);
@@ -44,7 +45,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await fetch("http://localhost:3001/api/login", {
+      const res = await fetch(`${backendUrl}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

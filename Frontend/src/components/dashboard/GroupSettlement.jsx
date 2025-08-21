@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaExchangeAlt } from "react-icons/fa";
 import UserAvatar from "../ui/UseAvatar";
 import { useEffect } from "react";
-
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 const SettleUpPage = ({
   groups,
   setGroups,
@@ -20,7 +20,7 @@ const SettleUpPage = ({
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3001/api/groups/my", {
+        const res = await fetch(`${backendUrl}/api/groups/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

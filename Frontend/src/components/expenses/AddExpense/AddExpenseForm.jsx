@@ -49,7 +49,7 @@ const AddExpenseForm = () => {
     tip: 0,
     grandTotal: 0,
   });
-
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
   expenses;
 
   const showAlert = (alertObj) => {
@@ -62,7 +62,7 @@ const AddExpenseForm = () => {
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3001/api/groups/my", {
+        const res = await fetch(`${backendUrl}/api/groups/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -80,7 +80,7 @@ const AddExpenseForm = () => {
     };
 
     fetchGroups();
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -88,7 +88,7 @@ const AddExpenseForm = () => {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+        const res = await fetch(`${backendUrl}/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ const AddExpenseForm = () => {
     };
 
     fetchFriends();
-  }, []);
+  }, [backendUrl]);
 
   const currentUser = {
     name: localStorage.getItem("username"),
@@ -276,7 +276,7 @@ const AddExpenseForm = () => {
 
     try {
       const token = currentUser.token;
-      const res = await fetch("http://localhost:3001/api/expense", {
+      const res = await fetch(`${backendUrl}/api/expense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

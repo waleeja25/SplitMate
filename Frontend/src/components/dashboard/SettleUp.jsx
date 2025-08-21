@@ -6,6 +6,7 @@ import UserAvatar from "../ui/UseAvatar";
 import { useEffect } from "react";
 import GroupSettlement from "./GroupSettlement";
 import alertDisplay from "../ui/alertDisplay";
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const SettleUpPage = () => {
   const currentUser = {
@@ -52,7 +53,7 @@ const SettleUpPage = () => {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+        const res = await fetch(`${backendUrl}/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -107,7 +108,7 @@ const SettleUpPage = () => {
           settleInGroup,
         };
 
-        const res = await fetch("http://localhost:3001/api/settlement", {
+        const res = await fetch(`${backendUrl}/api/settlement`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -137,7 +138,7 @@ const SettleUpPage = () => {
           group: groupId,
           date,
         };
-        const res = await fetch("http://localhost:3001/api/settlement", {
+        const res = await fetch(`${backendUrl}/api/settlement`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

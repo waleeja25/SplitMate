@@ -1,10 +1,11 @@
 const express = require('express');
-const connectDB = require('./db');
+const connectDB = require('../db');
 const cors = require('cors');
-const {jwtAuthMiddleware} = require('./jwt')
+const {jwtAuthMiddleware} = require('../jwt')
 const dotenv = require('dotenv');
 
 dotenv.config();
+connectDB();
 
 const app = express();
 
@@ -23,18 +24,16 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions)); 
 
 
+app.use(express.json()); 
 
-const users = require('./routes/User');
-const groups = require('./routes/Groups');
-const friends = require('./routes/Friends');
-const expenses = require('./routes/Expenses');
-const settlements = require('./routes/Settlements');
-const balances = require('./routes/Balances')
+const users = require('../routes/User');
+const groups = require('../routes/Groups');
+const friends = require('../routes/Friends');
+const expenses = require('../routes/Expenses');
+const settlements = require('../routes/Settlements');
+const balances = require('../routes/Balances')
 const PORT = 3001;
 
-
-app.use(express.json()); 
-connectDB();
 
 app.use((req, res, next) => {
   console.log("Incoming request path:", req.path);
@@ -54,8 +53,8 @@ app.get('/', (req, res) => {
     res.send("GET Request");
 })
 
-app.listen(PORT, ()=> {
-    console.log("Server is Up");
-})
+// app.listen(PORT, ()=> {
+//     console.log("Server is Up");
+// })
 
 

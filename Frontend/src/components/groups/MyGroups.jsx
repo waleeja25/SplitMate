@@ -10,7 +10,7 @@ const MyGroups = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
-
+ const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const showAlert = (alertObj) => {
     setAlert(alertObj);
     setTimeout(() => {
@@ -23,7 +23,7 @@ const MyGroups = () => {
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3001/api/groups/my", {
+        const res = await fetch(`${backendUrl}/api/groups/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -43,7 +43,7 @@ const MyGroups = () => {
     };
 
     fetchGroups();
-  }, []);
+  }, [backendUrl]);
 
   console.log(groups);
 
@@ -68,7 +68,7 @@ const MyGroups = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:3001/api/groups/${groupId}`, {
+      const res = await fetch(`${backendUrl}/api/groups/${groupId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

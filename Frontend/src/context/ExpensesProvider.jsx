@@ -1,22 +1,9 @@
-// import { useState } from "react";
-// import { ExpensesContext } from "./ExpensesContext";
-
-// export default function ExpensesProvider({ children }) {
-//   const [expenses, setExpenses] = useState([]);
-
-//   return (
-//     <ExpensesContext.Provider value={{ expenses, setExpenses }}>
-//       {children}
-//     </ExpensesContext.Provider>
-//   );
-// }
-// context/ExpensesProvider.js
 import { useState, useEffect, useCallback } from "react";
 import { ExpensesContext } from "./ExpensesContext";
 
 export default function ExpensesProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
-
+ const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const fetchExpenses = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -24,7 +11,7 @@ export default function ExpensesProvider({ children }) {
 
       if (!token || !userId) return;
 
-      const res = await fetch(`http://localhost:3001/api/expenses/${userId}`, {
+      const res = await fetch(`${backendUrl}/api/expenses/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -38,7 +25,7 @@ export default function ExpensesProvider({ children }) {
     } catch (err) {
       console.error("Error fetching expenses:", err);
     }
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
     fetchExpenses();

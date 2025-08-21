@@ -12,7 +12,7 @@ export default function IndividualExpensesCard({ friends = [] }) {
   const [balance, setBalance] = useState(null);
   const [settlements, setSettlements] = useState([]);
   const [activeTab, setActiveTab] = useState("expenses");
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const sessionUser = useMemo(() => {
     return {
       name: localStorage.getItem("username"),
@@ -30,49 +30,25 @@ export default function IndividualExpensesCard({ friends = [] }) {
     email: "not-found@example.com",
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const resExpenses = await fetch(
-  //         `http://localhost:3001/api/expense/friend/${sessionUser.objectId}/${friendId}`,
-  //         { headers: { Authorization: `Bearer ${sessionUser.token}` } }
-  //       );
-  //       const dataExpenses = await resExpenses.json();
-  //       if (dataExpenses.success) setFriendExpenses(dataExpenses.expenses);
-
-  //       const resBalance = await fetch(
-  //         `http://localhost:3001/api/balances/${sessionUser.objectId}/${friendId}`,
-  //         { headers: { Authorization: `Bearer ${sessionUser.token}` } }
-  //       );
-  //       const dataBalance = await resBalance.json();
-  //       if (dataBalance.success) setBalance(dataBalance.balance);
-  //     } catch (err) {
-  //       console.error("Error fetching friend data:", err);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [friendId, sessionUser]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resExpenses = await fetch(
-          `http://localhost:3001/api/expense/friend/${sessionUser.objectId}/${friendId}`,
+          `${backendUrl}/api/expense/friend/${sessionUser.objectId}/${friendId}`,
           { headers: { Authorization: `Bearer ${sessionUser.token}` } }
         );
         const dataExpenses = await resExpenses.json();
         if (dataExpenses.success) setFriendExpenses(dataExpenses.expenses);
 
         const resBalance = await fetch(
-          `http://localhost:3001/api/balances/${sessionUser.objectId}/${friendId}`,
+          `${backendUrl}/api/balances/${sessionUser.objectId}/${friendId}`,
           { headers: { Authorization: `Bearer ${sessionUser.token}` } }
         );
         const dataBalance = await resBalance.json();
         if (dataBalance.success) setBalance(dataBalance.balance);
 
         const resSettlements = await fetch(
-          `http://localhost:3001/api/settlement/${sessionUser.objectId}/${friendId}`,
+          `${backendUrl}/api/settlement/${sessionUser.objectId}/${friendId}`,
           { headers: { Authorization: `Bearer ${sessionUser.token}` } }
         );
         const dataSettlements = await resSettlements.json();
@@ -84,7 +60,7 @@ export default function IndividualExpensesCard({ friends = [] }) {
     };
 
     fetchData();
-  }, [friendId, sessionUser]);
+  }, [friendId, sessionUser, backendUrl]);
 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 min-h-screen">

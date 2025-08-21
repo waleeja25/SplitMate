@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 
 const CreateGroup = ({ setGroups }) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const [friends, setFriends] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [saveName, isSaveName] = useState(false);
@@ -53,7 +54,7 @@ const CreateGroup = ({ setGroups }) => {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
+        const res = await fetch(`${backendUrl}/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -78,7 +79,7 @@ const CreateGroup = ({ setGroups }) => {
     };
 
     fetchFriends();
-  }, []);
+  }, [backendUrl]);
 
   const handleAddMember = () => {
     const nameMissing = !memberName.trim();
@@ -119,7 +120,7 @@ const CreateGroup = ({ setGroups }) => {
       };
       const allMembers = [currentUser, ...members];
 
-      const res = await fetch("http://localhost:3001/api/groups", {
+      const res = await fetch(`${backendUrl}/api/groups`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

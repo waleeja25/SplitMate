@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [barData, setBarData] = useState([]);
   const [balances, setBalances] = useState([]);
   const { expenses } = useExpenses();
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
 console.log(expenses)
   const user = {
     name: localStorage.getItem("username"),
@@ -25,7 +26,7 @@ console.log(expenses)
   const fetchBalances = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/balances/${user.objectId}`,
+        `${backendUrl}/api/balances/${user.objectId}`,
         {
           headers: { Authorization: `Bearer ${user.token}` },
         }
@@ -37,7 +38,7 @@ console.log(expenses)
     } catch (err) {
       console.error("Error fetching balances:", err);
     }
-  }, [user.objectId, user.token]);
+  }, [user.objectId, user.token, backendUrl]);
 
   useEffect(() => {
     fetchBalances();

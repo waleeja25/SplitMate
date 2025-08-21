@@ -3,6 +3,7 @@ import logo from '../../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import alertDisplay from '../ui/alertDisplay.jsx';
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const SignupForm = () => {
 
   const onSubmit = async (data) => {
      try {
-      const res = await fetch('http://localhost:3001/api/register', {
+      const res = await fetch(`${backendUrl}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

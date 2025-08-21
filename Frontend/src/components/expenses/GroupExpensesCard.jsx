@@ -15,12 +15,12 @@ export default function GroupExpensesCard() {
   const [owedToYou, setOwedToYou] = useState([]);
   const [youOwe, setYouOwe] = useState([]);
   const [groups, setGroups] = useState([]);
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   useEffect(() => {
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3001/api/groups/my", {
+        const res = await fetch(`${backendUrl}/api/groups/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +38,7 @@ export default function GroupExpensesCard() {
     };
 
     fetchGroups();
-  }, []);
+  }, [backendUrl]);
 
   const sessionUser = useMemo(
     () => ({
@@ -60,14 +60,14 @@ export default function GroupExpensesCard() {
         const token = sessionUser.token;
 
         const resExpenses = await fetch(
-          `http://localhost:3001/api/expense/group/${groupId}/user/${sessionUser.objectId}`,
+          `${backendUrl}/api/expense/group/${groupId}/user/${sessionUser.objectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const dataExpenses = await resExpenses.json();
         if (dataExpenses.success) setGroupExpenses(dataExpenses.expenses);
 
         const resBalance = await fetch(
-          `http://localhost:3001/api/group-balances/${groupId}/${sessionUser.objectId}`,
+          `${backendUrl}/api/group-balances/${groupId}/${sessionUser.objectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const dataBalance = await resBalance.json();
@@ -99,7 +99,7 @@ export default function GroupExpensesCard() {
         }
 
         const resSettlements = await fetch(
-          `http://localhost:3001/api/settlement/group/${groupId}`,
+          `${backendUrl}/api/settlement/group/${groupId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const dataSettlements = await resSettlements.json();
@@ -111,7 +111,7 @@ export default function GroupExpensesCard() {
     };
 
     fetchData();
-  }, [groupId, sessionUser, members]);
+  }, [groupId, sessionUser, members, backendUrl]);
 
   console.log(owedToYou);
   console.log(youOwe);

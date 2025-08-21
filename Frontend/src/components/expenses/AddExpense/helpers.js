@@ -192,10 +192,10 @@ export function getDatewiseExpenses(monthKey, expenses) {
     total: Number(total.toFixed(2)),
   }));
 }
-
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 export async function BalanceUpdate(payload, token) {
   try {
-    const res = await fetch("http://localhost:3001/api/balances/update", {
+    const res = await fetch(`${backendUrl}/api/balances/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
