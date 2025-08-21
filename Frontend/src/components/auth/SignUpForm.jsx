@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import logo from "../../assets/logo.png";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import alertDisplay from "../ui/alertDisplay.jsx";
-const backendUrl = import.meta.env.VITE_BACKEND_URI;
+import React, { useState, useEffect } from 'react';
+import logo from '../../assets/logo.png';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import alertDisplay from '../ui/alertDisplay.jsx';
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -16,17 +15,17 @@ const SignupForm = () => {
     formState: { errors },
   } = useForm();
 
-  const password = watch("password");
+  const password = watch('password');
 
   const onSubmit = async (data) => {
-    try {
-      const res = await fetch(`${backendUrl}/api/register`, {
-        method: "POST",
+     try {
+      const res = await fetch('http://localhost:3001/api/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: data.username,
+          name: data.username, 
           email: data.email,
           password: data.password,
         }),
@@ -36,22 +35,22 @@ const SignupForm = () => {
 
       if (!res.ok) {
         setAlert({
-          type: "error",
-          title: "Error",
-          message: result.message || "Something went wrong",
+          type: 'error',
+          title: 'Error',
+          message: result.message || 'Something went wrong',
         });
         return;
       }
 
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("username", result.user.name);
-      localStorage.setItem("email", result.user.email);
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('username', result.user.name);
+      localStorage.setItem('email', result.user.email);
 
-      navigate("/login");
+      navigate('/login');
     } catch (err) {
       setAlert({
-        type: "error",
-        title: "Error",
+        type: 'error',
+        title: 'Error',
         message: err.message,
       });
     }
@@ -60,33 +59,33 @@ const SignupForm = () => {
   const onError = (errors) => {
     if (errors.username && errors.password && errors.confirmPassword) {
       setAlert({
-        type: "error",
-        title: "Error",
-        message: "All fields are required.",
+        type: 'error',
+        title: 'Error',
+        message: 'All fields are required.',
       });
     } else if (errors.username) {
       setAlert({
-        type: "error",
-        title: "Error",
-        message: "Username is required.",
+        type: 'error',
+        title: 'Error',
+        message: 'Username is required.',
       });
     } else if (errors.password) {
       setAlert({
-        type: "error",
-        title: "Error",
-        message: "Password is required.",
+        type: 'error',
+        title: 'Error',
+        message: 'Password is required.',
       });
-    } else if (errors.confirmPassword?.type === "required") {
+    } else if (errors.confirmPassword?.type === 'required') {
       setAlert({
-        type: "error",
-        title: "Error",
-        message: "Please confirm your password.",
+        type: 'error',
+        title: 'Error',
+        message: 'Please confirm your password.',
       });
-    } else if (errors.confirmPassword?.type === "validate") {
+    } else if (errors.confirmPassword?.type === 'validate') {
       setAlert({
-        type: "error",
-        title: "Error",
-        message: "Passwords do not match.",
+        type: 'error',
+        title: 'Error',
+        message: 'Passwords do not match.',
       });
     }
   };
@@ -117,27 +116,29 @@ const SignupForm = () => {
         </p>
         <hr className="border-t border-gray-300 my-4" />
 
-        <div className="text-left w-full">{alert && alertDisplay(alert)}</div>
+        <div className="text-left w-full">
+          {alert && alertDisplay(alert)}
+        </div>
 
         <input
           type="text"
           placeholder="Username"
-          {...register("username", { required: true })}
-          aria-invalid={errors.username ? "true" : "false"}
+          {...register('username', { required: true })}
+          aria-invalid={errors.username ? 'true' : 'false'}
           className="w-full px-4 py-3 mt-3 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
         />
 
         <input
           type="text"
           placeholder="Email"
-          {...register("email", {
-            required: "Email is required",
+          {...register('email', {
+            required: 'Email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Please enter a valid email address",
+              message: 'Please enter a valid email address',
             },
           })}
-          aria-invalid={errors.email ? "true" : "false"}
+          aria-invalid={errors.email ? 'true' : 'false'}
           className="w-full px-4 py-3 mt-3 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
         />
         {errors.email && (
@@ -147,19 +148,19 @@ const SignupForm = () => {
         <input
           type="password"
           placeholder="Password"
-          {...register("password", { required: true })}
-          aria-invalid={errors.password ? "true" : "false"}
+          {...register('password', { required: true })}
+          aria-invalid={errors.password ? 'true' : 'false'}
           className="w-full px-4 py-3 mt-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
         />
 
         <input
           type="password"
           placeholder="Confirm Password"
-          {...register("confirmPassword", {
+          {...register('confirmPassword', {
             required: true,
             validate: (value) => value === password,
           })}
-          aria-invalid={errors.confirmPassword ? "true" : "false"}
+          aria-invalid={errors.confirmPassword ? 'true' : 'false'}
           className="w-full px-4 py-3 mt-2 mb-4 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-[#1cc29f] transition"
         />
 

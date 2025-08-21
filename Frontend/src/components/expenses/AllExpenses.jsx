@@ -3,6 +3,7 @@ import ExpenseCard from "./ExpenseCard";
 import { useState, useEffect } from "react";
 import alertDisplay from "../ui/alertDisplay";
 import { BalanceUpdate } from "./AddExpense/helpers";
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const AllExpenses = () => {
   const sessionUser = useMemo(() => {
@@ -33,7 +34,7 @@ const AllExpenses = () => {
       }
       try {
         const res = await fetch(
-          `http://localhost:3001/api/expenses/${sessionUser.objectId}`,
+          `${backendUrl}/api/expenses/${sessionUser.objectId}`,
           {
             headers: {
               Authorization: `Bearer ${sessionUser.token}`,
