@@ -6,13 +6,14 @@ const {jwtAuthMiddleware} = require('./jwt')
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    // "https://split-mate-2h84.vercel.app"
-  ],
+  // origin: [
+  //   "http://localhost:5173",
+  //   // "https://split-mate-2h84.vercel.app"
+  // ],
+  origin: process.env.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  // credentials: true
 };
 
 app.use(cors(corsOptions));
