@@ -42,6 +42,160 @@ const ExpenseCard = ({
   return (
     <>
       <div className="mb-5 bg-white border border-[#ccc] rounded-lg px-5 py-4 shadow hover:shadow-md transition">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+          <div className="flex flex-row sm:flex-col items-center sm:items-center text-[#2a806d] font-bold">
+            <div className="text-2xl">{month}</div>
+            <div className="text-2xl ml-2 sm:ml-0">{day}</div>
+          </div>
+
+          <div className="flex-1">
+            <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-lg sm:text-xl mt-1 sm:mt-2">
+              <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+              <span>{categoryName}</span>
+            </div>
+
+            {expense.groupName === "Multiple people" ? (
+              <>
+                <div
+                  className="tooltip tooltip-top hidden sm:inline-block"
+                  data-tip={expense.tooltip}
+                >
+                  <span
+                    className="text-sm text-gray-500 cursor-pointer"
+                    onClick={() => setShowModal(true)}
+                  >
+                    {expense.groupName}
+                  </span>
+                </div>
+
+                <span
+                  className="sm:hidden text-sm text-gray-500 underline cursor-pointer"
+                  onClick={() => setShowModal(true)}
+                >
+                  {groupName}
+                </span>
+              </>
+            ) : (
+              <div className="text-sm text-gray-500">{groupName}</div>
+            )}
+
+            {showModal && (
+              <div className="modal modal-open">
+                <div className="modal-box">
+                  <h3 className="font-bold text-lg">Members</h3>
+                  <ul className="list-disc ml-5 mt-2">
+                    {expense.tooltip.split(", ").map((name, idx) => (
+                      <li key={idx}>{name}</li>
+                    ))}
+                  </ul>
+                  <div className="modal-action">
+                    <button
+                      className="btn bg-[#2a806d] hover:bg-[#53b8a2] text-white"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="text-xs sm:text-sm text-gray-500 italic">
+              {expense.splitType} split
+            </div>
+          </div>
+
+          <div className="text-right min-w-[100px] sm:min-w-[110px] text-sm sm:text-[15px] space-y-1">
+            <div className="text-[#474747] font-semibold italic">
+              {payerLabel} paid
+            </div>
+            <div className="font-bold text-[#111] text-base">
+              Rs {expense.amount}
+            </div>
+
+            {totalOwedToYou > 0 && (
+              <div>
+                <p className="text-gray-500 font-semibold italic text-xs sm:text-sm">
+                  You are owed
+                </p>
+                <span className="font-bold text-green-600 text-sm sm:text-base">
+                  Rs {totalOwedToYou.toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {totalYouOwe > 0 && (
+              <div>
+                <p className="text-gray-500 font-semibold italic text-xs sm:text-sm">
+                  You owe{" "}
+                  {payerName === sessionUser.name ? "others" : payerName}
+                </p>
+                <span className="font-bold text-red-600 text-sm sm:text-base">
+                  Rs {Math.abs(Number(totalYouOwe)).toFixed(2)}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {(owedToYou.length > 0 || youOwe.length > 0) && (
+          <>
+            <div className="mt-3 flex items-center justify-between">
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="text-base text-[#2a806d] font-medium flex items-center gap-2"
+              >
+                {expanded ? <FaChevronUp /> : <FaChevronDown />}
+                {expanded ? "Hide Details" : "Show Details"}
+              </button>
+
+              <button
+                onClick={() => handleDeleteExpense(expense.expenseId)}
+                className="text-red-500 hover:text-red-700"
+                title="Delete"
+              >
+                <FaTrashAlt size={18} />
+              </button>
+            </div>
+
+            {expanded && (
+              <div className="mt-4 grid md:grid-cols-2 gap-6 text-sm sm:text-[14px] font-medium">
+                <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
+                  <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">
+                    Owed to You
+                  </h4>
+                  {owedToYou.length > 0 ? (
+                    <ul className="list-disc ml-6 text-[#075e54] space-y-1">
+                      {owedToYou.map((line, i) => (
+                        <li key={i}>{line}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[#666]">None</p>
+                  )}
+                </div>
+
+                <div className="bg-[#fff4f4] border border-[#ef4444] rounded-xl p-4">
+                  <h4 className="font-semibold text-[#ef4444] text-lg mb-3">
+                    You Owe
+                  </h4>
+                  {youOwe.length > 0 ? (
+                    <ul className="list-disc ml-6 text-[#7f1d1d] space-y-2">
+                      {youOwe.map((line, i) => (
+                        <li key={i}>{line}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[#666]">None</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* <div className="mb-5 bg-white border border-[#ccc] rounded-lg px-5 py-4 shadow hover:shadow-md transition">
         <div className="flex justify-between items-start gap-4">
           <div className="flex flex-col items-center text-[#2a806d] font-bold">
             <div className="text-2xl">{month}</div>
@@ -191,7 +345,7 @@ const ExpenseCard = ({
             )}
           </>
         )}
-      </div>
+      </div> */}
     </>
   );
 };

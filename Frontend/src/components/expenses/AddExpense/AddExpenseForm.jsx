@@ -1,25 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
-import { getAllCategories } from '../../../lib/expense-categories';
-import alertDisplay from '../../ui/alertDisplay';
-import { updateBalances, BalanceUpdate } from './helpers';
-import SplitEqual from './SplitEqual';
-import SplitPercentage from './SplitPercentage';
-import SplitExact from './SplitExact';
-import SplitItemized from './SplitItemized';
-import ExpenseSummaryModal from './ExpenseSummaryModal';
-import { useExpenses } from '../../../context/UseExpenses';
-import 'react-datepicker/dist/react-datepicker.css';
-import DatePickerComponent from '../../ui/DatePickerComponent';
+import { useState, useEffect, useMemo } from "react";
+import { getAllCategories } from "../../../lib/expense-categories";
+import alertDisplay from "../../ui/alertDisplay";
+import { updateBalances, BalanceUpdate } from "./helpers";
+import SplitEqual from "./SplitEqual";
+import SplitPercentage from "./SplitPercentage";
+import SplitExact from "./SplitExact";
+import SplitItemized from "./SplitItemized";
+import ExpenseSummaryModal from "./ExpenseSummaryModal";
+import { useExpenses } from "../../../context/UseExpenses";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePickerComponent from "../../ui/DatePickerComponent";
 import {
   calculateEqualSplit,
   calculatePercentageSplit,
   calculateExactSplit,
   calculateItemizedSplit,
-} from './helpers';
+} from "./helpers";
 import { FaSpinner } from "react-icons/fa";
 
 const AddExpenseForm = () => {
-  const { fetchExpenses } = useExpenses();  
   const [alert, setAlert] = useState(null);
   const { expenses, setExpenses } = useExpenses();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,22 +27,21 @@ const AddExpenseForm = () => {
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [friends, setFriends] = useState([])
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState('');
-  const [groupSelected, setGroupSelected] = useState('');
-  const [paidBy, setPaidBy] = useState('');
-  const [splitType, setSplitType] = useState('');
+  const [friends, setFriends] = useState([]);
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [date, setDate] = useState("");
+  const [groupSelected, setGroupSelected] = useState("");
+  const [paidBy, setPaidBy] = useState("");
+  const [splitType, setSplitType] = useState("");
   const [percentages, setPercentages] = useState({});
   const [exactAmounts, setExactAmounts] = useState({});
-  const [items, setItems] = useState([{ name: '', cost: '', assignedTo: '' }]);
+  const [items, setItems] = useState([{ name: "", cost: "", assignedTo: "" }]);
   const [taxPercent, setTaxPercent] = useState(0);
   const [tipPercent, setTipPercent] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [submittedExpense, setSubmittedExpense] = useState(null);
-
-  const [isGroup, setIsGroup] = useState(true);
+  const [type, setType] = useState("individual");
   const [itemizedTotals, setItemizedTotals] = useState({
     memberTotals: {},
     subtotal: 0,
@@ -52,7 +50,7 @@ const AddExpenseForm = () => {
     grandTotal: 0,
   });
 
-  expenses
+  expenses;
 
   const showAlert = (alertObj) => {
     setAlert(alertObj);
@@ -84,7 +82,6 @@ const AddExpenseForm = () => {
     fetchGroups();
   }, []);
 
-
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -94,14 +91,14 @@ const AddExpenseForm = () => {
         const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await res.json();
         if (data.success) {
           setFriends(
-            data.friends.map(f => ({
+            data.friends.map((f) => ({
               id: f._id,
               name: f.friend.name,
               email: f.friend.email,
@@ -118,13 +115,12 @@ const AddExpenseForm = () => {
     fetchFriends();
   }, []);
 
-
   const currentUser = {
     name: localStorage.getItem("username"),
     email: localStorage.getItem("email"),
-    userId:localStorage.getItem("userId"),
-    objectId:localStorage.getItem("objectId"),
-    token: localStorage.getItem("token")
+    userId: localStorage.getItem("userId"),
+    objectId: localStorage.getItem("objectId"),
+    token: localStorage.getItem("token"),
   };
 
   const selectedGroup = groups.find((group) => group.name === groupSelected);
@@ -136,9 +132,8 @@ const AddExpenseForm = () => {
     return { members: Array.isArray(members) ? members : [] };
   }, [selectedGroup, members]);
 
-
   const handleAddItem = () => {
-    setItems([...items, { name: '', cost: '', assignedTo: '' }]);
+    setItems([...items, { name: "", cost: "", assignedTo: "" }]);
   };
 
   const handleAddMember = (e) => {
@@ -146,18 +141,17 @@ const AddExpenseForm = () => {
     if (members.length === 0) {
       setMembers([
         { name: currentUser.name, email: currentUser.email },
-        { name: memberName.trim(), email: memberEmail.trim() }
+        { name: memberName.trim(), email: memberEmail.trim() },
       ]);
     } else {
       setMembers([
         ...members,
-        { name: memberName.trim(), email: memberEmail.trim() }
+        { name: memberName.trim(), email: memberEmail.trim() },
       ]);
     }
     setMemberName("");
     setMemberEmail("");
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -166,7 +160,7 @@ const AddExpenseForm = () => {
       showAlert({
         type: "error",
         title: "Error",
-        message: 'Please fill out all fields.'
+        message: "Please fill out all fields.",
       });
       setIsSubmitting(false);
       return;
@@ -175,13 +169,16 @@ const AddExpenseForm = () => {
     const expenseAmount = parseFloat(amount || 0);
     let summary = {};
 
-    if (splitType === 'exact') {
-      const total = Object.values(exactAmounts).reduce((a, b) => a + parseFloat(b || 0), 0);
+    if (splitType === "exact") {
+      const total = Object.values(exactAmounts).reduce(
+        (a, b) => a + parseFloat(b || 0),
+        0
+      );
       if (Math.abs(total - expenseAmount) > 0.01) {
         showAlert({
           type: "error",
           title: "Mismatch",
-          message: "Exact amounts do not match total."
+          message: "Exact amounts do not match total.",
         });
         setIsSubmitting(false);
         return;
@@ -189,14 +186,13 @@ const AddExpenseForm = () => {
       ({ summary } = calculateExactSplit(people.members, exactAmounts, paidBy));
     }
 
-
-    if (splitType === 'itemizedExpense') {
+    if (splitType === "itemizedExpense") {
       for (const item of items) {
         if (!item.name || !item.cost || !item.assignedTo) {
           showAlert({
             type: "error",
             title: "Error",
-            message: "All items must be filled."
+            message: "All items must be filled.",
           });
           setIsSubmitting(false);
           return;
@@ -222,13 +218,18 @@ const AddExpenseForm = () => {
       });
     }
 
-    if (splitType === 'percentage') {
-      const result = calculatePercentageSplit(people.members, percentages, expenseAmount, paidBy);
+    if (splitType === "percentage") {
+      const result = calculatePercentageSplit(
+        people.members,
+        percentages,
+        expenseAmount,
+        paidBy
+      );
       if (result.error) {
         showAlert({
           type: "error",
           title: "Error",
-          message: result.error
+          message: result.error,
         });
 
         setIsSubmitting(false);
@@ -237,20 +238,24 @@ const AddExpenseForm = () => {
       summary = result.summary;
     }
 
-    if (splitType === 'equal') {
-      ({ summary } = calculateEqualSplit(people.members, expenseAmount, paidBy));
+    if (splitType === "equal") {
+      ({ summary } = calculateEqualSplit(
+        people.members,
+        expenseAmount,
+        paidBy
+      ));
     }
 
     const formattedMembers = Array.isArray(people.members)
-      ? people.members.map(m => ({
-        userId: m._id,
-        name: m.name,
-        email: m.email,
-      }))
+      ? people.members.map((m) => ({
+          userId: m._id,
+          name: m.name,
+          email: m.email,
+        }))
       : [];
 
     const groupMembers = groupSelected
-      ? groups.find(g => g.name === groupSelected)?.members || []
+      ? groups.find((g) => g.name === groupSelected)?.members || []
       : [];
     const expense = {
       amount: expenseAmount,
@@ -259,43 +264,43 @@ const AddExpenseForm = () => {
       group: groupSelected || null,
       paidBy,
       splitType,
-      percentages: splitType === 'percentage' ? percentages : null,
-      exactAmounts: splitType === 'exact' ? exactAmounts : null,
-      items: splitType === 'itemizedExpense' ? items : null,
-      taxPercent: splitType === 'itemizedExpense' ? taxPercent : null,
-      tipPercent: splitType === 'itemizedExpense' ? tipPercent : null,
+      percentages: splitType === "percentage" ? percentages : null,
+      exactAmounts: splitType === "exact" ? exactAmounts : null,
+      items: splitType === "itemizedExpense" ? items : null,
+      taxPercent: splitType === "itemizedExpense" ? taxPercent : null,
+      tipPercent: splitType === "itemizedExpense" ? tipPercent : null,
       summary,
       members: groupSelected ? groupMembers : formattedMembers,
+      type,
     };
 
     try {
-      const token = currentUser.token
-      const res = await fetch('http://localhost:3001/api/expense', {
-        method: 'POST',
+      const token = currentUser.token;
+      const res = await fetch("http://localhost:3001/api/expense", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(expense)
+        body: JSON.stringify(expense),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.message || 'Failed to save expense.');
+        throw new Error(result.message || "Failed to save expense.");
       }
 
-       const balancePayload = { summary, paidBy, amount };
-  if (groupSelected) {
-    const group = groups.find(g => g.name === groupSelected);
-    if (group) balancePayload.groupId = group._id.toString();
-  }
+      const balancePayload = { summary, paidBy, amount, type };
+      if (groupSelected) {
+        const group = groups.find((g) => g.name === groupSelected);
+        if (group) balancePayload.groupId = group._id.toString();
+      }
 
-  BalanceUpdate(balancePayload, currentUser.token);
+      BalanceUpdate(balancePayload, currentUser.token);
 
-      updateBalances(summary, paidBy, amount, splitType, date)
-     // BalanceUpdate(summary, paidBy, amount, splitType, currentUser.token)
-      setExpenses(prev => [...prev, result.expense]);
+      updateBalances(summary, paidBy, amount, splitType, date);
+      setExpenses((prev) => [...prev, result.expense]);
       setSubmittedExpense(result.expense);
       setShowSummary(true);
 
@@ -306,17 +311,17 @@ const AddExpenseForm = () => {
         color: "#a5d6a7",
       });
 
-      setAmount('');
-      setCategory('');
-      setDate('');
-      setGroupSelected('');
-      setPaidBy('');
+      setAmount("");
+      setCategory("");
+      setDate("");
+      setGroupSelected("");
+      setPaidBy("");
       setPercentages({});
       setExactAmounts({});
-      setItems([{ name: '', cost: '', assignedTo: '' }]);
+      setItems([{ name: "", cost: "", assignedTo: "" }]);
       setTaxPercent(0);
       setTipPercent(0);
-      setSplitType('');
+      setSplitType("");
 
       setItemizedTotals({
         memberTotals: {},
@@ -327,22 +332,21 @@ const AddExpenseForm = () => {
       });
       setMembers([]);
     } catch (err) {
-      console.log(err.message)
+      console.log(err.message);
       showAlert({
         type: "error",
         title: "Error",
-        message: err.message
+        message: err.message,
       });
     } finally {
       setIsSubmitting(false);
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
-   fetchExpenses(); 
     setIsSubmitting(false);
   };
 
   useEffect(() => {
-    if (splitType === 'itemizedExpense' && people) {
+    if (splitType === "itemizedExpense" && people) {
       const result = calculateItemizedSplit(
         people.members,
         items,
@@ -361,35 +365,43 @@ const AddExpenseForm = () => {
     }
   }, [splitType, people, items, taxPercent, tipPercent, paidBy]);
 
-
-
   return (
-    <div>
+    <div className="bg-[rgb(245,252,250)] min-h-screen px-4 sm:px-6 md:px-12 lg:px-20">
       <div className="text-center mb-3 p-7">
-        <p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">Add a new Expense</p>
-        <p className="text-[#4B4B4B] mt-1">
+        <p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+          Add a new Expense
+        </p>
+        <p className="text-[#4B4B4B] mt-2 text-sm sm:text-base md:text-lg">
           Log your expense and let us handle the split.
         </p>
-        <div className="mt-2 border-b-2 border-[#2a806d] w-1/3 mx-auto" />
+        <div className="mt-3 border-b-2 border-[#2a806d] w-4/3 sm:w-1/2 md:w-2/3 mx-auto" />
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto">
-
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto"
+      >
         <div className="w-full flex mb-6 rounded-lg border border-[#2a806d]">
           <button
             type="button"
-            onClick={() => setIsGroup(false)}
+            onClick={() => setType("individual")}
             className={`px-4 py-2 w-1/2 text-sm font-medium transition-colors duration-200 
-      ${!isGroup ? 'bg-[#2a806d] text-white' : 'bg-white text-[#2a806d]'} 
+      ${
+        type === "individual"
+          ? "bg-[#2a806d] text-white"
+          : "bg-white text-[#2a806d]"
+      } 
       rounded-l-lg border-r border-[#2a806d]`}
           >
             Individual Expense
           </button>
           <button
             type="button"
-            onClick={() => setIsGroup(true)}
+            onClick={() => setType("group")}
             className={`px-4 py-2 w-1/2 text-sm font-medium transition-colors duration-200 
-      ${isGroup ? 'bg-[#2a806d] text-white' : 'bg-white text-[#2a806d]'} 
+      ${
+        type === "group" ? "bg-[#2a806d] text-white" : "bg-white text-[#2a806d]"
+      } 
       rounded-r-lg`}
           >
             Group Expense
@@ -399,7 +411,7 @@ const AddExpenseForm = () => {
         <label className=" block mb-1 font-medium text-[#333]">Amount</label>
         <input
           type="number"
-          placeholder='0.00'
+          placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-full p-2 mb-4 border border-[#ccc] rounded text-[#333]"
@@ -413,12 +425,14 @@ const AddExpenseForm = () => {
         >
           <option value="">-- Select Category --</option>
           {getAllCategories().map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
           ))}
         </select>
-      <label className="block mb-1 font-medium">Select Date</label>
+        <label className="block mb-1 font-medium">Select Date</label>
         <DatePickerComponent date={date} setDate={setDate} />
-        {isGroup && (
+        {type === "group" && (
           <div>
             <label className="block mb-1 font-medium text-[#333]">Group</label>
             <select
@@ -434,7 +448,9 @@ const AddExpenseForm = () => {
               ))}
             </select>
 
-            <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+            <label className="block mb-1 font-medium text-[#333]">
+              Paid By
+            </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
@@ -444,18 +460,19 @@ const AddExpenseForm = () => {
               <option value="">Select who paid</option>
               {selectedGroup?.members.map((member, idx) => (
                 <option key={idx} value={member.name}>
-                  {member.name === currentUser ? 'You' : member.name}
+                  {member.name === currentUser ? "You" : member.name}
                 </option>
               ))}
             </select>
           </div>
         )}
 
-        {!isGroup && (
+        {type === "individual" && (
           <>
-            <label className="block mb-1 font-medium text-[#333]">Add Member</label>
+            <label className="block mb-1 font-medium text-[#333]">
+              Add Member
+            </label>
             <div className="rounded mb-6 relative">
-
               <input
                 list="friend-suggestions"
                 type="text"
@@ -465,7 +482,9 @@ const AddExpenseForm = () => {
                   const name = e.target.value;
                   setMemberName(name);
 
-                  const matchedFriend = friends.find(friend => friend.name === name);
+                  const matchedFriend = friends.find(
+                    (friend) => friend.name === name
+                  );
                   if (matchedFriend) {
                     setMemberEmail(matchedFriend.email);
                   }
@@ -505,7 +524,7 @@ const AddExpenseForm = () => {
                     className="inline-flex items-center px-3 py-1 rounded-full bg-[#e6f4f1] text-[#2a806d] border border-[#2a806d] text-sm"
                   >
                     {member.name}
-                    {member.name === currentUser?.name && ' (You)'}
+                    {member.name === currentUser?.name && " (You)"}
 
                     <button
                       onClick={() => {
@@ -513,14 +532,15 @@ const AddExpenseForm = () => {
                         if (paidBy === member.name) setPaidBy("");
                       }}
                       className="ml-2 text-[#2a806d] hover:text-red-600 font-bold"
-                    >
-                    </button>
+                    ></button>
                   </span>
                 ))}
               </div>
             )}
 
-            <label className="block mb-1 font-medium text-[#333]">Paid By</label>
+            <label className="block mb-1 font-medium text-[#333]">
+              Paid By
+            </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
@@ -537,9 +557,11 @@ const AddExpenseForm = () => {
           </>
         )}
 
-        <label className="w-full block mb-1 font-medium text-[#333]">Split Type</label>
-        <div className="w-full flex gap-2 mb-4">
-          {['equal', 'percentage', 'exact', 'itemizedExpense'].map((type) => (
+        <label className="w-full block mb-1 font-medium text-[#333]">
+          Split Type
+        </label>
+        <div className="w-full flex flex-wrap gap-2 mb-4">
+          {["equal", "percentage", "exact", "itemizedExpense"].map((type) => (
             <button
               key={type}
               type="button"
@@ -547,8 +569,12 @@ const AddExpenseForm = () => {
                 setSplitType(type);
                 setDialogVisible(true);
               }}
-              className={`w-1/4 px-3 py-1 border rounded ${splitType === type ? 'bg-[#2a806d] text-white' : 'text-[#333]'
-                }`}
+              className={`flex-1 min-w-[120px] px-3 py-2 text-sm sm:text-base border rounded-md transition 
+        ${
+          splitType === type
+            ? "bg-[#2a806d] text-white border-[#2a806d]"
+            : "text-[#333] bg-white hover:bg-gray-100 border-gray-300"
+        }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
@@ -581,20 +607,20 @@ const AddExpenseForm = () => {
         />
 
         {dialogVisible && (
-          <dialog open className="modal modal-bottom sm:modal-middle">
-            <form
+          <dialog open className="modal modal-middle">
+            <div
               method="dialog"
-              className={`modal-box ${splitType === 'itemizedExpense'
-                ? '!w-[80vw] !max-w-[80vw] sm:!w-[65vw] sm:!max-w-[80vw]'
-                : ''
-                }`}
+              className={`modal-box ${
+                splitType === "itemizedExpense"
+                  ? "!w-[80vw] !max-w-[80vw] sm:!w-[65vw] sm:!max-w-[80vw]"
+                  : ""
+              }`}
             >
-
               <div className="py-1">
-                {splitType === 'equal' && (
+                {splitType === "equal" && (
                   <SplitEqual selectedGroup={people} amount={amount} />
                 )}
-                {splitType === 'percentage' && (
+                {splitType === "percentage" && (
                   <SplitPercentage
                     percentages={percentages}
                     setPercentages={setPercentages}
@@ -602,14 +628,14 @@ const AddExpenseForm = () => {
                     selectedGroup={people}
                   />
                 )}
-                {splitType === 'exact' && (
+                {splitType === "exact" && (
                   <SplitExact
                     exactAmounts={exactAmounts}
                     setExactAmounts={setExactAmounts}
                     selectedGroup={people}
                   />
                 )}
-                {splitType === 'itemizedExpense' && (
+                {splitType === "itemizedExpense" && (
                   <SplitItemized
                     items={items}
                     setItems={setItems}
@@ -636,12 +662,11 @@ const AddExpenseForm = () => {
                   Close
                 </button>
               </div>
-            </form>
+            </div>
           </dialog>
         )}
       </form>
     </div>
-
   );
 };
 

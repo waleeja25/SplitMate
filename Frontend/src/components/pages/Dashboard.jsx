@@ -74,7 +74,7 @@ console.log(expenses)
     .reduce((acc, entry) => acc + entry.amount, 0);
 
   const totalBalance = totalOwedToYou - totalYouOwe;
-  console.log("BarData passed to chart:", barData);
+
 
 
   return (

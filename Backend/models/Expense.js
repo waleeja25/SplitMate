@@ -43,6 +43,12 @@ const ExpenseSchema = new Schema(
       default: "uncategorized",
     },
 
+    type: {
+      type: String,
+      enum: ["individual", "group"],
+      required: true,
+    },
+
     splitType: {
       type: String,
       enum: ["equal", "exact", "percentage", "itemizedExpense"],

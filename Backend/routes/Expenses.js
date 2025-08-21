@@ -62,12 +62,20 @@ router.post("/expense", async (req, res) => {
       items,
       taxPercent,
       tipPercent,
+      type,
     } = req.body;
 
     if (!members || members.length === 0) {
       return res
         .status(400)
         .json({ success: false, message: "Members are required" });
+    }
+
+    if (!["individual", "group"].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: "Type must be either 'individual' or 'group'",
+      });
     }
 
     const updatedMembers = [];
@@ -113,6 +121,7 @@ router.post("/expense", async (req, res) => {
       items,
       taxPercent,
       tipPercent,
+      type,
     });
 
     await expense.save();
@@ -199,12 +208,10 @@ router.get("/expense/group/:groupId/user/:userId", async (req, res) => {
 
     const isMember = group.members.some((m) => m._id.toString() === userId);
     if (!isMember) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "User is not a member of this group",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "User is not a member of this group",
+      });
     }
 
     const expenses = await Expense.find({ group: groupId })

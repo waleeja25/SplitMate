@@ -72,3 +72,57 @@
 .signup-btn:hover {
   background-color: #17a185;
 }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100; 
+}
+
+.bar {
+  height: 3px;
+  width: 100%;
+  background-color: #2A806D;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.bar.open:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.bar.open:nth-child(2) {
+  opacity: 0;
+}
+.bar.open:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+@media (max-width: 768px) {
+  .nav-actions {
+    position: absolute;
+    top: 70px; 
+    right: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    display: none; 
+  }
+
+  .nav-actions.active {
+    display: flex; 
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

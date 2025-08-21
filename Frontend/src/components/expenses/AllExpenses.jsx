@@ -3,9 +3,8 @@ import ExpenseCard from "./ExpenseCard";
 import { useState, useEffect } from "react";
 import alertDisplay from "../ui/alertDisplay";
 import { BalanceUpdate } from "./AddExpense/helpers";
-import { useExpenses } from "../../context/UseExpenses";
+
 const AllExpenses = () => {
-  const {fetchExpenses} = useExpenses(); 
   const sessionUser = useMemo(() => {
     return {
       token: localStorage.getItem("token"),
@@ -83,7 +82,6 @@ const AllExpenses = () => {
 
   const handleDeleteExpense = async (expenseId) => {
     const token = localStorage.getItem("token");
-
     try {
       const deletedExpense = expenses.find((f) => f.expenseId === expenseId);
       if (!deletedExpense) throw new Error("Expense not found");
@@ -107,13 +105,16 @@ const AllExpenses = () => {
         negativeSummary[user] = -Math.abs(amt);
       });
 
-      await BalanceUpdate(
-        negativeSummary,
-        deletedExpense.paidBy.name,
-        -Math.abs(deletedExpense.amount),
-        deletedExpense.splitType,
-        token
-      );
+      const payload = {
+        summary:negativeSummary, 
+        paidBy: deletedExpense.paidBy.name,
+        amount: -Math.abs(deletedExpense.amount),
+        splitType: deletedExpense.splitType,
+        groupId:deletedExpense.group._id,
+        type: deletedExpense.type,
+      };
+
+      await BalanceUpdate(payload, sessionUser.token);
       setExpenses((prev) => prev.filter((f) => f.expenseId !== expenseId));
 
       showAlert({
@@ -129,48 +130,7 @@ const AllExpenses = () => {
         message: err.message,
       });
     }
-    fetchExpenses();
   };
-
-  // const handleDeleteExpense = async (expenseId) => {
-  //   const token = localStorage.getItem("token");
-
-  //   try {
-  //     const res = await fetch(`http://localhost:3001/api/expense/${expenseId}`, {
-  //       method: 'DELETE',
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${token}`
-  //       }
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (data.success) {
-  //       setExpenses(prev => prev.filter(f => f.expenseId !== expenseId));
-
-  //       showAlert({
-  //         type: "success",
-  //         title: "Deleted",
-  //         message: "Expense deleted successfully",
-  //         color: "#a5d6a7",
-  //       });
-
-  //     } else {
-  //       showAlert({
-  //         type: "error",
-  //         title: "Error",
-  //         message: data.message || "Failed to delete expense"
-  //       });
-  //     }
-  //   } catch (err) {
-  //     showAlert({
-  //       type: "error",
-  //       title: "Error",
-  //       message: err.message
-  //     });
-  //   }
-  // };
 
   if (loading) {
     return (

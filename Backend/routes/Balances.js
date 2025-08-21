@@ -11,6 +11,7 @@ router.get("/balances/:userId", async (req, res) => {
     const userId = req.params.userId;
 
     let balancesDoc = await Balance.findOne({ userId }).lean();
+    console.log(balancesDoc)
 
     if (!balancesDoc) {
       return res.status(200).json({
@@ -70,9 +71,9 @@ router.get("/balances/:userId/:friendId", async (req, res) => {
 
 router.post("/balances/update", async (req, res) => {
   try {
-    const { summary, paidBy, amount, groupId } = req.body;
+    const { summary, paidBy, amount, groupId, type } = req.body;
 
-    if (!summary || !paidBy || !amount) {
+    if (!summary || !paidBy || !amount || !type) {
       return res
         .status(400)
         .json({ success: false, message: "Missing fields" });

@@ -23,6 +23,7 @@ const SettleUpPage = () => {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [alert, setAlert] = useState("");
+  const [settleInGroup, setSettleInGroup] = useState(false);
 
   const showAlert = (alertObj) => {
     setAlert(alertObj);
@@ -103,6 +104,7 @@ const SettleUpPage = () => {
           paymentMode,
           type: "individual",
           date,
+          settleInGroup,
         };
 
         const res = await fetch("http://localhost:3001/api/settlement", {
@@ -186,8 +188,6 @@ const SettleUpPage = () => {
       }));
     }
   }
-
-  payerOptions = payerOptions.filter((f) => f.id !== receiver);
   return (
     <div className="max-w-3xl mx-auto p-6 bg-[rgb(245,252,250)] min-h-screen">
       <div className="w-full max-w-xl mx-auto p-5 bg-white border border-[#B2E2D2] rounded-xl shadow text-[#4B4B4B] mt-7 ">
@@ -339,6 +339,21 @@ const SettleUpPage = () => {
               <option value="cash">Cash</option>
             </select>
           </div>
+
+          {transactionType === "individual" && (
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                checked={settleInGroup}
+                onChange={(e) => setSettleInGroup(e.target.checked)}
+                id="settleInGroup"
+                className="w-4 h-4 text-[#2A806D] border-gray-300 rounded"
+              />
+              <label htmlFor="settleInGroup" className="text-sm text-[#4B4B4B]">
+                Also settle in shared groups if applicable
+              </label>
+            </div>
+          )}
         </div>
 
         <footer className="flex justify-end gap-3 px-6 py-4">

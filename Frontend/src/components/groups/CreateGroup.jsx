@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 
 const CreateGroup = ({ setGroups }) => {
-   const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [saveName, isSaveName] = useState(false);
   const [friendList, setFriendList] = useState(false);
@@ -47,7 +47,7 @@ const CreateGroup = ({ setGroups }) => {
     setSelectedFriendIndex("");
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchFriends = async () => {
       try {
         const userId = localStorage.getItem("userId");
@@ -56,14 +56,14 @@ const CreateGroup = ({ setGroups }) => {
         const res = await fetch(`http://localhost:3001/api/friends/${userId}`, {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await res.json();
         if (data.success) {
           setFriends(
-            data.friends.map(f => ({
+            data.friends.map((f) => ({
               id: f._id,
               name: f.friend.name,
               email: f.friend.email,
@@ -78,9 +78,7 @@ const CreateGroup = ({ setGroups }) => {
     };
 
     fetchFriends();
-  }, []); 
-
-
+  }, []);
 
   const handleAddMember = () => {
     const nameMissing = !memberName.trim();
@@ -91,7 +89,10 @@ const CreateGroup = ({ setGroups }) => {
 
     if (nameMissing || emailMissing) return;
 
-    setMembers([...members, { name: memberName.trim(), email: memberEmail.trim() }]);
+    setMembers([
+      ...members,
+      { name: memberName.trim(), email: memberEmail.trim() },
+    ]);
 
     setMemberName("");
     setMemberEmail("");
@@ -116,27 +117,24 @@ const CreateGroup = ({ setGroups }) => {
         name: localStorage.getItem("username"),
         email: localStorage.getItem("email"),
       };
-      const allMembers = [
-        currentUser,
-        ...members,
-      ];
+      const allMembers = [currentUser, ...members];
 
       const res = await fetch("http://localhost:3001/api/groups", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: groupName,
-          members: allMembers, 
+          members: allMembers,
         }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        setGroups(prev => [...prev, data.group]);
+        setGroups((prev) => [...prev, data.group]);
         setAddGroup(true);
         setSuccessAlert(true);
         setGroupName("");
@@ -159,7 +157,6 @@ const CreateGroup = ({ setGroups }) => {
       });
     }
   };
-
 
   useEffect(() => {
     if (groupError || memberError || singlememberError || successAlert) {
@@ -184,16 +181,19 @@ const CreateGroup = ({ setGroups }) => {
   }, [addGroup]);
 
   return (
-
-    <div className="bg-[rgb(245,252,250)] min-h-screen">
+    <div className="bg-[rgb(245,252,250)] min-h-screen px-4 sm:px-6 md:px-12 lg:px-20">
       <div className="text-center mb-8 p-7 ">
-        <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">Create a New Group</h1>
-        <p className="text-[#4B4B4B] mt-1">Group your friends to split expenses easily and keep everything organized.</p>
+        <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">
+          Create a New Group
+        </h1>
+        <p className="text-[#4B4B4B] mt-1">
+          Group your friends to split expenses easily and keep everything
+          organized.
+        </p>
         <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
       </div>
 
       <div className="mt-8 p-8 bg-[rgb(255,255,255)] border border-gray-300 rounded-xl shadow-md max-w-xl mx-auto transition-all duration-300">
-
         {addGroup &&
           alertDisplay({
             type: "success",
@@ -224,8 +224,8 @@ const CreateGroup = ({ setGroups }) => {
               memberNameError && memberEmailError
                 ? "Member name and email are required."
                 : memberNameError
-                  ? "Name is missing."
-                  : "Email is missing.",
+                ? "Name is missing."
+                : "Email is missing.",
           })}
 
         {!saveName && (
@@ -262,12 +262,15 @@ const CreateGroup = ({ setGroups }) => {
 
         {saveName && (
           <>
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <FaUsers />
-              Add Group Members to{" "}
-              <span className="text-[#2a806d] font-bold ml-1">{groupName}</span>
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 flex items-center gap-2 flex-wrap">
+              <FaUsers className="shrink-0" />
+              <span>
+                Add Group Members to{" "}
+                <span className="text-[#2a806d] font-bold ml-1">
+                  {groupName}
+                </span>
+              </span>
             </h2>
-
             <div className="flex flex-col sm:flex-row gap-4 mb-4">
               <button
                 onClick={() => {
@@ -297,13 +300,17 @@ const CreateGroup = ({ setGroups }) => {
                 </h2>
 
                 {friends.length === 0 ? (
-                  <p className="text-sm text-[#4B4B4B] italic">No friends added yet.</p>
+                  <p className="text-sm text-[#4B4B4B] italic">
+                    No friends added yet.
+                  </p>
                 ) : (
                   <div className="flex flex-col gap-4">
                     <select
                       value={selectedFriendIndex}
-                      onChange={(e) => setSelectedFriendIndex(Number(e.target.value))}
-                      className="p-2 rounded border border-[#B2E2D2] bg-[#F6F9F8] text-[#2A806D] font-medium"
+                      onChange={(e) =>
+                        setSelectedFriendIndex(Number(e.target.value))
+                      }
+                      className="p-3 rounded-lg border border-[#B2E2D2] bg-[#F5FCFA] text-[#2A806D] font-medium focus:outline-none focus:ring-2 focus:ring-[#2A806D] transition"
                     >
                       <option value="">-- Choose a friend --</option>
                       {friends.map((friend, index) => (
@@ -312,11 +319,10 @@ const CreateGroup = ({ setGroups }) => {
                         </option>
                       ))}
                     </select>
-
                     <button
                       onClick={handleAddFriendToGroup}
-                      className="bg-[#2A806D] hover:bg-[#246f5f] text-white px-4 py-2 rounded-lg transition"
                       disabled={selectedFriendIndex === ""}
+                      className="bg-[#2A806D] hover:bg-[#246f5f] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg shadow-md transition duration-200"
                     >
                       Add to Group
                     </button>
@@ -384,9 +390,7 @@ const CreateGroup = ({ setGroups }) => {
           </>
         )}
       </div>
-
     </div>
-
   );
 };
 

@@ -81,7 +81,7 @@ export default function GroupExpensesCard() {
 
           const owedToYouArr = [];
           const youOweArr = [];
-
+ console.log( "bl " ,userBalances)
           Object.entries(userBalances).forEach(([otherId, info]) => {
             otherId;
             const { name, amount } = info;
@@ -115,6 +115,7 @@ export default function GroupExpensesCard() {
 
   console.log(owedToYou);
   console.log(youOwe);
+ 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 min-h-screen">
       <button
@@ -182,13 +183,13 @@ export default function GroupExpensesCard() {
             <h2 className="text-xl font-bold text-[#2a806d] mb-4">
               Group Balances
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#f0fcf9] border border-[#a7f3d0] rounded-xl p-4 shadow-sm">
-                <h4 className="text-[#1cc29f] font-semibold mb-2 text-base">
+              <div className="mt-4 grid md:grid-cols-2 gap-6 text-[14px] font-medium">
+                <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
+                  <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">
                   You are owed
                 </h4>
                 {owedToYou.length > 0 ? (
-                  <ul className="text-gray-700 italic text-sm list-disc ml-5 space-y-1">
+                  <ul className="list-disc ml-3 text-[#075e54] space-y-1 text-sm">
                     {owedToYou.map((line, i) => (
                       <li key={i}>{line}</li>
                     ))}
@@ -200,12 +201,12 @@ export default function GroupExpensesCard() {
                 )}
               </div>
 
-              <div className="bg-[#fff7f7] border border-[#fecaca] rounded-xl p-4 shadow-sm">
-                <h4 className="text-[#f87171] font-semibold mb-2 text-base">
-                  You owe
-                </h4>
+                <div className="bg-[#fff4f4] border border-[#ef4444] rounded-xl p-4">
+                  <h4 className="font-semibold text-[#ef4444] text-lg mb-3">
+                    You Owe
+                  </h4>
                 {youOwe.length > 0 ? (
-                  <ul className="text-gray-700 italic text-sm list-disc ml-5 space-y-1">
+                      <ul className="list-disc ml-3 text-[#7f1d1d] space-y-2">
                     {youOwe.map((line, i) => (
                       <li key={i}>{line}</li>
                     ))}

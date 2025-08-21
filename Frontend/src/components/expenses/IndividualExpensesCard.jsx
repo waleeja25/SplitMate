@@ -30,29 +30,29 @@ export default function IndividualExpensesCard({ friends = [] }) {
     email: "not-found@example.com",
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resExpenses = await fetch(
-          `http://localhost:3001/api/expense/friend/${sessionUser.objectId}/${friendId}`,
-          { headers: { Authorization: `Bearer ${sessionUser.token}` } }
-        );
-        const dataExpenses = await resExpenses.json();
-        if (dataExpenses.success) setFriendExpenses(dataExpenses.expenses);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const resExpenses = await fetch(
+  //         `http://localhost:3001/api/expense/friend/${sessionUser.objectId}/${friendId}`,
+  //         { headers: { Authorization: `Bearer ${sessionUser.token}` } }
+  //       );
+  //       const dataExpenses = await resExpenses.json();
+  //       if (dataExpenses.success) setFriendExpenses(dataExpenses.expenses);
 
-        const resBalance = await fetch(
-          `http://localhost:3001/api/balances/${sessionUser.objectId}/${friendId}`,
-          { headers: { Authorization: `Bearer ${sessionUser.token}` } }
-        );
-        const dataBalance = await resBalance.json();
-        if (dataBalance.success) setBalance(dataBalance.balance);
-      } catch (err) {
-        console.error("Error fetching friend data:", err);
-      }
-    };
+  //       const resBalance = await fetch(
+  //         `http://localhost:3001/api/balances/${sessionUser.objectId}/${friendId}`,
+  //         { headers: { Authorization: `Bearer ${sessionUser.token}` } }
+  //       );
+  //       const dataBalance = await resBalance.json();
+  //       if (dataBalance.success) setBalance(dataBalance.balance);
+  //     } catch (err) {
+  //       console.error("Error fetching friend data:", err);
+  //     }
+  //   };
 
-    fetchData();
-  }, [friendId, sessionUser]);
+  //   fetchData();
+  // }, [friendId, sessionUser]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,7 +179,6 @@ export default function IndividualExpensesCard({ friends = [] }) {
         role="tablist"
         className="flex space-x-2 mb-4 rounded-xl bg-[#e5f6f3] p-1"
       >
-        {/* Expenses Tab */}
         <button
           role="tab"
           className={`flex-1 text-center font-medium text-[#2a806d] py-2 rounded-lg transition ${
@@ -192,8 +191,6 @@ export default function IndividualExpensesCard({ friends = [] }) {
           Expenses{" "}
           <span className="font-semibold">({friendExpenses.length})</span>
         </button>
-
-        {/* Settlements Tab */}
         <button
           role="tab"
           className={`flex-1 text-center font-medium text-[#2a806d] py-2 rounded-lg transition ${
