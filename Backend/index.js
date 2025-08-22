@@ -3,6 +3,7 @@ const connectDB = require('./db');
 const cors = require('cors');
 const {jwtAuthMiddleware} = require('./jwt')
 const dotenv = require('dotenv');
+const fetch = require("node-fetch");
 
 dotenv.config();
 connectDB();
@@ -47,6 +48,23 @@ app.use('/api',jwtAuthMiddleware, friends);
 app.use('/api',jwtAuthMiddleware, expenses)
 app.use('/api',jwtAuthMiddleware, settlements)
 app.use('/api',jwtAuthMiddleware, balances)
+
+app.get("/ip-check", async (req, res) => {
+  try {
+    const response = await fetch("https://api64.ipify.org?format=json");
+    const data = await response.json();
+
+    console.log("Server outbound IP:", data.ip); // will show in your console/logs
+
+    res.json({
+      outboundIP: data.ip,
+    });
+  } catch (err) {
+    console.error("Error fetching IP:", err);
+    res.status(500).json({ error: "Failed to fetch IP" });
+  }
+});
+
 
 app.get('/', (req, res) => {
     console.log("Get Handler");
