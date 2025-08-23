@@ -1,11 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../models/Users'); 
-const {generateToken} = require('../jwt')
+const User = require("../models/Users");
+const { generateToken } = require("../jwt");
 
-router.get('/user', async (req, res) => {
+router.get("/user", async (req, res) => {
   try {
-    const users = await User.find().select('-password'); 
+    const users = await User.find().select("-password");
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({
@@ -15,7 +15,7 @@ router.get('/user', async (req, res) => {
   }
 });
 
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   console.log("Request Received");
 
   try {
@@ -29,11 +29,22 @@ router.post('/register', async (req, res) => {
     }
 
     const existingUser = await User.findOne({ email });
+ 
     if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: "Email already in use",
-      });
+      if (!existingUser.password) {
+        existingUser.password = password;
+        await existingUser.save();
+
+        return res.status(200).json({
+          success: true,
+          message: "Password set successfully. You can now log in.",
+        });
+      } else {
+        return res.status(409).json({
+          success: false,
+          message: "Email already in use",
+        });
+      }
     }
 
     const newUser = new User({ name, email, password });
@@ -47,8 +58,8 @@ router.post('/register', async (req, res) => {
         userId: newUser.userId,
         name: newUser.name,
         email: newUser.email,
-      }, 
-       token
+      },
+      token,
     });
   } catch (err) {
     res.status(500).json({
@@ -58,9 +69,9 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
-    const {name, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -92,11 +103,11 @@ router.post('/login', async (req, res) => {
       message: "Login successful",
       user: {
         userId: user.userId,
-        _id: user._id,  
+        _id: user._id,
         name: user.name,
         email: user.email,
-      }, 
-      token
+      },
+      token,
     });
   } catch (err) {
     res.status(500).json({
@@ -105,6 +116,5 @@ router.post('/login', async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;
