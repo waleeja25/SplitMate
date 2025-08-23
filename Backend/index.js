@@ -53,9 +53,9 @@ app.get('/', (req, res) => {
     res.send("GET Request");
 })
 
-// app.listen(PORT, ()=> {
-//     console.log("Server is Up");
-// })
+app.listen(PORT, ()=> {
+    console.log("Server is Up");
+})
 
 
 module.exports = app;

@@ -184,14 +184,14 @@ const CreateGroup = ({ setGroups }) => {
   return (
     <div className="bg-[rgb(245,252,250)] min-h-screen px-4 sm:px-6 md:px-12 lg:px-20">
       <div className="text-center mb-8 p-7 ">
-        <h1 className="text-4xl font-bold text-[#2A806D] tracking-wide">
+     <h1 className="text-4xl py-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#185144] via-[#36a186] to-[#2A806D]">
           Create a New Group
         </h1>
-        <p className="text-[#4B4B4B] mt-1">
+            <p className="text-[#4B4B4B] text-sm sm:text-base md:text-lg italic">
           Group your friends to split expenses easily and keep everything
           organized.
         </p>
-        <div className="mt-2 border-b-2 border-[#2A806D] w-2/3 mx-auto" />
+    <div className="mt-3 border-b-2 border-[#2a806d] w-4/3 sm:w-1/2 md:w-2/3 mx-auto" />
       </div>
 
       <div className="mt-8 p-8 bg-[rgb(255,255,255)] border border-gray-300 rounded-xl shadow-md max-w-xl mx-auto transition-all duration-300">

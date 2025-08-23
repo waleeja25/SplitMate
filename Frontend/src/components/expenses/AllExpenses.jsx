@@ -146,13 +146,13 @@ const AllExpenses = () => {
   return (
     <div className="p-6 max-w-3xl mx-auto bg-[rgb(245,252,250)] min-h-screen">
       <div className="text-center mb-8">
-        <h1 className="text-5xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+        <h1 className="text-5xl sm:text-4xl py-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
           All Expenses
         </h1>
-        <p className="text-[#333] mt-1 italic">
+         <p className="text-[#4B4B4B] text-sm sm:text-base md:text-lg italic">
           Track who paid, who owes, and how it splits.
         </p>
-        <div className="mt-2 border-b-2 border-[#2a806d] w-3/4 mx-auto" />
+     <div className="mt-3 border-b-2 border-[#2a806d] w-4/3 sm:w-1/2 md:w-2/3 mx-auto" />
       </div>
       <div className="text-left w-full">{alert && alertDisplay(alert)}</div>
       {expenses.length === 0 ? (

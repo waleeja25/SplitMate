@@ -26,15 +26,13 @@ const DashboardNavbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-4 md:px-8 py-1 bg-[#f0faf6] border-[#e1f6f0] shadow-lg ">
-      {/* Logo + Welcome Text */}
       <div className="flex items-center gap-4">
-        <img src={navLogo} alt="SplitMate Logo" className="h-10 w-auto" />
+        <img src={navLogo} alt="SplitMate Logo"   className="h-10 w-10 rounded-full object-cover"/>
         <p className="text-lg font-medium text-[#2A806D] tracking-wide">
-           <span className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">SplitMate</span>
+           <span className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">SplitMate</span>
         </p>
       </div>
 
-      {/* User Avatar & Dropdown */}
       <div className="relative flex items-center gap-3" ref={dropdownRef}>
         <UserAvatar name={username} size={35} />
         <button

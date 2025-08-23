@@ -8,7 +8,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URI;
 const SignupForm = () => {
   const navigate = useNavigate();
   const [alert, setAlert] = useState(null);
-
+  const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -19,6 +19,7 @@ const SignupForm = () => {
   const password = watch('password');
 
   const onSubmit = async (data) => {
+    setLoading(true)
      try {
       const res = await fetch(`${backendUrl}/api/register`, {
         method: 'POST',
@@ -54,6 +55,8 @@ const SignupForm = () => {
         title: 'Error',
         message: err.message,
       });
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -169,7 +172,7 @@ const SignupForm = () => {
           type="submit"
           className="w-full py-3 text-white rounded-md font-bold text-base bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm transition"
         >
-          Sign Up
+        {loading ? "Signing Up..." : "Sign Up"}
         </button>
       </form>
     </div>

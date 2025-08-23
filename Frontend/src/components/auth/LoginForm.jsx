@@ -7,6 +7,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const LoginForm = () => {
   const [alert, setAlert] = useState(null);
+    const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -44,6 +45,7 @@ const LoginForm = () => {
   }, [alert]);
 
   const onSubmit = async (data) => {
+    setLoading(true)
     try {
       const res = await fetch(`${backendUrl}/api/login`, {
         method: "POST",
@@ -60,10 +62,11 @@ const LoginForm = () => {
       const result = await res.json();
 
       if (!res.ok) {
+        setLoading(false)
         setAlert({
           type: "error",
           title: "Error",
-          message: result.message || "Something went wrong",
+          message: "Invalid Username or Password",
         });
         return;
       }
@@ -80,6 +83,8 @@ const LoginForm = () => {
         title: "Error",
         message: err.message,
       });
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -141,7 +146,7 @@ const LoginForm = () => {
           type="submit"
           className="w-full py-3  text-white rounded-md font-bold text-base bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm transition"
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

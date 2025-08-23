@@ -3,11 +3,20 @@
 import daisyui from 'daisyui'
 export default {
   content: [ "./src/**/*.{js,jsx,ts,tsx}",],
+  // theme: {
+  //   extend: {},
+  // },
   theme: {
-    extend: {},
+  extend: {
+    fontFamily: {
+      poppins: ["Poppins", "sans-serif"],
+      inter: ["Inter", "sans-serif"],
+    },
   },
+}
+,
   plugins: [daisyui],
     daisyui: {
-    themes: ["light"], 
+    themes: ["emerald","light"], 
   },
 }

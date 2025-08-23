@@ -10,7 +10,7 @@ const NavBar = () => {
     <header className="navbar">
       <NavLink to="/" className="logo-container">
         <img src={navLogo} alt="Logo" className="logo" />
-        <p className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+        <p className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
           SplitMate
         </p>
       </NavLink>

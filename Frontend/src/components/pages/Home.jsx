@@ -1,185 +1,204 @@
-// import { Link } from "react-router-dom";
-// import NavBar from "../ui/NavBar";
-
-// export default function Home() {
-//   return (
-//     <div className="font-['Poppins']">
-//       <NavBar />
-      
-//       {/* Hero Section */}
-//       <section className="min-h-screen bg-gradient-to-b from-[rgba(42,128,109,0.1)] to-[rgb(245,252,250)] flex flex-col items-center justify-center px-4 py-20">
-        
-//         {/* Main Heading */}
-//         <div className="text-center mb-16 max-w-4xl">
-//           <h1 className="text-5xl md:text-7xl font-bold text-[#2a806d] mb-6">
-//             Split Expenses <span className="text-[#333]">Without the Hassle</span>
-//           </h1>
-//           <p className="text-xl text-[#333] leading-relaxed max-w-2xl mx-auto">
-//             The simplest way to manage group expenses. Track who paid, calculate balances,
-//             and settle up - all in one place.
-//           </p>
-//         </div>
-
-//         {/* Action Buttons */}
-//         <div className="flex flex-col md:flex-row gap-6 mb-40">
-//           <Link 
-//             to="/create"
-//             className="px-8 py-4 bg-[#2a806d] hover:bg-[#20765f] text-white text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-//           >
-//             Create New Group
-//           </Link>
-//           <Link 
-//             to="/join"
-//             className="px-8 py-4 bg-white hover:bg-[#f0f0f0] text-[#333] border border-[#ccc] text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-//           >
-//             Join Existing Group
-//           </Link>
-//         </div>
-
-//         {/* Feature Preview Image */}
-//         <div className="w-full max-w-5xl mb-40 rounded-2xl overflow-hidden shadow-2xl">
-//           <img 
-//             src="https://placehold.co/1200x650" 
-//             alt="SplitMate app interface showing expense tracking dashboard with charts and transaction list"
-//             className="w-full h-auto"
-//           />
-//         </div>
-
-//         {/* How It Works Section */}
-//         <section className="w-full max-w-6xl mb-32">
-//           <h2 className="text-4xl font-bold text-[#2a806d] text-center mb-16">How SplitMate Works</h2>
-          
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-//             {/* Step 1 */}
-//             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-//               <div className="text-5xl text-[#2a806d] mb-6">1</div>
-//               <h3 className="text-2xl font-bold text-[#333] mb-4">Create Your Group</h3>
-//               <p className="text-[#333]">
-//                 Start by creating a group and adding members. Give it a name that reflects your purpose - 
-//                 'Road Trip 2023' or 'Roommates Expenses'.
-//               </p>
-//             </div>
-
-//             {/* Step 2 */}
-//             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-//               <div className="text-5xl text-[#2a806d] mb-6">2</div>
-//               <h3 className="text-2xl font-bold text-[#333] mb-4">Add Expenses</h3>
-//               <p className="text-[#333]">
-//                 Log any shared expenses. Split them equally or customize who paid and who owes. 
-//                 Add receipts for easy reference.
-//               </p>
-//             </div>
-
-//             {/* Step 3 */}
-//             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-//               <div className="text-5xl text-[#2a806d] mb-6">3</div>
-//               <h3 className="text-2xl font-bold text-[#333] mb-4">Settle Up</h3>
-//               <p className="text-[#333]">
-//                 Let SplitMate calculate who owes whom. Send payment requests and mark them as 
-//                 paid when settled.
-//               </p>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Testimonials */}
-//         <section className="w-full max-w-4xl mb-32 text-center">
-//           <h2 className="text-3xl font-bold text-[#2a806d] mb-12">What People Are Saying</h2>
-//           <div className="bg-white p-10 rounded-xl shadow-lg">
-//             <p className="text-xl text-[#333] italic mb-8">
-//               "SplitMate saved our group trips from endless spreadsheet arguments. Now we actually enjoy splitting bills!"
-//             </p>
-//             <p className="font-bold text-[#333]">— Sarah & Her Travel Friends</p>
-//           </div>
-//         </section>
-
-//         {/* Final CTA */}
-//         <div className="text-center mb-20">
-//           <h2 className="text-3xl font-bold text-[#2a806d] mb-8">Ready to Simplify Your Group Expenses?</h2>
-//           <Link 
-//             to="/create"
-//             className="px-10 py-5 bg-[#2a806d] hover:bg-[#20765f] text-white text-xl rounded-xl shadow-lg transition-all duration-300 inline-block"
-//           >
-//             Get Started - It's Free
-//           </Link>
-//         </div>
-
-//       </section>
-
-//       {/* Footer */}
-//       <footer className="bg-[#2a806d] text-white p-8 text-center">
-//         <p className="text-sm">© 2023 SplitMate | Made with ♥ by Waleeja Ali</p>
-//       </footer>
-//     </div>
-//   );
-// }
 import { Link } from "react-router-dom";
 import NavBar from "../ui/NavBar";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { actions, steps, FEATURES, testimonials, emojis } from "../../lib/home";
 
 export default function Home() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % actions.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch("https://formspree.io/f/mvgqenwp", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          message,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        setShowDialog(true);
+        e.target.reset();
+      } else {
+        alert("Oops! Something went wrong.");
+      }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="font-['Poppins']">
       <NavBar />
 
-      {/* Hero Section */}
-      <section className="min-h-screen bg-gradient-to-b from-[rgba(42,128,109,0.05)] to-[rgb(245,252,250)] flex flex-col items-center justify-center px-4 pt-24 pb-10">
-        
-        {/* Main Heading */}
-        <motion.div 
-          className="text-center mb-16 max-w-4xl"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+      <section
+        id="hero"
+        className="hero min-h-[95vh] bg-gradient-to-b from-[rgba(42,128,109,0.05)] to-[rgb(245,252,250)] "
+      >
+        <svg className="absolute inset-0 w-full h-full opacity-10">
+          <defs>
+            <pattern
+              id="grid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M40 0 H0 V40"
+                fill="none"
+                stroke="#2A806D"
+                strokeWidth="1"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+        <div className="hero-content flex-col text-center font-inter ">
+          <motion.h1
+            className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-snug"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+              Split Expenses
+            </span>{" "}
+            <span className="bg-gradient-to-r from-[#3d3c3c] via-[#333] to-[#444] bg-clip-text text-transparent">
+              Without the Hassle
+            </span>
+          </motion.h1>
+
+          <div className="mt-6 mb-3 font-inter">
+            <div className="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+              <div>
+                The simplest way to{" "}
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={actions[index].first}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative inline-block inset-0 text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm whitespace-nowrap"
+                  >
+                    {actions[index].first}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+
+              <div className="relative flex justify-center items-center italic h-[60px] text-3xl md:text-4xl font-bold mt-3">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={actions[index].word + actions[index].sub}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0 text-3xl md:text-3xl bg-gradient-to-r from-[#555454] via-[#333] to-[#444] bg-clip-text text-transparent whitespace-nowrap"
+                  >
+                    {actions[index].word} {actions[index].sub}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-8 mt-5">
+              {emojis.map((emoji, idx) => (
+                <motion.img
+                  key={idx}
+                  src={emoji.src}
+                  className="w-12 h-12"
+                  style={{
+                    filter: `invert(32%) sepia(94%) saturate(500%) hue-rotate(120deg)`,
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 1.6,
+                    delay: idx * 0.2,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-2xl leading-relaxed font-inter">
+            Keep track of shared expenses and balances with{" "}
+            <span className="text-[#2a806d] font-semibold">friends</span>,{" "}
+            <span className="text-[#2a806d] font-semibold">groups</span>,{" "}
+            <span className="text-[#2a806d] font-semibold">trips</span>, and
+            more — all in one place.
+          </p>
+
+          <div className="mt-10">
+            <Link
+              to="/signup"
+              className="btn bg-[#2a806d] hover:bg-[#1d4d3a] text-white text-lg md:text-xl rounded-lg px-10 py-5 shadow-lg border-0"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="features"
+        className="bg-[rgb(245 252 250)] py-6 min-h-[90vh]
+      "
+      >
+        <motion.h2
+          className="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm bg-clip-text text-transparent"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-5xl md:text-7xl font-bold text-[#2a806d] mb-6">
-            Split Expenses <span className="text-[#333]">Without the Hassle</span>
-          </h1>
-          <p className="text-xl text-[#333] leading-relaxed max-w-2xl mx-auto">
-            The simplest way to manage group expenses. Track who paid, calculate balances,
-            and settle up — all in one place.
-          </p>
-        </motion.div>
+          Smart Features
+        </motion.h2>
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ title, Icon, bg, color, description }) => (
+              <div
+                key={title}
+                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-1"
+              >
+                <div className="card-body items-center text-center space-y-4">
+                  <div className={`rounded-full p-3 ${bg}`}>
+                    <Icon className={`h-6 w-6 ${color}`} />
+                  </div>
+                  <h3 className="text-xl font-bold">{title}</h3>
+                  <p className="text-gray-500">{description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* Action Buttons */}
-        <motion.div 
-          className="flex flex-col md:flex-row gap-6 mb-32"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <Link 
-            to="/create"
-            className="px-8 py-4 bg-[#2a806d] hover:bg-[#20765f] text-white text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            Create New Group
-          </Link>
-          <Link 
-            to="/join"
-            className="px-8 py-4 bg-white hover:bg-[#f0f0f0] text-[#333] border border-[#ccc] text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            Join Existing Group
-          </Link>
-        </motion.div>
-
-        {/* Feature Preview Image */}
-        <motion.div 
-          className="w-full max-w-5xl mb-40 rounded-2xl overflow-hidden shadow-2xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-        >
-          <img 
-            src="https://placehold.co/1200x650" 
-            alt="SplitMate app dashboard"
-            className="w-full h-auto"
-          />
-        </motion.div>
-
-        {/* How It Works Section */}
-        <section className="w-full max-w-6xl mb-32">
-          <motion.h2 
-            className="text-4xl font-bold text-[#2a806d] text-center mb-16"
+      <section
+        id="working"
+        className=" w-full mt-5 bg-dots min-h-[90vh] mx-auto py-8 px-4 md:px-0"
+      >
+        <div className="flex flex-col items-center">
+          <motion.h2
+            className="text-4xl md:text-5xl font-extrabold text-center mb-6 bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm bg-clip-text text-transparent"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
@@ -187,69 +206,129 @@ export default function Home() {
             How SplitMate Works
           </motion.h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[1, 2, 3].map((step, idx) => {
-              const titles = ["Create Your Group", "Add Expenses", "Settle Up"];
-              const descs = [
-                "Start by creating a group and adding members. Give it a name like 'Road Trip 2023' or 'Roommates'.",
-                "Log any shared expenses. Split equally or customize who paid and who owes. Add receipts easily.",
-                "Let SplitMate calculate who owes whom. Mark payments as settled when complete."
-              ];
+          <p className="text-lg md:text-xl lg:text-xl text-gray-600 max-w-2xl leading-relaxed font-inter italic text-center mt-5">
+            Here’s a quick look at{" "}
+            <span className="text-[#2a806d] font-semibold">
+              how SplitMate works
+            </span>{" "}
+            to make splitting expenses effortless.
+          </p>
+        </div>
 
-              return (
-                <motion.div
-                  key={step}
-                  className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.2, duration: 0.5 }}
-                >
-                  <div className="text-5xl text-[#2a806d] mb-6">{step}</div>
-                  <h3 className="text-2xl font-bold text-[#333] mb-4">{titles[idx]}</h3>
-                  <p className="text-[#333]">{descs[idx]}</p>
-                </motion.div>
-              );
-            })}
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {steps.map(({ title, Icon, bg, color, description }) => (
+              <div
+                key={title}
+                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-1"
+              >
+                <div className="card-body items-center text-center space-y-4">
+                  <div
+                    className={`rounded-full p-3 ${bg}`}
+                    style={{ backgroundColor: bg }}
+                  >
+                    <Icon className={`h-6 w-6 ${color}`} />
+                  </div>
+                  <h3 className="text-xl font-bold">{title}</h3>
+                  <p className="text-gray-500">{description}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        </section>
-
-        {/* Testimonials */}
-        <motion.section 
-          className="w-full max-w-4xl mb-32 text-center"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl font-bold text-[#2a806d] mb-12">What People Are Saying</h2>
-          <div className="bg-white p-10 rounded-xl shadow-lg">
-            <p className="text-xl text-[#333] italic mb-8">
-              "SplitMate saved our group trips from endless spreadsheet arguments. Now we actually enjoy splitting bills!"
-            </p>
-            <p className="font-bold text-[#333]">— Sarah & Her Travel Friends</p>
-          </div>
-        </motion.section>
-
-        {/* Final CTA */}
-        <motion.div 
-          className="text-center mb-20"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold text-[#2a806d] mb-8">Ready to Simplify Your Group Expenses?</h2>
-          <Link 
-            to="/create"
-            className="px-10 py-5 bg-[#2a806d] hover:bg-[#20765f] text-white text-xl rounded-xl shadow-lg transition-all duration-300 inline-block hover:scale-105"
-          >
-            Get Started — It's Free
-          </Link>
-        </motion.div>
-
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#2a806d] text-white p-8 text-center">
-        <p className="text-sm">© 2023 SplitMate | Made with ♥ by Waleeja Ali</p>
+      <section
+        id="people"
+        className="w-full max-w-2xl mx-auto mb-7 text-center px-4 py-6 min-h-[65vh]"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.h2
+          className="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm bg-clip-text text-transparent"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          What People Are Saying
+        </motion.h2>
+
+        <div className="relative mb-16">
+          <motion.div
+            key={index}
+            className="card bg-base-100 shadow-xl p-8"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-lg md:text-xl text-gray-700 italic mb-6 font-inter">
+              "{testimonials[index].quote}"
+            </p>
+            <p className="font-bold text-[#333]">
+              — {testimonials[index].author}
+            </p>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white shadow-md rounded-xl p-4 max-w-md mx-auto border border-gray-200 font-inter font-normal"
+        >
+          <h3 className="text-xl font-semibold text-[#2a806d] mb-4">
+            Share Your Feedback
+          </h3>
+
+          <form onSubmit={handleSubmit} method="POST" className="space-y-3">
+            <label htmlFor="email"></label>
+            <input
+              type="email"
+              placeholder="Your Email"
+              name="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#36a186] outline-none text-sm"
+            />
+
+            <textarea
+              placeholder="Your Feedback..."
+              rows={3}
+              name="message"
+              id="message"
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#36a186] outline-none text-sm"
+            />
+
+            <button
+              type="submit"
+              className="w-full py-2 rounded-lg text-white text-sm font-medium bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] hover:shadow-md transition"
+            >
+              {loading ? "Submitting..." : "Submit"}
+            </button>
+          </form>
+          {showDialog && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white rounded-xl p-6 max-w-sm text-center shadow-lg">
+                <h2 className="text-xl font-bold text-[#2A806D] mb-4">
+                  Thank you for your feedback!
+                </h2>
+                <button
+                  onClick={() => setShowDialog(false)}
+                  className="mt-2 px-4 py-2 rounded-lg bg-[#2A806D] text-white font-semibold hover:bg-[#36a186] transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </section>
+
+      <footer className="footer footer-center bg-[#2a806d] text-white p-3">
+        <p className="text-sm">© 2025 SplitMate | Made by Waleeja Ali</p>
       </footer>
     </div>
   );

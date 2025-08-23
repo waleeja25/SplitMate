@@ -368,10 +368,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URI;
   return (
     <div className="bg-[rgb(245,252,250)] min-h-screen px-4 sm:px-6 md:px-12 lg:px-20">
       <div className="text-center mb-3 p-7">
-        <p className="text-4xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+           <h1 className="text-4xl py-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#185144] via-[#36a186] to-[#2A806D]">
           Add a new Expense
-        </p>
-        <p className="text-[#4B4B4B] mt-2 text-sm sm:text-base md:text-lg">
+        </h1>
+        <p className="text-[#4B4B4B] text-sm sm:text-base md:text-lg italic">
           Log your expense and let us handle the split.
         </p>
         <div className="mt-3 border-b-2 border-[#2a806d] w-4/3 sm:w-1/2 md:w-2/3 mx-auto" />
