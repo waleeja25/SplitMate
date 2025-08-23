@@ -89,10 +89,10 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-[rgb(245,252,250)] pt-10 mt-4 sm:pt-16 overflow-hidden font-['Montserrat'] px-4">
+    <div className="flex justify-center items-start min-h-[88vh] bg-dots bg-[rgb(245,252,250)] pt-10 mt-1 sm:pt-16 overflow-hidden font-['Montserrat'] px-4">
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
-        className="bg-white px-10 py-7 rounded-xl shadow-lg w-full max-w-md text-center border border-gray-300"
+        className="bg-white px-10 py-6 rounded-xl shadow-lg w-full max-w-md text-center border border-gray-300"
       >
         <img
           src={logo}
