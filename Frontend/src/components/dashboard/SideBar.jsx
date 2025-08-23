@@ -18,7 +18,7 @@ const Sidebar = () => {
   const location = useLocation();
   const user = localStorage.getItem("username");
 
-  const [isOpen, setIsOpen] = useState(false); // Sidebar toggle
+  const [isOpen, setIsOpen] = useState(false); 
 
   const navItems = [
     { label: "Dashboard", route: "/dashboard", icon: <Home size={18} /> },
@@ -32,7 +32,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Toggle Button */}
       <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white border border-[#cceee4] shadow-md"
         onClick={() => setIsOpen(!isOpen)}
@@ -52,7 +51,7 @@ const Sidebar = () => {
               fixed lg:static
               top-[48px]
               left-0
-              max-h-screen
+              min-h-screen
               overflow-y-auto
               w-64 
               bg-[#f0faf6] 
@@ -63,7 +62,6 @@ const Sidebar = () => {
               z-40
             "
           >
-            {/* Greeting */}
             <div className="flex flex-col items-center gap-1 mb-8 mt-9 relative">
               <div className="z-10 text-center">
                 <p className="text-lg font-medium text-gray-600 tracking-wide">
@@ -83,7 +81,7 @@ const Sidebar = () => {
                     key={label}
                     onClick={() => {
                       navigate(route);
-                      setIsOpen(false); // Auto-close on navigation
+                      setIsOpen(false);
                     }}
                     className={`flex items-center gap-3 px-4 py-2 rounded-xl font-semibold cursor-pointer group transition-all duration-300 ease-in-out 
                     ${
@@ -106,7 +104,6 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      {/* Always show on larger screens */}
       <div className="hidden lg:flex flex-col w-64 h-screen bg-[#f0faf6] border-r border-t border-[#d9f0ea] shadow-lg px-4 py-6">
         <div className="flex flex-col items-center gap-1 mb-8 mt-9 relative">
           <div className="z-10 text-center">
