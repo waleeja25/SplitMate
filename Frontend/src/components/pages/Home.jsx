@@ -87,9 +87,9 @@ export default function Home() {
             </span>
           </motion.h1>
 
-          <div className="mt-6 mb-3 font-inter">
-            <div className="text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
-              <div>
+          <div className="mt-3 sm:mt-6 lg:mt-10 mb-3 font-inter px-4 sm:px-0">
+            <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium">
                 The simplest way to{" "}
                 <AnimatePresence mode="wait">
                   <motion.span
@@ -98,14 +98,14 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -30 }}
                     transition={{ duration: 0.5 }}
-                    className="relative inline-block inset-0 text-4xl md:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm whitespace-nowrap"
+                    className="relative inline-block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#2A806D] via-[#36a186] to-[#2A806D] drop-shadow-sm whitespace-nowrap"
                   >
                     {actions[index].first}
                   </motion.span>
                 </AnimatePresence>
               </div>
 
-              <div className="relative flex justify-center items-center italic h-[60px] text-3xl md:text-4xl font-bold mt-3">
+              <div className="relative flex justify-center items-center italic h-[50px] sm:h-[55px] md:h-[60px] lg:h-[70px] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-3">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={actions[index].word + actions[index].sub}
@@ -113,7 +113,7 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -30 }}
                     transition={{ duration: 0.5 }}
-                    className="absolute inset-0 text-3xl md:text-3xl bg-gradient-to-r from-[#555454] via-[#333] to-[#444] bg-clip-text text-transparent whitespace-nowrap"
+                    className="absolute inset-0 text-xl sm:text-2xl md:text-3xl lg:text-4xl bg-gradient-to-r from-[#555454] via-[#333] to-[#444] bg-clip-text text-transparent whitespace-nowrap"
                   >
                     {actions[index].word} {actions[index].sub}
                   </motion.span>
@@ -121,12 +121,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex justify-center gap-8 mt-5">
+            <div className="flex justify-center gap-3 sm:gap-4 md:gap-6 mt-5">
               {emojis.map((emoji, idx) => (
                 <motion.img
                   key={idx}
                   src={emoji.src}
-                  className="w-12 h-12"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
                   style={{
                     filter: `invert(32%) sepia(94%) saturate(500%) hue-rotate(120deg)`,
                   }}
@@ -139,7 +139,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
           <p className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-2xl leading-relaxed font-inter">
             Keep track of shared expenses and balances with{" "}
             <span className="text-[#2a806d] font-semibold">friends</span>,{" "}
