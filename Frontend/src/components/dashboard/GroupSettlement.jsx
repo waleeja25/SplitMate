@@ -68,7 +68,7 @@ const SettleUpPage = ({
         </select>
       </div>
 
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <div className="flex flex-col items-center">
           <UserAvatar name={payer} size={48} />
           <select
