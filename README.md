@@ -1,10 +1,5 @@
-<div align="center">
-  <h1>SplitMate</h1>
-  <p>
-    A modern, responsive, and full-stack expense-splitting web application built using <b>React, Express.js, MongoDB, and Node.js</b>.  
-    SplitMate simplifies group expense management by allowing users to create groups, add friends, split costs fairly, track balances, and record settlements — making shared expenses transparent and hassle-free.
-  </p>
-</div>
+# SplitMate 
+A modern, responsive, and full-stack expense-splitting web application built using React, Express.js, MongoDB, and Node.js. SplitMate simplifies group expense management by allowing users to create groups, add friends, split costs fairly, track balances, and record settlements — making shared expenses transparent and hassle-free.
 
 ---
 
@@ -33,7 +28,7 @@
 ---
 
 ## 🧰 Tech Stack
-- **Frontend:** React.js, React Router, Context API, TailwindCSS, DaisyUI, Material UI, Framer Motion, DiceBear Avatars  
+- **Frontend:** React.js, React Router,React Hook Form, Context API, TailwindCSS, DaisyUI, Material UI, Framer Motion, DiceBear Avatars  
 - **Backend:** Node.js, Express.js  
 - **Database:** MongoDB Atlas, Mongoose  
 - **Authentication:** JWT (JSON Web Tokens)  
