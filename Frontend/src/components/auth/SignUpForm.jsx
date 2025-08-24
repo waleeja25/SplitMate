@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import alertDisplay from "../ui/alertDisplay.jsx";
 const backendUrl = import.meta.env.VITE_BACKEND_URI;
@@ -42,14 +42,19 @@ const SignupForm = () => {
           message: "User created successfully",
           color: "#a5d6a7",
         });
+        navigate("/login");
         return;
+      } else {
+  setAlert({
+    type: "error",
+    title: "Error",
+    message: result.message || "Something went wrong",
+        });
       }
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("username", result.user.name);
       localStorage.setItem("email", result.user.email);
-
-      navigate("/login");
     } catch (err) {
       console.log(err.message);
     } finally {
@@ -99,7 +104,7 @@ const SignupForm = () => {
   }, [alert]);
 
   return (
-    <div className="flex justify-center bg-dots items-start min-h-[90vh] bg-[rgb(245,252,250)] pt-9 sm:pt-16 overflow-hidden font-['Montserrat'] px-4">
+    <div className="flex justify-center items-start min-h-[88vh] bg-dots bg-[rgb(245,252,250)] pt-10 mt-1 sm:pt-16 overflow-hidden font-['Montserrat'] px-4">
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
         className="bg-white px-10 py-4 rounded-xl shadow-lg w-full max-w-md text-center  border border-gray-300"
@@ -169,6 +174,15 @@ const SignupForm = () => {
         >
           {loading ? "Signing Up..." : "Sign Up"}
         </button>
+        <p className="p-2">
+          Already have an account?{" "}
+          <NavLink
+            to="/login"
+            className="text-[#2A806D] font-semibold hover:underline"
+          >
+            Login
+          </NavLink>
+        </p>
       </form>
     </div>
   );
