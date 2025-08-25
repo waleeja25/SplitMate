@@ -52,6 +52,7 @@ export default function IndividualExpensesCard({ friends = [] }) {
           { headers: { Authorization: `Bearer ${sessionUser.token}` } }
         );
         const dataSettlements = await resSettlements.json();
+        console.log("Data Expense", dataSettlements);
         if (dataSettlements.success)
           setSettlements(dataSettlements.settlements);
       } catch (err) {
@@ -193,9 +194,16 @@ export default function IndividualExpensesCard({ friends = [] }) {
                 className="card bg-white border shadow-sm hover:shadow-md transition"
               >
                 <div className="card-body space-y-2">
-                  <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-2xl">
-                    <CategoryIcon className="w-6 h-6" />
-                    <span>{categoryName}</span>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 text-[#2a806d] font-semibold text-2xl">
+                      <CategoryIcon className="w-6 h-6" />
+                      <span>{categoryName}</span>
+                    </div>
+                    {expense.type === "group" && expense.group?.name && (
+                      <span className="text-sm text-gray-500 italic mt-0.5">
+                        Group: {expense.group.name}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-start text-sm text-gray-600">
@@ -263,15 +271,23 @@ export default function IndividualExpensesCard({ friends = [] }) {
                         ? "you"
                         : settlement.to.name}
                     </h3>
+
                     <span className="text-[#2a806d] font-bold text-xl">
                       Rs {settlement.amount}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-sm text-gray-600">
+                    <div className="flex flex-col">
+                    {settlement.type === "group" && settlement.group?.name && (
+                      <span className="text-sm text-gray-500 italic mt-0.5">
+                        Group: {settlement.group.name}
+                      </span>
+                    )}
                     <span className="italic">
                       Mode: {settlement.paymentMode}
                     </span>
+                    </div>
                     <span>
                       {new Date(settlement.date).toLocaleDateString("en-IN", {
                         year: "numeric",

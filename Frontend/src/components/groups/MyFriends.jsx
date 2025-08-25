@@ -76,7 +76,7 @@ const MyFriends = ({ friends, setFriends }) => {
       });
     }
   };
-  console.log(friends)
+  console.log("Friends",friends)
 
   const handleFriendClick = (friendId) => {
     navigate(`/myFriends/${encodeURIComponent(friendId)}`, {
@@ -117,7 +117,8 @@ const MyFriends = ({ friends, setFriends }) => {
 
   const handleDeleteFriend = async (friendId) => {
     const token = localStorage.getItem("token");
-
+console.log(token)
+console.log(friendId)
     try {
       const res = await fetch(`${backendUrl}/api/friends/${friendId}`, {
         method: 'DELETE',
@@ -154,7 +155,7 @@ const MyFriends = ({ friends, setFriends }) => {
       });
     }
   };
-  console.log("Friend Id " ,friends._id)
+  
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-[rgb(245,252,250)] min-h-screen">
@@ -201,7 +202,7 @@ const MyFriends = ({ friends, setFriends }) => {
               </div>
 
               <button
-                onClick={() => handleDeleteFriend(friend.friendId)}
+                onClick={() => handleDeleteFriend(friend.id)}
                 className="text-red-500 hover:text-red-700 p-2 rounded"
               >
                 <FiTrash2 size={20} />
