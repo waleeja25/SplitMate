@@ -134,20 +134,16 @@ router.post("/settlement", async (req, res) => {
           // remainingAmount -= payment;
         }
       }
-      // Get global balances
+     
       const fromBalanceI =
         (await Balance.findOne({ userId: from })) ||
         new Balance({ userId: from });
 
-      // Actual debt for individual expenses only
-      // We need to exclude group-related debts
       let individualDebt = 0;
 
       for (let [key, val] of fromBalanceI.balances) {
         if (key === to.toString()) {
-          // Here, val might include total debt (individual + group)
-          // If you separately store group balances in GroupBalance, we can subtract them
-          // Example: sum of debts from all groups
+
           const sharedGroups = await Group.find({
             members: { $all: [from, to] },
           }).select("_id");
@@ -163,12 +159,13 @@ router.post("/settlement", async (req, res) => {
             }
           }
 
-          individualDebt = -(val - groupDebt); // val is negative if from owes to to
+          individualDebt = -(val - groupDebt); 
           break;
         }
       }
 
-      individualDebt = Math.max(individualDebt, 0); // just to be safe
+      individualDebt = Math.max(individualDebt, 0); 
+      individualDebt = Number(individualDebt.toFixed(2));
       if (remainingAmount > individualDebt) {
         return res.status(400).json({
           success: false,
@@ -176,8 +173,6 @@ router.post("/settlement", async (req, res) => {
         });
       }
 
-      // Apply any remaining amount to global balances
-      // if (remainingAmount > 0) {
       const fromBalance =
         (await Balance.findOne({ userId: from })) ||
         new Balance({ userId: from });
@@ -192,7 +187,6 @@ router.post("/settlement", async (req, res) => {
         (toBalance.balances.get(from.toString()) || 0) - remainingAmount
       );
 
-      // Cleanup near-zero balances
       for (let [key, val] of fromBalance.balances)
         if (Math.abs(val) < 0.01) fromBalance.balances.delete(key);
       for (let [key, val] of toBalance.balances)
@@ -219,6 +213,7 @@ async function updateGroupBalances(groupId, from, to, amount) {
     new GroupBalance({ groupId, userId: to });
   const currentDebtt = fromGB.balances.get(to.toString()) || 0;
   const groupDebtAmount = currentDebtt < 0 ? -currentDebtt : 0;
+  groupDebtAmount = Number(groupDebtAmount.toFixed(2));
 
   if (amount > groupDebtAmount) {
     throw new Error(

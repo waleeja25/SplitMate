@@ -80,9 +80,9 @@ const AllExpenses = () => {
 
     fetchExpensess();
   }, [sessionUser]);
+  console.log("expenses ", expenses)
 
   const handleDeleteExpense = async (expenseId) => {
-    const token = localStorage.getItem("token");
     try {
       const deletedExpense = expenses.find((f) => f.expenseId === expenseId);
       if (!deletedExpense) throw new Error("Expense not found");
@@ -93,13 +93,13 @@ const AllExpenses = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionUser.token}`,
           },
         }
       );
       const data = await res.json();
       if (!data.success)
-        throw new Error(data.message || "Failed to delete expense");
+        throw new Error("Failed to delete expense");
 
       const negativeSummary = {};
       Object.entries(deletedExpense.summary).forEach(([user, amt]) => {
@@ -111,7 +111,7 @@ const AllExpenses = () => {
         paidBy: deletedExpense.paidBy.name,
         amount: -Math.abs(deletedExpense.amount),
         splitType: deletedExpense.splitType,
-        groupId:deletedExpense.group._id,
+        groupId: deletedExpense.group?._id || null,
         type: deletedExpense.type,
       };
 
