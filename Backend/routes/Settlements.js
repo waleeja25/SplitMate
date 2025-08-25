@@ -134,7 +134,7 @@ router.post("/settlement", async (req, res) => {
           // remainingAmount -= payment;
         }
       }
-     
+
       const fromBalanceI =
         (await Balance.findOne({ userId: from })) ||
         new Balance({ userId: from });
@@ -143,7 +143,6 @@ router.post("/settlement", async (req, res) => {
 
       for (let [key, val] of fromBalanceI.balances) {
         if (key === to.toString()) {
-
           const sharedGroups = await Group.find({
             members: { $all: [from, to] },
           }).select("_id");
@@ -159,12 +158,12 @@ router.post("/settlement", async (req, res) => {
             }
           }
 
-          individualDebt = -(val - groupDebt); 
+          individualDebt = -(val - groupDebt);
           break;
         }
       }
 
-      individualDebt = Math.max(individualDebt, 0); 
+      individualDebt = Math.max(individualDebt, 0);
       individualDebt = Number(individualDebt.toFixed(2));
       if (remainingAmount > individualDebt) {
         return res.status(400).json({
@@ -212,7 +211,7 @@ async function updateGroupBalances(groupId, from, to, amount) {
     (await GroupBalance.findOne({ groupId, userId: to })) ||
     new GroupBalance({ groupId, userId: to });
   const currentDebtt = fromGB.balances.get(to.toString()) || 0;
-  const groupDebtAmount = currentDebtt < 0 ? -currentDebtt : 0;
+  let groupDebtAmount = currentDebtt < 0 ? -currentDebtt : 0;
   groupDebtAmount = Number(groupDebtAmount.toFixed(2));
 
   if (amount > groupDebtAmount) {
