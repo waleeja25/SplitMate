@@ -81,7 +81,7 @@ export default function GroupExpensesCard() {
 
           const owedToYouArr = [];
           const youOweArr = [];
- console.log( "bl " ,userBalances)
+
           Object.entries(userBalances).forEach(([otherId, info]) => {
             otherId;
             const { name, amount } = info;
@@ -103,6 +103,7 @@ export default function GroupExpensesCard() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const dataSettlements = await resSettlements.json();
+        console.log("settle ", dataSettlements);
         if (dataSettlements.success)
           setSettlements(dataSettlements.settlements);
       } catch (err) {
@@ -115,7 +116,7 @@ export default function GroupExpensesCard() {
 
   console.log(owedToYou);
   console.log(youOwe);
- 
+
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 min-h-screen">
       <button
@@ -183,9 +184,9 @@ export default function GroupExpensesCard() {
             <h2 className="text-xl font-bold text-[#2a806d] mb-4">
               Group Balances
             </h2>
-              <div className="mt-4 grid md:grid-cols-2 gap-6 text-[14px] font-medium">
-                <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
-                  <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">
+            <div className="mt-4 grid md:grid-cols-2 gap-6 text-[14px] font-medium">
+              <div className="bg-[#f0fcf9] border border-[#2a806d] rounded-xl p-4">
+                <h4 className="font-semibold text-[#1cc29f] text-lg mb-3">
                   You are owed
                 </h4>
                 {owedToYou.length > 0 ? (
@@ -201,12 +202,12 @@ export default function GroupExpensesCard() {
                 )}
               </div>
 
-                <div className="bg-[#fff4f4] border border-[#ef4444] rounded-xl p-4">
-                  <h4 className="font-semibold text-[#ef4444] text-lg mb-3">
-                    You Owe
-                  </h4>
+              <div className="bg-[#fff4f4] border border-[#ef4444] rounded-xl p-4">
+                <h4 className="font-semibold text-[#ef4444] text-lg mb-3">
+                  You Owe
+                </h4>
                 {youOwe.length > 0 ? (
-                      <ul className="list-disc ml-3 text-[#7f1d1d] space-y-2">
+                  <ul className="list-disc ml-3 text-[#7f1d1d] space-y-2">
                     {youOwe.map((line, i) => (
                       <li key={i}>{line}</li>
                     ))}
@@ -269,7 +270,6 @@ export default function GroupExpensesCard() {
           onClick={() => setActiveTab("settlements")}
         >
           Settlements{" "}
-          <span className="font-semibold">({settlements.length})</span>
         </button>
       </div>
 
@@ -342,7 +342,37 @@ export default function GroupExpensesCard() {
                 key={idx}
                 className="card bg-white border shadow-sm hover:shadow-md transition rounded-xl"
               >
-                <div className="card-body space-y-2">
+                {settlement.type === "group" && (
+                  <div className="card-body space-y-2">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold text-[#2a806d]">
+                        {settlement.from.name === sessionUser.name
+                          ? "You"
+                          : settlement.from.name}{" "}
+                        <span className="text-gray-700 font-normal">paid</span>{" "}
+                        {settlement.to.name === sessionUser.name
+                          ? "you"
+                          : settlement.to.name}
+                      </h3>
+                      <span className="text-[#2a806d] font-bold text-xl">
+                        Rs {settlement.amount}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span className="italic">
+                        Mode: {settlement.paymentMode}
+                      </span>
+                      <span>
+                        {new Date(settlement.date).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="card-body space-y-2">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold text-[#2a806d]">
                       {settlement.from.name === sessionUser.name
@@ -369,7 +399,7 @@ export default function GroupExpensesCard() {
                       })}
                     </span>
                   </div>
-                </div>
+                </div> */}
               </div>
             ))
           )}
